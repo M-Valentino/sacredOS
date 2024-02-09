@@ -4,16 +4,39 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../system/gui.css">
+  <style>
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+    }
+    .colorBox {
+      width: 10px;
+      height: 10px;
+      border: 1px solid #000;
+    }
+  </style>
 </head>
 
 <body>
 
-  <div  class="osElemBase">
-    <button class="oSButton" >Go Menu</button>
+  <div class="osElemBase">
+    <div class="flexRow">
+      <div class="flexRow">
+      <div>Color</div>
+      <div class="colorBox" style="background-color: var(--primColor);"></div>
+    </div>
+      <button class="oSButton" onclick="changeColor()">Change</button>
+    </div>
   </div>
 
   <script>
-  window.top.postMessage('hello', '*')
+    window.top.postMessage('hello', '*')
+
+    function changeColor() {
+      var r = document.querySelector(':root');
+      r.style.setProperty('--primColor', 'lightblue');
+    }
+    
   </script>
 
 </body>
