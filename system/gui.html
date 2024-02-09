@@ -46,34 +46,34 @@
     var windowCount = -1;
 
     function openProgram(path) {
-    console.log(path);
-    windowCount++;
+      console.log(path);
+      windowCount++;
 
-    var window = document.createElement('div');
-    window.id = `win${windowCount}`;
-    window.classList = "window";
-    document.body.appendChild(window);
+      var window = document.createElement('div');
+      window.id = `win${windowCount}`;
+      window.classList = "window";
+      document.body.appendChild(window);
 
-    var header = document.createElement('div');
-    header.id = `hed${windowCount}`;
-    header.classList = "menuHeader";
-    header.textContent = "Program";
-    window.appendChild(header); // Directly append to the window for clarity
+      var header = document.createElement('div');
+      header.id = `hed${windowCount}`;
+      header.classList = "menuHeader";
+      header.textContent = "Program";
+      window.appendChild(header); // Directly append to the window for clarity
 
-    // Create a transparent overlay but don't add it to the document yet
-    var overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.cursor = 'grabbing';
-    overlay.style.zIndex = '9999'; // Ensure it's on top of everything
-    overlay.style.display = 'none'; // Start hidden
+      // Create a transparent overlay but don't add it to the document yet
+      var overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.cursor = 'grabbing';
+      overlay.style.zIndex = '9999'; // Ensure it's on top of everything
+      overlay.style.display = 'none'; // Start hidden
 
-    document.body.appendChild(overlay);
+      document.body.appendChild(overlay);
 
-    header.addEventListener('mousedown', function(e) {
+      header.addEventListener('mousedown', function (e) {
         e.preventDefault(); // Prevent any default actions that might interfere with the drag
         overlay.style.display = 'block'; // Show the overlay
         let rect = window.getBoundingClientRect();
@@ -81,32 +81,32 @@
         var dragOffsetY = e.clientY - rect.top;
 
         function onMouseMove(e) {
-            window.style.position = 'absolute';
-            window.style.left = e.clientX - dragOffsetX + 'px';
-            window.style.top = e.clientY - dragOffsetY + 'px';
+          window.style.position = 'absolute';
+          window.style.left = e.clientX - dragOffsetX + 'px';
+          window.style.top = e.clientY - dragOffsetY + 'px';
         }
 
         function onMouseUp() {
-            overlay.style.display = 'none'; // Hide the overlay
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
+          overlay.style.display = 'none'; // Hide the overlay
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
         }
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
-    });
+      });
 
-    var iframe = document.createElement('iframe');
-    iframe.src = path;
-    iframe.width = "100%";
-    iframe.height = "100%";
-    iframe.frameBorder = '0';
-    iframe.style.border = '0';
-    iframe.style.overflow = "hidden";
-    iframe.style.zIndex = '1';
-    iframe.allowFullscreen = true;
-    window.appendChild(iframe);
-}
+      var iframe = document.createElement('iframe');
+      iframe.src = path;
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.frameBorder = '0';
+      iframe.style.border = '0';
+      iframe.style.overflow = "hidden";
+      iframe.style.zIndex = '1';
+      iframe.allowFullscreen = true;
+      window.appendChild(iframe);
+    }
 
 
 
