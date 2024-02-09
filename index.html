@@ -8,9 +8,9 @@
 
 <body id="guiDriver">
   <script>
-
+var iframe;
 function loadGUI() {
-  var iframe = document.createElement('iframe');
+  iframe = document.createElement('iframe');
     // iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
     iframe.srcdoc = fileContents['system']['gui.html'];
     iframe.width = "100%";
@@ -71,10 +71,11 @@ function loadGUI() {
       console.error(err);
     });
 
-
-
-
     window.onmessage = function (e) {
+      if(e.data == "REQ:FT") {
+        iframe.contentWindow.postMessage(fileTable, '*');
+        return;
+      }
       try {
         iframe.contentWindow.postMessage(e.data, '*');
       } catch (e) { }

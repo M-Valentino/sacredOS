@@ -17,20 +17,22 @@
   </div>
 
   <script>
+    var fileTable;
 
-    var fileTable = JSON.parse(unescape(location.hash.replace(/#/, "")));
-    console.log(fileTable);
+    window.top.postMessage("REQ:FT", "*");
 
-    for (let i = 0; i < fileTable.programs.length; i++) {
-      var menuItem = document.createElement('div');
-      menuItem.innerHTML = fileTable.programs[i];
-      menuItem.classList = "oSButton osElemBase";
-      menuItem.onclick = menuItem.onclick = (function (programName) {
-        return function () {
-          openProgram('../programs/' + programName);
-        };
-      })(fileTable.programs[i]);
-      document.getElementById("menuContent").appendChild(menuItem);
+    function populateMenu() {
+      for (let i = 0; i < fileTable.programs.length; i++) {
+        var menuItem = document.createElement('div');
+        menuItem.innerHTML = fileTable.programs[i];
+        menuItem.classList = "oSButton osElemBase";
+        menuItem.onclick = menuItem.onclick = (function (programName) {
+          return function () {
+            openProgram('../programs/' + programName);
+          };
+        })(fileTable.programs[i]);
+        document.getElementById("menuContent").appendChild(menuItem);
+      }
     }
 
     var menuOpen = false;
@@ -110,6 +112,12 @@
     }
 
     window.onmessage = function (e) {
+      if (typeof e.data === "object") {
+        alert("fgds")
+        fileTable = e.data;
+        populateMenu(); // Call a new function to populate the menu
+        return;
+      }
       try {
         eval(decodeURI(e.data));
       } catch (e) { }
