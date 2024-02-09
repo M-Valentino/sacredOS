@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primColor: #d81;
+      --secColor: #ccc;
+      --guiPadding: 2px;
+      --borderWidth: 2px;
+      --programBarHeight: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .osElemBase {
+      background-color: var(--secColor);
+      padding: var(--guiPadding);
+    }
+
+    #programBar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: var(--programBarHeight);
+      border: var(--borderWidth) outset;
+    }
+
+    .oSButton {
+      border: var(--borderWidth) outset;
+      cursor: pointer;
+    }
+
+    #goMenuButton {
+      height: 100%;
+    }
+
+    #goMenu {
+      position: fixed;
+      bottom: var(--programBarHeight);
+      left: 0;
+      width: 200px;
+    }
+
+    #goMenuHeader {
+      height: 24px;
+      width: 100%;
+      background-color: var(--primColor);
+      border: calc(var(--borderWidth)* 2) ridge var(--primColor);
+    }
+
+    #goMenuContent {
+      border-left: calc(var(--borderWidth)* 2) ridge;
+      border-right: calc(var(--borderWidth)* 2) ridge;
+      min-height: 300px;
+    }
+  </style>
+  <title>Sacred OS</title>
+</head>
+
+<body>
+
+  <div id="goMenu">
+    <div id="goMenuHeader">Sacred OS</div>
+    <div id="goMenuContent" class="osElemBase"></div>
+  </div>
+  <div id="programBar" class="osElemBase">
+    <button id="goMenuButton" class="osElemBase oSButton">Go Menu</button>
+  </div>
+
+  <script>
+
+  </script>
+
+</body>
+
+</html>
