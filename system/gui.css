@@ -39,11 +39,11 @@ body {
   cursor: pointer;
 }
 
-#goMenuButton {
+#menuButton {
   height: 100%;
 }
 
-#goMenu {
+#menu {
   position: fixed;
   bottom: var(--programBarHeight);
   left: 0;
@@ -51,14 +51,14 @@ body {
   display: none;
 }
 
-#goMenuHeader {
+#menuHeader {
   height: 24px;
   width: 100%;
   background-color: var(--primColor);
   border: calc(var(--borderWidth)* 2) ridge var(--primColor);
 }
 
-#goMenuContent {
+#menuContent {
   border-left: calc(var(--borderWidth)* 2) ridge;
   border-right: calc(var(--borderWidth)* 2) ridge;
   min-height: 300px;

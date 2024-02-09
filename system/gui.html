@@ -8,12 +8,12 @@
 
 <body>
 
-  <div id="goMenu">
-    <div id="goMenuHeader">Sacred OS</div>
-    <div id="goMenuContent" class="osElemBase"></div>
+  <div id="menu">
+    <div id="menuHeader">Sacred OS</div>
+    <div id="menuContent" class="osElemBase"></div>
   </div>
   <div id="programBar" class="osElemBase">
-    <button id="goMenuButton" class="osElemBase oSButton" onclick="toggleOpenGoMenu()">Go Menu</button>
+    <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">Go Menu</button>
   </div>
 
   <script>
@@ -24,17 +24,37 @@
     for (let i = 0; i < disk.programs.length; i++) {
       var menuItem = document.createElement('div');
       menuItem.innerHTML = disk.programs[i];
-      document.getElementById("goMenuContent").appendChild(menuItem);
+      menuItem.classList = "oSButton osElemBase";
+      menuItem.onclick = menuItem.onclick = (function (programName) {
+        return function () {
+          openProgram('../programs/' + programName);
+        };
+      })(disk.programs[i]);
+      document.getElementById("menuContent").appendChild(menuItem);
     }
 
-    var goMenuOpen = false;
-    function toggleOpenGoMenu() {
-      goMenuOpen = !goMenuOpen;
-      if (goMenuOpen) {
-        document.getElementById("goMenu").style.display = "initial";
+    var menuOpen = false;
+    function toggleOpenmenu() {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        document.getElementById("menu").style.display = "initial";
       } else {
-        document.getElementById("goMenu").style.display = "none";
+        document.getElementById("menu").style.display = "none";
       }
+    }
+
+    function openProgram(path) {
+      console.log(path);
+      var iframe = document.createElement('iframe');
+      iframe.src = path;
+      iframe.width = "400px";
+      iframe.height = "300px";
+      iframe.frameBorder = '0';
+      iframe.style.border = '0';
+      iframe.style.overflow = "hidden";
+      iframe.style.zIndex = 1;
+      iframe.allowFullscreen = true;
+      document.body.appendChild(iframe);
     }
   </script>
 
