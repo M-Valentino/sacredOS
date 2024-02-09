@@ -64,7 +64,6 @@
 
     loadFilesContent(fileTable).then(data => {
       fileContents = data;
-      console.log(data);
       loadGUI();
     }).catch(err => {
       console.error(err);
@@ -74,6 +73,8 @@
       if (e.data == "REQ:FT") {
         iframe.contentWindow.postMessage(fileTable, '*');
         return;
+      } else if (e.data == "REQ:PF") {
+        iframe.contentWindow.postMessage("PF:"+ JSON.stringify(fileContents["programs"]), '*');
       }
       try {
         iframe.contentWindow.postMessage(e.data, '*');

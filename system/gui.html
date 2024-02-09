@@ -18,8 +18,10 @@
 
   <script>
     var fileTable;
+    var programFiles;
 
     window.top.postMessage("REQ:FT", "*");
+    window.top.postMessage("REQ:PF", "*");
 
     function populateMenu() {
       for (let i = 0; i < fileTable.programs.length; i++) {
@@ -28,7 +30,7 @@
         menuItem.classList = "oSButton osElemBase";
         menuItem.onclick = menuItem.onclick = (function (programName) {
           return function () {
-            openProgram('../programs/' + programName);
+            openProgram( programName, programFiles[programName]);
           };
         })(fileTable.programs[i]);
         document.getElementById("menuContent").appendChild(menuItem);
@@ -47,9 +49,8 @@
 
     var windowCount = -1;
 
-    function openProgram(path) {
+    function openProgram(path, data) {
       toggleOpenmenu();
-      console.log(path);
       windowCount++;
 
       var window = document.createElement('div');
@@ -100,7 +101,7 @@
       });
 
       var iframe = document.createElement('iframe');
-      iframe.src = path;
+      iframe.srcdoc = data;
       iframe.width = "100%";
       iframe.height = "100%";
       iframe.frameBorder = '0';
@@ -113,9 +114,18 @@
 
     window.onmessage = function (e) {
       if (typeof e.data === "object") {
-        alert("fgds")
         fileTable = e.data;
-        populateMenu(); // Call a new function to populate the menu
+        
+        return;
+      } else if (e.data.startsWith("PF:")) {
+        var jsonString = e.data.substring(3);
+        try {
+          programFiles = JSON.parse(jsonString);
+          populateMenu(); // Call a new function to populate the menu
+          
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
         return;
       }
       try {
