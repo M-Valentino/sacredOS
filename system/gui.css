@@ -25,6 +25,13 @@ body {
   padding: var(--guiPadding);
 }
 
+.windowRidgeBorder {
+  padding: 4px;
+  border-right: calc(var(--borderWidth)* 2) ridge;
+  border-left: calc(var(--borderWidth)* 2) ridge;
+  border-bottom: calc(var(--borderWidth)* 2) ridge;
+}
+
 #programBar {
   position: fixed;
   left: 0;
@@ -35,6 +42,7 @@ body {
 }
 
 .oSButton {
+  font-family: 'Times New Roman', Times, serif;
   border: var(--borderWidth) outset;
   cursor: pointer;
 }
