@@ -35,6 +35,7 @@
     function changeColor() {
       var r = document.querySelector(':root');
       r.style.setProperty('--primColor', 'lightblue');
+      window.top.postMessage('hello', '*');
     }
     
   </script>
