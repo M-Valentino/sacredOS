@@ -8,28 +8,28 @@
 
 <body>
 
-  <div id="menu">
-    <div id="menuHeader">Sacred OS</div>
+  <div id="mainMenu">
+    <div class="menuHeader">Sacred OS</div>
     <div id="menuContent" class="osElemBase"></div>
   </div>
   <div id="programBar" class="osElemBase">
-    <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">Go Menu</button>
+    <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">~Menu~</button>
   </div>
 
   <script>
 
-    var disk = JSON.parse(unescape(location.hash.replace(/#/, "")));
-    console.log(disk);
+    var fileTable = JSON.parse(unescape(location.hash.replace(/#/, "")));
+    console.log(fileTable);
 
-    for (let i = 0; i < disk.programs.length; i++) {
+    for (let i = 0; i < fileTable.programs.length; i++) {
       var menuItem = document.createElement('div');
-      menuItem.innerHTML = disk.programs[i];
+      menuItem.innerHTML = fileTable.programs[i];
       menuItem.classList = "oSButton osElemBase";
       menuItem.onclick = menuItem.onclick = (function (programName) {
         return function () {
           openProgram('../programs/' + programName);
         };
-      })(disk.programs[i]);
+      })(fileTable.programs[i]);
       document.getElementById("menuContent").appendChild(menuItem);
     }
 
@@ -37,24 +37,39 @@
     function toggleOpenmenu() {
       menuOpen = !menuOpen;
       if (menuOpen) {
-        document.getElementById("menu").style.display = "initial";
+        document.getElementById("mainMenu").style.display = "initial";
       } else {
-        document.getElementById("menu").style.display = "none";
+        document.getElementById("mainMenu").style.display = "none";
       }
     }
 
+    var windowCount = -1;
+
     function openProgram(path) {
       console.log(path);
+      windowCount++;
+
+      var window = document.createElement('div');
+      window.id = `win${windowCount}`;
+      window.classList = "window";
+      document.body.appendChild(window);
+
+      var header = document.createElement('div');
+      header.id = `hed${windowCount}`;
+      header.classList = "menuHeader";
+      header.textContent = "Program";
+      document.getElementById(`win${windowCount}`).appendChild(header);
+
       var iframe = document.createElement('iframe');
       iframe.src = path;
-      iframe.width = "400px";
-      iframe.height = "300px";
+      iframe.width = "100%";
+      iframe.height = "100%";
       iframe.frameBorder = '0';
       iframe.style.border = '0';
       iframe.style.overflow = "hidden";
       iframe.style.zIndex = 1;
       iframe.allowFullscreen = true;
-      document.body.appendChild(iframe);
+      document.getElementById(`win${windowCount}`).appendChild(iframe);
     }
   </script>
 

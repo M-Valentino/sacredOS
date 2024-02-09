@@ -43,7 +43,7 @@ body {
   height: 100%;
 }
 
-#menu {
+#mainMenu {
   position: fixed;
   bottom: var(--programBarHeight);
   left: 0;
@@ -51,7 +51,7 @@ body {
   display: none;
 }
 
-#menuHeader {
+.menuHeader {
   height: 24px;
   width: 100%;
   background-color: var(--primColor);
@@ -62,4 +62,9 @@ body {
   border-left: calc(var(--borderWidth)* 2) ridge;
   border-right: calc(var(--borderWidth)* 2) ridge;
   min-height: 300px;
+}
+
+.window {
+  width: 600px;
+  height: 400px;
 }
