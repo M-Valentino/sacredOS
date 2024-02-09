@@ -34,8 +34,8 @@
         alert('It works!');
       }
       try {
-        eval( decodeURI(e.data));
-        console.log(decodeURI(e.data));
+        // eval( decodeURI(e.data));
+        iframe.contentWindow.postMessage(e.data, '*');
       } catch (e) { }
 
     };

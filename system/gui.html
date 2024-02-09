@@ -108,7 +108,14 @@
       window.appendChild(iframe);
     }
 
+    window.onmessage = function (e) {
 
+      try {
+        eval(decodeURI(e.data));
+
+      } catch (e) { }
+
+    };
 
   </script>
 
