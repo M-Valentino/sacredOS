@@ -28,11 +28,17 @@
     iframe.allowFullscreen = true;
     document.body.appendChild(iframe);
 
-    window.onmessage = function(e) {
-    if (e.data == 'hello') {
+    window.onmessage = function (e) {
+
+      if (e.data == 'hello') {
         alert('It works!');
-    }
-};
+      }
+      try {
+        eval( decodeURI(e.data));
+        console.log(decodeURI(e.data));
+      } catch (e) { }
+
+    };
 
 
   </script>
