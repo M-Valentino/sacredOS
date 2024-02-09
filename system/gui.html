@@ -46,6 +46,7 @@
     var windowCount = -1;
 
     function openProgram(path) {
+      toggleOpenmenu();
       console.log(path);
       windowCount++;
 
@@ -109,12 +110,9 @@
     }
 
     window.onmessage = function (e) {
-
       try {
         eval(decodeURI(e.data));
-
       } catch (e) { }
-
     };
 
   </script>

@@ -29,18 +29,10 @@
     document.body.appendChild(iframe);
 
     window.onmessage = function (e) {
-
-      if (e.data == 'hello') {
-        alert('It works!');
-      }
       try {
-        // eval( decodeURI(e.data));
         iframe.contentWindow.postMessage(e.data, '*');
       } catch (e) { }
-
     };
-
-
   </script>
 
 
