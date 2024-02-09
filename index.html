@@ -8,20 +8,19 @@
 
 <body id="guiDriver">
   <script>
-var iframe;
-function loadGUI() {
-  iframe = document.createElement('iframe');
-    // iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
-    iframe.srcdoc = fileContents['system']['gui.html'];
-    iframe.width = "100%";
-    iframe.height = "100%";
-    iframe.frameBorder = '0';
-    iframe.style.border = '0';
-    iframe.style.overflow = "hidden";
-    iframe.allowFullscreen = true;
-    document.body.appendChild(iframe);
-}
-
+    var iframe;
+    function loadGUI() {
+      iframe = document.createElement('iframe');
+      // iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
+      iframe.srcdoc = fileContents['system']['gui.html'];
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.frameBorder = '0';
+      iframe.style.border = '0';
+      iframe.style.overflow = "hidden";
+      iframe.allowFullscreen = true;
+      document.body.appendChild(iframe);
+    }
 
     var fileTable = {
       system: [
@@ -72,7 +71,7 @@ function loadGUI() {
     });
 
     window.onmessage = function (e) {
-      if(e.data == "REQ:FT") {
+      if (e.data == "REQ:FT") {
         iframe.contentWindow.postMessage(fileTable, '*');
         return;
       }
