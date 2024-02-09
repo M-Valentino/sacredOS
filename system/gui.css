@@ -52,7 +52,10 @@ body {
 }
 
 .menuHeader {
-  height: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 4px;
+  height: 32px;
   width: 100%;
   background-color: var(--primColor);
   border: calc(var(--borderWidth)* 2) ridge var(--primColor);

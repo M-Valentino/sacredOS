@@ -5,14 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../system/gui.css">
   <style>
+    .setting {
+      max-width: 270px;
+    }
+
     .flexRow {
       display: flex;
       flex-direction: row;
+      width: 100%;
     }
 
     .colorBox {
-      width: 10px;
-      height: 10px;
+      margin-left: 16px;
+      width: 16px;
+      height: 16px;
       border: 1px solid #000;
     }
   </style>
@@ -21,14 +27,16 @@
 <body>
 
   <div class="osElemBase">
-    <div class="flexRow">
+    <div class="setting">
       <div class="flexRow">
-        <div>Color</div>
-        <div class="colorBox" style="background-color: var(--primColor);"></div>
+        <div class="flexRow">
+          <div>System Accent Color</div>
+          <div class="colorBox" style="background-color: var(--primColor);"></div>
+        </div>
+        <!-- Hidden color picker input -->
+        <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
+        <button class="oSButton" onclick="document.getElementById('colorPicker').click()">Change</button>
       </div>
-      <!-- Hidden color picker input -->
-      <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
-      <button class="oSButton" onclick="document.getElementById('colorPicker').click()">Change</button>
     </div>
   </div>
 
