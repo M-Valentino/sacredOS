@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../system/gui.css">
+  <style>
+    .setting {
+      max-width: 270px;
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+
+    .colorBox {
+      margin-left: 16px;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="osElemBase windowRidgeBorder">
+    <div class="setting">
+      <div class="flexRow">
+        <div class="flexRow">
+          <div>System Accent Color</div>
+          <div class="colorBox" style="background-color: var(--primColor);"></div>
+        </div>
+        <!-- Hidden color picker input -->
+        <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
+        <button class="oSButton" onclick="document.getElementById('colorPicker').click()">Change</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function changeColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
+    }
+
+    function changeColor(color) {
+      document.querySelector(':root').style.setProperty('--primColor', color);
+      window.top.postMessage(changeColorSystemWide(color), "*");
+    }
+
+  </script>
+
+</body>
+
+</html>

@@ -8,6 +8,21 @@
 
 <body id="guiDriver">
   <script>
+
+function loadGUI() {
+  var iframe = document.createElement('iframe');
+    // iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
+    iframe.srcdoc = fileContents['system']['gui.html'];
+    iframe.width = "100%";
+    iframe.height = "100%";
+    iframe.frameBorder = '0';
+    iframe.style.border = '0';
+    iframe.style.overflow = "hidden";
+    iframe.allowFullscreen = true;
+    document.body.appendChild(iframe);
+}
+
+
     var fileTable = {
       system: [
         "gui.css",
@@ -17,16 +32,47 @@
         "settings.html",
         "files.html"
       ]
+    };
+    var fileContents;
+
+    async function loadFilesContent(fileTable) {
+      let filesContent = {};
+
+      for (let directory in fileTable) {
+        filesContent[directory] = {}; // Initialize a nested object for the directory
+
+        for (let fileName of fileTable[directory]) {
+          // Construct the full URL for each file
+          let fileURL = `${directory}/${fileName}`;
+          try {
+            // Fetch file content asynchronously
+            let response = await fetch(fileURL);
+            if (response.ok) {
+              let content = await response.text();
+              // Store the content within the nested structure, matching the original
+              filesContent[directory][fileName] = content;
+            } else {
+              console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+            }
+          } catch (err) {
+            console.error(`Error fetching file ${fileURL}: ${err}`);
+          }
+        }
+      }
+
+      return filesContent;
     }
-    var iframe = document.createElement('iframe');
-    iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
-    iframe.width = "100%";
-    iframe.height = "100%";
-    iframe.frameBorder = '0';
-    iframe.style.border = '0';
-    iframe.style.overflow = "hidden";
-    iframe.allowFullscreen = true;
-    document.body.appendChild(iframe);
+
+    loadFilesContent(fileTable).then(data => {
+      fileContents = data;
+      console.log(data);
+      loadGUI();
+    }).catch(err => {
+      console.error(err);
+    });
+
+
+
 
     window.onmessage = function (e) {
       try {
