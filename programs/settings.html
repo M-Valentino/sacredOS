@@ -26,23 +26,21 @@
         <div>Color</div>
         <div class="colorBox" style="background-color: var(--primColor);"></div>
       </div>
-      <button class="oSButton" onclick="changeColor()">Change</button>
+      <!-- Hidden color picker input -->
+      <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
+      <button class="oSButton" onclick="document.getElementById('colorPicker').click()">Change</button>
     </div>
   </div>
 
   <script>
-    window.top.postMessage('hello', '*');
 
-    function serializeFunction(f) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', 'lightblue');`);
-    }
-    function changeRoot() {
-      document.querySelector(':root').style.setProperty('--primColor', 'lightblue');
+    function changeColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
     }
 
-    function changeColor() {
-      changeRoot();
-      window.top.postMessage(serializeFunction(), "*");
+    function changeColor(color) {
+      document.querySelector(':root').style.setProperty('--primColor', color);
+      window.top.postMessage(changeColorSystemWide(color), "*");
     }
 
   </script>
