@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="gui.css">
+</head>
+
+<body>
+
+  <div id="goMenu">
+    <div id="goMenuHeader">Sacred OS</div>
+    <div id="goMenuContent" class="osElemBase"></div>
+  </div>
+  <div id="programBar" class="osElemBase">
+    <button id="goMenuButton" class="osElemBase oSButton" onclick="toggleOpenGoMenu()">Go Menu</button>
+  </div>
+
+  <script>
+
+    var disk = JSON.parse(unescape(location.hash.replace(/#/, "")));
+    console.log(disk);
+
+    for (let i = 0; i < disk.programs.length; i++) {
+      var menuItem = document.createElement('div');
+      menuItem.innerHTML = disk.programs[i];
+      document.getElementById("goMenuContent").appendChild(menuItem);
+    }
+
+    var goMenuOpen = false;
+    function toggleOpenGoMenu() {
+      goMenuOpen = !goMenuOpen;
+      if (goMenuOpen) {
+        document.getElementById("goMenu").style.display = "initial";
+      } else {
+        document.getElementById("goMenu").style.display = "none";
+      }
+    }
+  </script>
+
+</body>
+
+</html>
