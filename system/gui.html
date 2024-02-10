@@ -62,7 +62,14 @@
       header.id = `hed${windowCount}`;
       header.classList = "menuHeader";
       header.textContent = "Program";
-      window.appendChild(header); // Directly append to the window for clarity
+      window.appendChild(header);
+
+      var closeButton = document.createElement('button');
+      closeButton.id = `hed${windowCount}`;
+      closeButton.classList = "osElemBase oSButton";
+      closeButton.textContent = "X";
+      
+      header.appendChild(closeButton);
 
       // Create a transparent overlay but don't add it to the document yet
       var overlay = document.createElement('div');
