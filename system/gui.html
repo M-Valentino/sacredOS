@@ -68,6 +68,7 @@
       closeButton.id = `close${windowCount}`; // Unique ID for the close button
       closeButton.classList = "osElemBase oSButton";
       closeButton.textContent = "X";
+      closeButton.style.float = "right";
       closeButton.onclick = function () {
         closeProgram(`win${windowCount}`);
       };
