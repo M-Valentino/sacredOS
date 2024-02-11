@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../system/gui.css">
@@ -14,45 +13,51 @@
       flex-direction: row;
       width: 100%;
     }
-
-    .colorBox {
-      margin-left: 16px;
-      width: 16px;
-      height: 16px;
-      border: 1px solid #000;
-    }
   </style>
 </head>
-
 <body>
-
   <div class="osElemBase windowRidgeBorder">
     <div class="setting">
       <div class="flexRow">
-        <div class="flexRow">
-          <div>Test</div>
-          <div class="colorBox" style="background-color: var(--primColor);"></div>
-        </div>
-        <!-- Hidden color picker input -->
-        <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
-        <button class="oSButton" onclick="document.getElementById('colorPicker').click()">Change</button>
+        <div>Backup Disk</div>
+        <button class="oSButton" onclick="downloadDisk()">Download Copy</button>
       </div>
     </div>
   </div>
 
   <script>
+    var diskBackup = {};
+    
 
-    function changeColorSystemWide(color) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
+    function downloadDisk() {
+      // Ensure diskBackup is a string that contains valid JSON before initiating download
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
+      const d = new Date();
+      var element = document.createElement('a');
+      element.setAttribute('href', dataStr);
+      element.setAttribute('download', `SacredOSBackup-${d.toISOString()}.json`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
     }
 
-    function changeColor(color) {
-      document.querySelector(':root').style.setProperty('--primColor', color);
-      window.top.postMessage(changeColorSystemWide(color), "*");
-    }
-
+    window.onmessage = function (e) {
+      if (e.data.startsWith("AF:")) {
+        var jsonString = e.data.substring(3);
+        try {
+          diskBackup = JSON.parse(jsonString);
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
+        return;
+      }
+      try {
+        eval(decodeURI(e.data));
+      } catch (error) {
+        console.error("Error evaluating message data:", error);
+      }
+    };
   </script>
-
 </body>
-
 </html>

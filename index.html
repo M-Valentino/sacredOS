@@ -75,6 +75,11 @@
         return;
       } else if (e.data == "REQ:PF") {
         iframe.contentWindow.postMessage("PF:"+ JSON.stringify(fileContents["programs"]), '*');
+        return;
+      }
+      else if (e.data == "REQ:AF") {
+        iframe.contentWindow.postMessage("AF:"+ JSON.stringify(fileContents), '*');
+        return;
       }
       try {
         iframe.contentWindow.postMessage(e.data, '*');
