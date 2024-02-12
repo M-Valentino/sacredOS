@@ -4,25 +4,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../system/gui.css">
   <style>
-    .setting {
-      max-width: 270px;
-    }
-
     .flexRow {
+      max-width: 270px;
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       width: 100%;
     }
   </style>
 </head>
 <body>
   <div class="osElemBase windowRidgeBorder">
-    <div class="setting">
+
       <div class="flexRow">
         <div>Backup Disk</div>
         <button class="oSButton" onclick="downloadDisk()">Download Copy</button>
       </div>
-    </div>
+  
   </div>
 
   <script>
