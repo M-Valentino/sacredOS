@@ -6,22 +6,17 @@
   <link rel="stylesheet" href="system/gui.css">
 </head>
 
-<body id="guiDriver">
-  <script>
-    var iframe;
-    function loadGUI() {
-      iframe = document.createElement('iframe');
-      // iframe.src = `system/gui.html#${JSON.stringify(fileTable)}`;
-      iframe.srcdoc = fileContents['system']['gui.html'];
-      iframe.width = "100%";
-      iframe.height = "100%";
-      iframe.frameBorder = '0';
-      iframe.style.border = '0';
-      iframe.style.overflow = "hidden";
-      iframe.allowFullscreen = true;
-      document.body.appendChild(iframe);
-    }
+<body>
 
+  <div id="mainMenu">
+    <div class="menuHeader">Sacred OS</div>
+    <div id="menuContent" class="osElemBase"></div>
+  </div>
+  <div id="programBar" class="osElemBase">
+    <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">~Menu~</button>
+  </div>
+
+  <script>
     var fileTable = {
       system: [
         "gui.css",
@@ -32,6 +27,7 @@
         "files.html"
       ]
     };
+
     var fileContents;
 
     async function loadFilesContent(fileTable) {
@@ -58,35 +54,125 @@
           }
         }
       }
+      console.log(fileContents);
 
       return filesContent;
     }
 
-    loadFilesContent(fileTable).then(data => {
-      fileContents = data;
-      loadGUI();
-    }).catch(err => {
-      console.error(err);
-    });
+    function populateMenu() {
+      for (let i = 0; i < fileTable.programs.length; i++) {
+        var menuItem = document.createElement('div');
+        menuItem.innerHTML = fileTable.programs[i];
+        menuItem.classList = "oSButton osElemBase";
+        menuItem.onclick = menuItem.onclick = (function (programName) {
+          return function () {
+            openProgram(programName, fileContents.programs[programName]);
+          };
+        })(fileTable.programs[i]);
+        document.getElementById("menuContent").appendChild(menuItem);
+      }
+    }
 
-    window.onmessage = function (e) {
-      if (e.data == "REQ:FT") {
-        iframe.contentWindow.postMessage(fileTable, '*');
-        return;
-      } else if (e.data == "REQ:PF") {
-        iframe.contentWindow.postMessage("PF:"+ JSON.stringify(fileContents["programs"]), '*');
-        return;
+    (async function initialize() {
+      fileContents = await loadFilesContent(fileTable);
+      console.log(fileContents); // This ensures fileContents is logged after being populated.
+      populateMenu(); // Ensure this is called after fileContents is populated.
+    })()
+
+
+    var menuOpen = false;
+    function toggleOpenmenu() {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        document.getElementById("mainMenu").style.display = "initial";
+      } else {
+        document.getElementById("mainMenu").style.display = "none";
       }
-      else if (e.data == "REQ:AF") {
-        iframe.contentWindow.postMessage("AF:"+ JSON.stringify(fileContents), '*');
-        return;
-      }
-      try {
-        iframe.contentWindow.postMessage(e.data, '*');
-      } catch (e) { }
-    };
+    }
+
+    var windowCount = -1;
+
+    function openProgram(path, data) {
+      toggleOpenmenu();
+      windowCount++;
+
+      var window = document.createElement('div');
+      window.id = `win${windowCount}`;
+      window.classList = "window";
+      document.body.appendChild(window);
+
+      var header = document.createElement('div');
+      header.id = `hed${windowCount}`;
+      header.classList = "menuHeader";
+      header.textContent = path;
+      window.appendChild(header);
+
+      var closeButton = document.createElement('button');
+      closeButton.id = `close${windowCount}`; // Unique ID for the close button
+      closeButton.classList = "osElemBase oSButton";
+      closeButton.textContent = "X";
+      closeButton.style.float = "right";
+      closeButton.onclick = function () {
+        closeProgram(`win${windowCount}`);
+      };
+      header.appendChild(closeButton);
+
+      // Create a transparent overlay but don't add it to the document yet
+      var overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.cursor = 'grabbing';
+      overlay.style.zIndex = '9999'; // Ensure it's on top of everything
+      overlay.style.display = 'none'; // Start hidden
+
+      document.body.appendChild(overlay);
+
+      header.addEventListener('mousedown', function (e) {
+        if (e.target === closeButton) {
+          return; // Don't start dragging if clicking on the close button
+        }
+        e.preventDefault(); // Prevent any default actions that might interfere with the drag
+        overlay.style.display = 'block'; // Show the overlay
+        let rect = window.getBoundingClientRect();
+        var dragOffsetX = e.clientX - rect.left;
+        var dragOffsetY = e.clientY - rect.top;
+
+        function onMouseMove(e) {
+          window.style.position = 'absolute';
+          window.style.left = e.clientX - dragOffsetX + 'px';
+          window.style.top = e.clientY - dragOffsetY + 'px';
+        }
+
+        function onMouseUp() {
+          overlay.style.display = 'none'; // Hide the overlay
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      var iframe = document.createElement('iframe');
+      iframe.srcdoc = data;
+      iframe.width = "100%";
+      iframe.height = "100%";
+      iframe.frameBorder = '0';
+      iframe.style.border = '0';
+      iframe.style.overflow = "hidden";
+      iframe.style.zIndex = '1';
+      iframe.allowFullscreen = true;
+      window.appendChild(iframe);
+    }
+
+    function closeProgram(id) {
+      document.getElementById(id).outerHTML = "";
+    }
+
   </script>
-
 
 </body>
 
