@@ -8,6 +8,7 @@
     #screen {
       background-color: #000;
     }
+
     #bootScreen {
       margin: auto;
       width: 90vw;
@@ -70,6 +71,11 @@
     var fileTable = {
       system: [
         "gui.css",
+        {
+          icons: [
+            "folder.json",
+          ]
+        }
       ],
       programs: [
         "settings.html",
@@ -102,33 +108,39 @@
       afterFileContentLoaded(); // Call after content loaded
     });
 
-    async function loadfileContents(fileTable) {
-      tempFileContent = {};
+    async function loadfileContents(fileTable, basePath = '') {
+      let tempFileContent = {};
 
-      for (let directory in fileTable) {
-        tempFileContent[directory] = {}; // Initialize a nested object for the directory
-
-        for (let fileName of fileTable[directory]) {
-          // Construct the full URL for each file
-          let fileURL = `${directory}/${fileName}`;
-          try {
-            // Fetch file content asynchronously
-            let response = await fetch(fileURL);
-            if (response.ok) {
-              let content = await response.text();
-              // Store the content within the nested structure, matching the original
-              tempFileContent[directory][fileName] = content;
-            } else {
-              console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+      for (let key in fileTable) {
+        if (Array.isArray(fileTable[key])) {
+          tempFileContent[key] = {};
+          for (let item of fileTable[key]) {
+            if (typeof item === 'string') {
+              let fileURL = `${basePath}${key}/${item}`;
+              try {
+                let response = await fetch(fileURL);
+                if (response.ok) {
+                  let content = await response.text();
+                  tempFileContent[key][item] = content;
+                } else {
+                  console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+                }
+              } catch (err) {
+                console.error(`Error fetching file ${fileURL}: ${err}`);
+              }
+            } else if (typeof item === 'object') {
+              for (let nestedKey in item) {
+                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+              }
             }
-          } catch (err) {
-            console.error(`Error fetching file ${fileURL}: ${err}`);
           }
         }
       }
 
       return tempFileContent;
     }
+
+
 
     function populateMenu() {
       for (let i = 0; i < fileTable.programs.length; i++) {
@@ -156,6 +168,7 @@
         document.head.appendChild(styleElement);
       }
       populateMenu();
+      console.log(fileContents);
     }
 
 
