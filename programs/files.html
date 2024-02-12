@@ -23,6 +23,9 @@
       <div>Backup Disk</div>
       <button class="oSButton osElemBase" onclick="downloadDisk()">Download Copy</button>
     </div>
+    <div class="flexRow">
+      <input id="fileDir">
+    </div>
     <hr>
     <div id="topLevelObjects"></div>
   </div>
@@ -34,8 +37,9 @@
     window.top.postMessage("REQ:AF", "*");
 
     const folderImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAmCAMAAAC1U+gzAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAH5QTFRFAAAAAAAAAAAAAAABAAAAPDcmy7iCwK+FopRdAAAB1cCE0LyDAAAA38eHd24+AAAABQUEAAAA2sOH4sqHuKeG5cyHMy4pfXVnAAAArqKHWUw8AAAApZOIAAAAAAAAAgIC1r6IAAAAyrSG0ruIMCwDAAAAKAICZ1pGAAAAAAAA2dvouQAAACp0Uk5TAPX/iQ3/////b///9///sf+1////////A///Zf/4Af//v////wz//94o9ejMJQAAAhRJREFUeJyNlIua0yAQhdtRSZyIlya4dq2KoFXf/wWdMzPQtN9uNycXApyfGQjJbrenlV7tXhRd6/UG4E3oEmID4OZhI2HAsD0GgGGEd2zEU3q7Brqf7xBXgPnHPvcpTBMuKwIKencLrCQunlQoWDTxJYQCVwibpd1MN0C3wh34WvEWcP/7Z2a71gcDQHzcYIc+KSAIER8OhxjlfEKza5TMiBZMgkis7P2aeZzlYZ7Nb0hyYBnCZyIfSTzMYktziqiosUUg2gMYloHoIUp7grrDnh1BRdbqi0ZYFqIEF1q1mFthdPIhsLhEx+NyVMDGNk5DJe4xmaV8pK8OiN8cGpibf06rZqnq2xPgpEC0Xk46bx1f0FmbNIYEcOAoa2Qrh16YGCaNxc7JyiWibw4Qjbr80o0+xeBMxiXPkei7AqeTZAR/bMNrXpYaJq4J9g0ogESQbYGXixwsPi7dq2pV5rEDP4hyzrqNwejFvkH6gQA/HSAqAhzyIXI3mb9/EjGG9kkokKc6cdbjOcXUgQf6VUPOQqhYHxh1+fhyCNoaJcBvByRADaGiZ8o5ZDjkV2FGrctjiGfadUB6qwjt3WKVC/WH1kDxEKFg+qEgEdwuY2Sivx3Q4S0CuooOX/TM0mfJ9d+GAFUCwF/VDVvJzlRDbgA0VU1KDKG0vIMGkQOj0RootbyoM/27AHd09uK8+n3v7yNNzf4fb4FQJ9L+Q7EAAAAASUVORK5CYII=";
-
+    document.getElementById("fileDir").value = "://";
     function displayTopLevelObjects(backupObject) {
+      
       var displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -46,7 +50,7 @@
         button.classList ="oSButton osElemBase";
         button.onclick = function () {
           displayTopLevelObjects(backupObject[key]);
-          
+          document.getElementById("fileDir").value += `${key}/`;
         };
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
