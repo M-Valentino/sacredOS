@@ -48,6 +48,7 @@
 
     function changeColor(color) {
       document.querySelector(':root').style.setProperty('--primColor', color);
+      window.top.postMessage(`U:PRIMC${color}`, "*");
       window.top.postMessage(changeColorSystemWide(color), "*");
     }
 

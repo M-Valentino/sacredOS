@@ -177,16 +177,29 @@
       }
     }
 
+    function updatePrimaryColor(newColor) {
+      const regex = /(--primColor: ).*?;/;
+      fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
+    }
 
     window.onmessage = function (e) {
-      if (e.data == "REQ:AF") {
-        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), '*');
-        return;
+      if (typeof e.data === 'string') { // Ensure e.data is a string
+        if (e.data == "REQ:AF") {
+          sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), '*');
+          return;
+        } else if (e.data.startsWith("U:PRIMC")) {
+          var jsonString = e.data.substring(7);
+          updatePrimaryColor(jsonString);
+          return;
+        }
       }
       try {
-        eval(decodeURI(e.data));
+        if (typeof e.data === 'string') { // Ensure e.data is a string for eval
+          eval(decodeURI(e.data));
+        }
       } catch (e) { }
     };
+
 
   </script>
 
