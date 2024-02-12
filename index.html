@@ -129,25 +129,26 @@
     function openProgram(path, data) {
       toggleOpenmenu();
       windowCount++;
+      const currentWindowID = windowCount;
 
       var window = document.createElement('div');
-      window.id = `win${windowCount}`;
+      window.id = `win${currentWindowID}`;
       window.classList = "window";
       document.body.appendChild(window);
 
       var header = document.createElement('div');
-      header.id = `hed${windowCount}`;
+      header.id = `hed${currentWindowID}`;
       header.classList = "menuHeader";
       header.textContent = path;
       window.appendChild(header);
 
       var closeButton = document.createElement('button');
-      closeButton.id = `close${windowCount}`; // Unique ID for the close button
+      closeButton.id = `close${currentWindowID}`; // Unique ID for the close button
       closeButton.classList = "osElemBase oSButton";
       closeButton.textContent = "X";
       closeButton.style.float = "right";
       closeButton.onclick = function () {
-        closeProgram(`win${windowCount}`);
+        closeProgram(`win${currentWindowID}`);
       };
       header.appendChild(closeButton);
 
