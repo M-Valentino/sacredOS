@@ -108,7 +108,8 @@
       afterFileContentLoaded(); // Call after content loaded
     });
 
-    async function loadfileContents(fileTable, basePath = '') {
+    async function loadfileContents(fileTable, basePath = '', writeToKey = false) {
+      
       let tempFileContent = {};
 
       for (let key in fileTable) {
@@ -121,7 +122,12 @@
                 let response = await fetch(fileURL);
                 if (response.ok) {
                   let content = await response.text();
-                  tempFileContent[key][item] = content;
+                  if (writeToKey) {
+                    tempFileContent[item] = content;
+                  } else {
+                    tempFileContent[key][item] = content;
+                  }
+                  
                 } else {
                   console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
                 }
@@ -130,7 +136,8 @@
               }
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
-                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`, true);
+                console.log(key, nestedKey);
               }
             }
           }
