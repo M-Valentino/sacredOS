@@ -39,6 +39,7 @@
     document.getElementById("fileDir").value = "://";
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
+      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
       var displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -53,7 +54,16 @@
         };
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
-        icon.src = folderImage;
+
+        if (key.indexOf('.') === -1) {
+          icon.src = folderImage;
+        }
+        else 
+        // if (key.split('.').pop() === "json") 
+        {
+          icon.src = documentImage;
+        }
+        
         button.appendChild(icon);
         displayArea.appendChild(button);
       });
