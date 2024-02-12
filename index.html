@@ -172,7 +172,19 @@
       document.getElementById(id).outerHTML = "";
     }
 
+    function sendMessageToAllIframes(message) {
+      const iframes = document.getElementsByTagName('iframe');
+      for (let i = 0; i < iframes.length; i++) {
+        iframes[i].contentWindow.postMessage(message, '*'); // Use '*' for targetOrigin if you don't know the domain
+      }
+    }
+
+
     window.onmessage = function (e) {
+      if (e.data == "REQ:AF") {
+        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), '*');
+        return;
+      }
       try {
         eval(decodeURI(e.data));
       } catch (e) { }

@@ -28,7 +28,7 @@
   <script>
     var diskBackup = {};
     
-
+    window.top.postMessage("REQ:AF", "*");
     function downloadDisk() {
       // Ensure diskBackup is a string that contains valid JSON before initiating download
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
@@ -51,11 +51,6 @@
           console.error("Error parsing JSON data:", error);
         }
         return;
-      }
-      try {
-        eval(decodeURI(e.data));
-      } catch (error) {
-        console.error("Error evaluating message data:", error);
       }
     };
   </script>
