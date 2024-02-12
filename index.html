@@ -227,6 +227,11 @@
           var jsonString = e.data.substring(7);
           updatePrimaryColor(jsonString);
           return;
+        } else if (e.data == "REQ:SS") {
+          if (fileContents.system && fileContents.system['gui.css']) {
+            e.source.postMessage("SS:" + fileContents.system['gui.css'], '*');
+          }
+          return;
         }
       }
       try {

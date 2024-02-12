@@ -3,7 +3,6 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../system/gui.css">
   <style>
     .setting {
       max-width: 270px;
@@ -41,7 +40,7 @@
   </div>
 
   <script>
-
+    window.top.postMessage("REQ:SS", "*");
     function changeColorSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
     }
@@ -51,6 +50,21 @@
       window.top.postMessage(`U:PRIMC${color}`, "*");
       window.top.postMessage(changeColorSystemWide(color), "*");
     }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
 
   </script>
 

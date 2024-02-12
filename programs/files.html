@@ -3,7 +3,6 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="../system/gui.css">
   <style>
     .flexRow {
       max-width: 270px;
@@ -25,8 +24,10 @@
 
   <script>
     var diskBackup = {};
-
+    
+    window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
+
     function downloadDisk() {
       // Ensure diskBackup is a string that contains valid JSON before initiating download
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
@@ -47,6 +48,17 @@
           diskBackup = JSON.parse(jsonString);
         } catch (error) {
           console.error("Error parsing JSON data:", error);
+        }
+        return;
+      } else if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
         }
         return;
       }
