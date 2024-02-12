@@ -18,13 +18,13 @@
   <div class="osElemBase windowRidgeBorder">
     <div class="flexRow">
       <div>Backup Disk</div>
-      <button class="oSButton" onclick="downloadDisk()">Download Copy</button>
+      <button class="oSButton osElemBase" onclick="downloadDisk()">Download Copy</button>
     </div>
   </div>
 
   <script>
     var diskBackup = {};
-    
+
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
 

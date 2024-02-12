@@ -51,6 +51,9 @@ body {
   border: var(--borderWidth) outset;
   cursor: pointer;
 }
+.oSButton:hover {
+  background-color: #e7e7e7;
+}
 
 #menuButton {
   height: 100%;
