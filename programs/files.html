@@ -45,8 +45,8 @@
         button.textContent = key;
         button.classList ="oSButton osElemBase";
         button.onclick = function () {
-          // Define what happens when the button is clicked
-          console.log(key + ' clicked'); // Example action
+          displayTopLevelObjects(backupObject[key]);
+          
         };
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
