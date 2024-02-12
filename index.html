@@ -3,10 +3,15 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="system/gui.css">
 </head>
 
 <body>
+  <div id="userPrompt" style="display:block;">
+    <p>Do you want to upload a JSON file for custom settings?</p>
+    <button id="uploadJson">Yes, upload JSON</button>
+    <button id="defaultSettings">Continue with default settings</button>
+    <input type="file" id="fileInput" style="display:none;">
+  </div>
 
   <div id="mainMenu">
     <div class="menuHeader">Sacred OS</div>
@@ -27,13 +32,36 @@
       ]
     };
 
-    var fileContents;
+    var fileContents = "";
+    var defaultFileContents = "";
 
-    async function loadFilesContent(fileTable) {
-      let filesContent = {};
+    document.getElementById("uploadJson").addEventListener("click", function () {
+      document.getElementById("fileInput").click();
+    });
+
+    document.getElementById("fileInput").addEventListener("change", async function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          fileContents = JSON.parse(e.target.result);
+          await afterFileContentLoaded(); // Call after content loaded
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    document.getElementById("defaultSettings").addEventListener("click", async function () {
+      defaultFileContents = await loadfileContents(fileTable); // Load default contents here
+      fileContents = defaultFileContents; // Assign loaded contents to fileContents
+      afterFileContentLoaded(); // Call after content loaded
+    });
+
+    async function loadfileContents(fileTable) {
+      tempFileContent = {};
 
       for (let directory in fileTable) {
-        filesContent[directory] = {}; // Initialize a nested object for the directory
+        tempFileContent[directory] = {}; // Initialize a nested object for the directory
 
         for (let fileName of fileTable[directory]) {
           // Construct the full URL for each file
@@ -44,7 +72,7 @@
             if (response.ok) {
               let content = await response.text();
               // Store the content within the nested structure, matching the original
-              filesContent[directory][fileName] = content;
+              tempFileContent[directory][fileName] = content;
             } else {
               console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
             }
@@ -54,7 +82,7 @@
         }
       }
 
-      return filesContent;
+      return tempFileContent;
     }
 
     function populateMenu() {
@@ -71,11 +99,19 @@
       }
     }
 
-    (async function initialize() {
-      fileContents = await loadFilesContent(fileTable);
-      console.log(fileContents); // This ensures fileContents is logged after being populated.
-      populateMenu(); // Ensure this is called after fileContents is populated.
-    })()
+    async function afterFileContentLoaded() {
+      // Hide user prompt and show main menu
+      document.getElementById("userPrompt").style.display = "none";
+      document.getElementById("mainMenu").style.display = "block";
+      // Check if fileContents and the necessary CSS content are loaded
+      if (fileContents && fileContents.system && fileContents.system['gui.css']) {
+        var styleElement = document.createElement('style');
+        styleElement.type = 'text/css';
+        styleElement.innerText = fileContents.system['gui.css'];
+        document.head.appendChild(styleElement);
+      }
+      populateMenu();
+    }
 
 
     var menuOpen = false;
