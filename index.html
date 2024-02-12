@@ -172,6 +172,12 @@
       document.getElementById(id).outerHTML = "";
     }
 
+    window.onmessage = function (e) {
+      try {
+        eval(decodeURI(e.data));
+      } catch (e) { }
+    };
+
   </script>
 
 </body>
