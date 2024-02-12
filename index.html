@@ -3,13 +3,34 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #bootScreen {
+      margin: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 20px;
+      width: 90vw;
+      height: 90vh;
+      background-color: #00a;
+      padding: 20px;
+      color: #fff;
+    }
+    .biosButton {
+      background-color: transparent;
+      border: 6px solid #fff;
+      border-style: double;
+      font-size: 18px;
+      padding: 4px;
+      cursor: pointer;
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="userPrompt" style="display:block;">
-    <p>Do you want to upload a JSON file for custom settings?</p>
-    <button id="uploadJson">Yes, upload JSON</button>
-    <button id="defaultSettings">Continue with default settings</button>
+  <div id="bootScreen">
+    <p>Do you want to boot Sacred OS from your JSON disk backup?</p>
+    <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
+    <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
     <input type="file" id="fileInput" style="display:none;">
   </div>
 
@@ -105,7 +126,7 @@
 
     async function afterFileContentLoaded() {
       // Hide user prompt and show main menu
-      document.getElementById("userPrompt").style.display = "none";
+      document.getElementById("bootScreen").style.display = "none";
       document.getElementById("programBar").style.display = "initial";
       // Check if fileContents and the necessary CSS content are loaded
       if (fileContents && fileContents.system && fileContents.system['gui.css']) {
