@@ -22,6 +22,10 @@
   </div>
 
   <script>
+    // Hide until user decides to upload JSON or not
+    document.getElementById("mainMenu").style.display = "none";
+    document.getElementById("programBar").style.display = "none";
+
     var fileTable = {
       system: [
         "gui.css",
@@ -102,7 +106,8 @@
     async function afterFileContentLoaded() {
       // Hide user prompt and show main menu
       document.getElementById("userPrompt").style.display = "none";
-      document.getElementById("mainMenu").style.display = "block";
+      document.getElementById("mainMenu").style.display = "initial";
+      document.getElementById("programBar").style.display = "initial";
       // Check if fileContents and the necessary CSS content are loaded
       if (fileContents && fileContents.system && fileContents.system['gui.css']) {
         var styleElement = document.createElement('style');
