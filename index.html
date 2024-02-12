@@ -109,7 +109,7 @@
     });
 
     async function loadfileContents(fileTable, basePath = '', writeToKey = false) {
-      
+
       let tempFileContent = {};
 
       for (let key in fileTable) {
@@ -122,12 +122,10 @@
                 let response = await fetch(fileURL);
                 if (response.ok) {
                   let content = await response.text();
-                  if (writeToKey) {
-                    tempFileContent[item] = content;
-                  } else {
-                    tempFileContent[key][item] = content;
-                  }
-                  
+
+                  tempFileContent[key][item] = content;
+
+
                 } else {
                   console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
                 }
@@ -136,7 +134,7 @@
               }
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
-                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`, true);
+                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
                 console.log(key, nestedKey);
               }
             }
