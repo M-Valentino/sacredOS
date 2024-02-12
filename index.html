@@ -6,29 +6,43 @@
   <style>
     #bootScreen {
       margin: auto;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 20px;
       width: 90vw;
       height: 90vh;
       background-color: #00a;
       padding: 20px;
-      color: #fff;
+      
     }
     .biosButton {
       background-color: transparent;
-      border: 6px solid #fff;
+      border: 6px solid #ff0;
       border-style: double;
       font-size: 18px;
       padding: 4px;
       cursor: pointer;
       color: #fff;
+      margin-right: 20px;
+      margin-top: 40px;
+      letter-spacing: 1px;
+    }
+    .biosText {
+      font-size: 24px;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+    }
+    #biosTitle {
+      letter-spacing: 4px;
+      font-size: 48px;
+      color: #fff;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
   <div id="bootScreen">
-    <p>Do you want to boot Sacred OS from your JSON disk backup?</p>
+    <div id="biosTitle">Sacred OS Boot Menu</div>
+    <div class="biosText">░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░</div>
+    <div class="biosText">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
     <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
     <input type="file" id="fileInput" style="display:none;">
