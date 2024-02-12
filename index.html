@@ -123,8 +123,8 @@
     }
 
     async function loadfileContents(fileTable, basePath = '') {
-
       let tempFileContent = {};
+      let tempObjectConent = {};
 
       for (let key in fileTable) {
         if (Array.isArray(fileTable[key])) {
@@ -135,8 +135,9 @@
               tempFileContent[key][item] = await fetchContent(fileURL);
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
-                tempFileContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
-                console.log(key, nestedKey);
+                tempObjectConent = tempFileContent;
+                tempObjectConent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+                tempFileContent[key][nestedKey] = tempObjectConent[key][nestedKey][nestedKey];
               }
             }
           }
