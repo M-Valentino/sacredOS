@@ -20,6 +20,8 @@
       <div>Backup Disk</div>
       <button class="oSButton osElemBase" onclick="downloadDisk()">Download Copy</button>
     </div>
+    <hr>
+    <div id="topLevelObjects"></div>
   </div>
 
   <script>
@@ -27,6 +29,23 @@
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
+
+    function displayTopLevelObjects(backupObject) {
+      var displayArea = document.getElementById("topLevelObjects");
+      displayArea.innerHTML = ''; // Clear existing content
+
+      var topLevelKeys = Object.keys(backupObject);
+      topLevelKeys.forEach(function (key) {
+        var button = document.createElement('button');
+        button.textContent = key;
+        button.classList ="oSButton osElemBase";
+        button.onclick = function () {
+          // Define what happens when the button is clicked
+          console.log(key + ' clicked'); // Example action
+        };
+        displayArea.appendChild(button);
+      });
+    }
 
     function downloadDisk() {
       // Ensure diskBackup is a string that contains valid JSON before initiating download
@@ -46,6 +65,7 @@
         var jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
+          displayTopLevelObjects(diskBackup);
         } catch (error) {
           console.error("Error parsing JSON data:", error);
         }
