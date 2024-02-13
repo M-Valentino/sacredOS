@@ -67,6 +67,17 @@ input {
   display: none;
 }
 
+#clock {
+  position: relative;
+  float: right;
+  height: 100%;
+  border: var(--borderWidth) inset;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--guiPadding);
+}
+
 .menuHeader {
   font-size: 18px;
   font-weight: 600;

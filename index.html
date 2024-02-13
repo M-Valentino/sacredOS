@@ -62,6 +62,7 @@
   </div>
   <div id="programBar" class="osElemBase">
     <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">~Menu~</button>
+    <div id="clock"></div>
   </div>
 
   <script>
@@ -149,8 +150,6 @@
       return tempFileContent;
     }
 
-
-
     function populateMenu() {
       for (let i = 0; i < fileTable.programs.length; i++) {
         var menuItem = document.createElement('div');
@@ -179,7 +178,6 @@
       populateMenu();
 
     }
-
 
     var menuOpen = false;
     function toggleOpenmenu() {
@@ -321,6 +319,23 @@
         }
       } catch (e) { }
     };
+
+    // https://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock
+    function checkTime(i) {
+      if (i < 10) { i = "0" + i };
+      return i;
+    }
+
+    function updateClock() {
+      const today = new Date();
+      let h = today.getHours();
+      let m = today.getMinutes();
+      let s = today.getSeconds();
+      m = checkTime(m);
+      s = checkTime(s);
+      document.getElementById("clock").innerHTML = h + ":" + m + ":" + s;
+    }
+    setInterval(updateClock, 1000);
 
   </script>
 
