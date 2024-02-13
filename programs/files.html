@@ -103,6 +103,21 @@
         newDir = "://";
       }
       document.getElementById("fileDir").value = newDir;
+
+      // New logic to navigate the backupObject based on newDir
+      const pathParts = newDir.substring(3).split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", newDir);
+          return;
+        }
+      }
+
+      displayTopLevelObjects(currentObject);
     }
 
     function downloadDisk() {
