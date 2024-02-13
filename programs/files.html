@@ -47,6 +47,7 @@
     document.getElementById("fileDir").value = "://";
 
     function displayTopLevelObjects(backupObject) {
+
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
       var displayArea = document.getElementById("topLevelObjects");
@@ -58,6 +59,15 @@
         button.textContent = key;
         button.classList = "oSButton osElemBase";
         button.onclick = function () {
+          let keyToCheck = key;
+          if (keyToCheck.split('.').pop() === "html") {
+            const message = {
+              action: "openProgram",
+              params: { fileName: key, fileData: backupObject[key] }
+            };
+            window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+            return;
+          }
           displayTopLevelObjects(backupObject[key]);
           document.getElementById("fileDir").value += `${key}/`;
         };

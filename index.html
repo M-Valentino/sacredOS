@@ -192,7 +192,7 @@
 
     var windowCount = -1;
 
-    function openProgram(path, data) {
+    function openProgram(programName, data) {
       toggleOpenmenu();
       windowCount++;
       const currentWindowID = windowCount;
@@ -205,7 +205,7 @@
       var header = document.createElement('div');
       header.id = `hed${currentWindowID}`;
       header.classList = "menuHeader";
-      header.textContent = path;
+      header.textContent = programName;
       window.appendChild(header);
 
       var closeButton = document.createElement('button');
@@ -299,15 +299,25 @@
             e.source.postMessage("SS:" + fileContents.system['gui.css'], '*');
           }
           return;
+        } else if (e.data.startsWith("OP:")) {
+          try {
+            const message = JSON.parse(e.data.substring(3));
+            if (message.action && message.action === "openProgram" && message.params) {
+              const { fileName, fileData } = message.params;
+              openProgram(fileName, fileData);
+            }
+          } catch (error) {
+            console.error('Error parsing message:', error);
+          }
         }
       }
       try {
         if (typeof e.data === 'string') { // Ensure e.data is a string for eval
           eval(decodeURI(e.data));
+          console.log(e.data);
         }
       } catch (e) { }
     };
-
 
   </script>
 
