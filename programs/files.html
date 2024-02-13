@@ -4,13 +4,23 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    .flexRow {
-      max-width: 270px;
+    #dirUp {
+      width: 32px;
+      margin-left: 8px;
+    }
+
+    .flexRowLarge {
+      margin-top: 4px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       width: 100%;
     }
+
+    #fileDir {
+      width: 100%;
+    }
+
     img {
       margin-top: 4px;
     }
@@ -19,12 +29,10 @@
 
 <body>
   <div class="osElemBase windowRidgeBorder shadow">
-    <div class="flexRow">
-      <div>Backup Disk</div>
-      <button class="oSButton osElemBase" onclick="downloadDisk()">Download Copy</button>
-    </div>
-    <div class="flexRow">
+    <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
+    <div class="flexRowLarge">
       <input id="fileDir">
+      <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
     </div>
     <hr>
     <div id="topLevelObjects"></div>
@@ -37,6 +45,7 @@
     window.top.postMessage("REQ:AF", "*");
 
     document.getElementById("fileDir").value = "://";
+
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
@@ -47,7 +56,7 @@
       topLevelKeys.forEach(function (key) {
         var button = document.createElement('button');
         button.textContent = key;
-        button.classList ="oSButton osElemBase";
+        button.classList = "oSButton osElemBase";
         button.onclick = function () {
           displayTopLevelObjects(backupObject[key]);
           document.getElementById("fileDir").value += `${key}/`;
@@ -58,15 +67,42 @@
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
         }
-        else 
+        else
         // if (key.split('.').pop() === "json") 
         {
           icon.src = documentImage;
         }
-        
+
         button.appendChild(icon);
         displayArea.appendChild(button);
       });
+    }
+
+    function removeLastSlashSection(str) {
+      const lastIndex = str.lastIndexOf('/');
+      // If '/' was not found or is the only character, return the original string
+      if (lastIndex <= 0) {
+        return str;
+      }
+      // Find the next-to-last index of '/'
+      const nextToLastIndex = str.lastIndexOf('/', lastIndex - 1);
+      // If the next-to-last '/' was not found, return the original string
+      if (nextToLastIndex < 0) {
+        return str;
+      }
+      return str.substring(0, nextToLastIndex + 1) + str.substring(lastIndex + 1);
+    }
+
+    function upDir() {
+      const oldDir = document.getElementById("fileDir").value;
+      if (oldDir === "://") {
+        return;
+      }
+      let newDir = removeLastSlashSection(oldDir);
+      if (newDir === ":/") {
+        newDir = "://";
+      }
+      document.getElementById("fileDir").value = newDir;
     }
 
     function downloadDisk() {
