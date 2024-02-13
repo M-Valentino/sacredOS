@@ -157,7 +157,7 @@
         menuItem.classList = "oSButton osElemBase";
         menuItem.onclick = menuItem.onclick = (function (programName) {
           return function () {
-            openProgram(programName, fileContents.programs[programName]);
+            openProgram(programName, fileContents.programs[programName], true);
           };
         })(fileTable.programs[i]);
         document.getElementById("menuContent").appendChild(menuItem);
@@ -192,8 +192,10 @@
 
     var windowCount = -1;
 
-    function openProgram(programName, data) {
-      toggleOpenmenu();
+    function openProgram(programName, data, dontToggleMenu) {
+      if (dontToggleMenu) {
+        toggleOpenmenu();
+      }
       windowCount++;
       const currentWindowID = windowCount;
 
@@ -304,7 +306,7 @@
             const message = JSON.parse(e.data.substring(3));
             if (message.action && message.action === "openProgram" && message.params) {
               const { fileName, fileData } = message.params;
-              openProgram(fileName, fileData);
+              openProgram(fileName, fileData, false);
             }
           } catch (error) {
             console.error('Error parsing message:', error);
