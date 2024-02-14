@@ -363,6 +363,11 @@
       fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
     }
 
+    function updateSecondaryColor(newColor) {
+      const regex = /(--secColor: ).*?;/;
+      fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
+    }
+
     window.onmessage = function (e) {
       if (typeof e.data === 'string') { // Ensure e.data is a string
         if (e.data == "REQ:AF") {
@@ -371,6 +376,10 @@
         } else if (e.data.startsWith("U:PRIMC")) {
           var jsonString = e.data.substring(7);
           updatePrimaryColor(jsonString);
+          return;
+        } else if (e.data.startsWith("U:SECC")) {
+          var jsonString = e.data.substring(6);
+          updateSecondaryColor(jsonString);
           return;
         } else if (e.data == "REQ:SS") {
           if (fileContents.system && fileContents.system['gui.css']) {

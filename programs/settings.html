@@ -32,21 +32,40 @@
         <div class="colorBox" style="background-color: var(--primColor);"></div>
       </div>
       <!-- Hidden color picker input -->
-      <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
+      <input type="color" id="colorPicker" style="display:none" onchange="changePrimColor(this.value)" />
       <button class="oSButton osElemBase" onclick="document.getElementById('colorPicker').click()">Change</button>
     </div>
+    <div class="setting">
+      <div class="flexRow">
+        <div class="flexRow">
+          <div>Main System Color</div>
+          <div class="colorBox" style="background-color: var(--secColor);"></div>
+        </div>
+        <!-- Hidden color picker input -->
+        <input type="color" id="colorPicker2" style="display:none" onchange="changeSecColor(this.value)" />
+        <button class="oSButton osElemBase" onclick="document.getElementById('colorPicker2').click()">Change</button>
+      </div>
   </div>
 
   <script>
     window.top.postMessage("REQ:SS", "*");
-    function changeColorSystemWide(color) {
+    function changePrimColorSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
     }
+    function changeSecColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
+    }
 
-    function changeColor(color) {
+    function changePrimColor(color) {
       document.querySelector(':root').style.setProperty('--primColor', color);
       window.top.postMessage(`U:PRIMC${color}`, "*");
-      window.top.postMessage(changeColorSystemWide(color), "*");
+      window.top.postMessage(changePrimColorSystemWide(color), "*");
+    }
+
+    function changeSecColor(color) {
+      document.querySelector(':root').style.setProperty('--secColor', color);
+      window.top.postMessage(`U:SECC${color}`, "*");
+      window.top.postMessage(changeSecColorSystemWide(color), "*");
     }
 
     window.onmessage = function (e) {
