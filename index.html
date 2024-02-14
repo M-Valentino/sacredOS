@@ -221,13 +221,17 @@
       };
       header.appendChild(closeButton);
 
+      const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);
+      const width = sizeMatch ? sizeMatch[1] : '600';
+      const height = sizeMatch ? sizeMatch[2] : '400';
+
       var maximizeButton = document.createElement('button');
       maximizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
       maximizeButton.classList = "osElemBase oSButton windowControlButton";
       maximizeButton.textContent = "[ ]";
       maximizeButton.style.float = "right";
       maximizeButton.onclick = function () {
-        maximizeProgram(`win${currentWindowID}`, `prog${currentWindowID}`);
+        toggleMaximizeProgram(`win${currentWindowID}`, `prog${currentWindowID}`, `max${currentWindowID}`, width, height);
       };
       header.appendChild(maximizeButton);
 
@@ -274,9 +278,6 @@
       var iframe = document.createElement('iframe');
       iframe.id = `prog${currentWindowID}`;
       iframe.srcdoc = data;
-      const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);
-      const width = sizeMatch ? sizeMatch[1] : '600';
-      const height = sizeMatch ? sizeMatch[2] : '400';
       iframe.width = width;
       iframe.height = height;
       iframe.style.overflow = "hidden";
@@ -290,13 +291,22 @@
       document.getElementById(id).outerHTML = "";
     }
 
-    function maximizeProgram(windowID, programID) {
-      document.getElementById(windowID).style.width = "100%";
-      document.getElementById(windowID).style.height = "calc(100vh - var(--programBarHeight))";
-      document.getElementById(windowID).style.left = 0;
-      document.getElementById(windowID).style.top = 0;
-      document.getElementById(programID).style.width = "100%";
-      document.getElementById(programID).style.height = "calc(100vh - var(--programBarHeight))";
+    function toggleMaximizeProgram(windowID, programID, maximizeButtonID, width, height) {
+      if (document.getElementById(maximizeButtonID).textContent === "[ ]") {
+        document.getElementById(windowID).style.width = "100%";
+        document.getElementById(windowID).style.height = "calc(100vh - var(--programBarHeight))";
+        document.getElementById(windowID).style.left = 0;
+        document.getElementById(windowID).style.top = 0;
+        document.getElementById(programID).style.width = "100%";
+        document.getElementById(programID).style.height = "calc(100vh - var(--programBarHeight))";
+        document.getElementById(maximizeButtonID).textContent = "[]";
+      } else {
+        document.getElementById(windowID).style.width = width + "px";
+        document.getElementById(windowID).style.height = height + "px";
+        document.getElementById(programID).style.width = width + "px";
+        document.getElementById(programID).style.height = height + "px";
+        document.getElementById(maximizeButtonID).textContent = "[ ]";
+      }
     }
 
     function bringWindowToFront(id) {
