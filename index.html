@@ -237,6 +237,16 @@
       };
       header.appendChild(maximizeButton);
 
+      var minimizeButton = document.createElement('button');
+      minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
+      minimizeButton.classList = "osElemBase oSButton windowControlButton";
+      minimizeButton.textContent = "__";
+      minimizeButton.style.float = "right";
+      minimizeButton.onclick = function () {
+        minimizeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
+      };
+      header.appendChild(minimizeButton);
+
       // Create a transparent overlay but don't add it to the document yet
       var overlay = document.createElement('div');
       overlay.style.position = 'fixed';
@@ -251,7 +261,7 @@
       document.body.appendChild(overlay);
 
       header.addEventListener('mousedown', function (e) {
-        if (e.target === closeButton || e.target === maximizeButton) {
+        if (e.target === closeButton || e.target === maximizeButton || e.target === minimizeButton) {
           return; // Don't start dragging if clicking on the close button
         }
         bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
@@ -291,7 +301,7 @@
       var menuBarButton = document.createElement('button');
       menuBarButton.id = `men${currentWindowID}`;
       menuBarButton.classList = "osElemBase oSButton h-100";
-      menuBarButton.style.border = "var(--borderWidth) outset";
+      menuBarButton.style.border = "var(--borderWidth) inset";
       menuBarButton.textContent = programName;
       menuBarButton.addEventListener('mousedown', function (e) {
         bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
@@ -322,7 +332,13 @@
       }
     }
 
+    function minimizeProgram(windowID, menuButtonID) {
+      document.getElementById(windowID).style.display = "none";
+      document.getElementById(menuButtonID).style.border = "var(--borderWidth) outset";
+    }
+
     function bringWindowToFront(winID, buttID) {
+      document.getElementById(winID).style.display = "initial";
       const windows = document.querySelectorAll('div[id^="win"]');
       windows.forEach(function (win) {
         // If the id matches the specified window, bring it to the front
@@ -332,15 +348,7 @@
           win.style.zIndex = '4';
         }
       });
-      const buttons = document.querySelectorAll('button[id^="men"]');
-      buttons.forEach(function (butt) {
-        // If the id matches the specified button, make it pressed
-        if (butt.id === buttID) {
-          butt.style.border = "var(--borderWidth) inset";
-        } else {
-          butt.style.border = "var(--borderWidth) outset";
-        }
-      });
+      document.getElementById(buttID).style.border = "var(--borderWidth) inset";
     }
 
     function sendMessageToAllIframes(message) {
