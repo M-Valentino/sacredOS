@@ -1,3 +1,17 @@
+function populateMenu() {
+  for (let i = 0; i < fileTable.programs.length; i++) {
+    var menuItem = document.createElement('div');
+    menuItem.innerHTML = fileTable.programs[i];
+    menuItem.classList = "oSButton osElemBase";
+    menuItem.onclick = menuItem.onclick = (function (programName) {
+      return function () {
+        openProgram(programName, fileContents.programs[programName], true);
+      };
+    })(fileTable.programs[i]);
+    document.getElementById("menuContent").appendChild(menuItem);
+  }
+}
+
 var menuOpen = false;
 function toggleOpenmenu() {
   menuOpen = !menuOpen;

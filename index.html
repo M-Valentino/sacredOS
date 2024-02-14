@@ -74,6 +74,7 @@
       system: [
         "gui.css",
         "gui.js",
+        "kernel.js",
         {
           icons: [
             "document.json",
@@ -152,89 +153,34 @@
       return tempFileContent;
     }
 
-    function populateMenu() {
-      for (let i = 0; i < fileTable.programs.length; i++) {
-        var menuItem = document.createElement('div');
-        menuItem.innerHTML = fileTable.programs[i];
-        menuItem.classList = "oSButton osElemBase";
-        menuItem.onclick = menuItem.onclick = (function (programName) {
-          return function () {
-            openProgram(programName, fileContents.programs[programName], true);
-          };
-        })(fileTable.programs[i]);
-        document.getElementById("menuContent").appendChild(menuItem);
-      }
-    }
-
     async function afterFileContentLoaded() {
       // Hide user prompt and show main menu
       document.getElementById("bootScreen").style.display = "none";
       document.getElementById("programBar").style.display = "initial";
-      // Check if fileContents and the necessary CSS content are loaded
-      if (fileContents && fileContents.system && fileContents.system['gui.css']) {
-        var styleElement = document.createElement('style');
-        styleElement.type = 'text/css';
-        styleElement.innerText = fileContents.system['gui.css'];
-        document.head.appendChild(styleElement);
-      }
-      if (fileContents && fileContents.system && fileContents.system['gui.js']) {
-        var scriptElement = document.createElement('script');
-        scriptElement.type = 'text/javascript'; // Correct MIME type for JavaScript
-        scriptElement.textContent = fileContents.system['gui.js']; // Correctly setting JS content
-        document.body.appendChild(scriptElement);
-        populateMenu();
+      // Check if fileContents are loaded
+      if (fileContents && fileContents.system) {
+        if (fileContents.system['gui.css']) {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = fileContents.system['gui.css'];
+          document.head.appendChild(styleElement);
+        }
+        if (fileContents.system['gui.js']) {
+          var guiScript = document.createElement('script');
+          guiScript.type = 'text/javascript';
+          guiScript.textContent = fileContents.system['gui.js'];
+          document.body.appendChild(guiScript);
+        }
+        if (fileContents.system['kernel.js']) {
+          var kernelScript = document.createElement('script');
+          kernelScript.type = 'text/javascript';
+          kernelScript.textContent = fileContents.system['kernel.js'];
+          document.body.appendChild(kernelScript);
+          populateMenu();
+        }
       }
     }
 
-    function sendMessageToAllIframes(message) {
-      const iframes = document.getElementsByTagName('iframe');
-      for (let i = 0; i < iframes.length; i++) {
-        iframes[i].contentWindow.postMessage(message, '*');
-      }
-    }
-
-    window.onmessage = function (e) {
-      if (typeof e.data === 'string') { // Ensure e.data is a string
-        if (e.data == "REQ:AF") {
-          sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), '*');
-          return;
-        } else if (e.data.startsWith("U:PRIMC")) {
-          var jsonString = e.data.substring(7);
-          updatePrimaryColor(jsonString);
-          return;
-        } else if (e.data.startsWith("U:SECCL")) {
-          var jsonString = e.data.substring(7);
-          updateSecondaryColorLight(jsonString);
-          return;
-        } else if (e.data.startsWith("U:SECC")) {
-          var jsonString = e.data.substring(6);
-          updateSecondaryColor(jsonString);
-          return;
-        }
-        else if (e.data == "REQ:SS") {
-          if (fileContents.system && fileContents.system['gui.css']) {
-            e.source.postMessage("SS:" + fileContents.system['gui.css'], '*');
-          }
-          return;
-        } else if (e.data.startsWith("OP:")) {
-          try {
-            const message = JSON.parse(e.data.substring(3));
-            if (message.action && message.action === "openProgram" && message.params) {
-              const { fileName, fileData } = message.params;
-              openProgram(fileName, fileData, false);
-            }
-          } catch (error) {
-            console.error('Error parsing message:', error);
-          }
-        }
-      }
-      try {
-        if (typeof e.data === 'string') { // Ensure e.data is a string for eval
-          eval(decodeURI(e.data));
-          console.log(e.data);
-        }
-      } catch (e) { }
-    };
   </script>
 
 </body>
