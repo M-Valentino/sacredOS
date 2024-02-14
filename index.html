@@ -201,6 +201,7 @@
 
       var window = document.createElement('div');
       window.id = `win${currentWindowID}`;
+      window.style.zIndex = '5';
       window.classList = "window windowRidgeBorder";
       document.body.appendChild(window);
 
@@ -237,6 +238,7 @@
         if (e.target === closeButton) {
           return; // Don't start dragging if clicking on the close button
         }
+        bringWindowToFront(`win${currentWindowID}`);
         e.preventDefault(); // Prevent any default actions that might interfere with the drag
         overlay.style.display = 'block'; // Show the overlay
         let rect = window.getBoundingClientRect();
@@ -267,7 +269,6 @@
       iframe.width = width;
       iframe.height = height;
       iframe.style.overflow = "hidden";
-      iframe.style.zIndex = '1';
       iframe.frameBorder = '0';
       iframe.style.border = '0';
       iframe.allowFullscreen = true;
@@ -278,10 +279,22 @@
       document.getElementById(id).outerHTML = "";
     }
 
+    function bringWindowToFront(id) {
+      const windows = document.querySelectorAll('div[id^="win"]');
+      windows.forEach(function (win) {
+        // If the id matches the specified window, bring it to the front
+        if (win.id === id) {
+          win.style.zIndex = '5';
+        } else {
+          win.style.zIndex = '4';
+        }
+      });
+    }
+
     function sendMessageToAllIframes(message) {
       const iframes = document.getElementsByTagName('iframe');
       for (let i = 0; i < iframes.length; i++) {
-        iframes[i].contentWindow.postMessage(message, '*'); // Use '*' for targetOrigin if you don't know the domain
+        iframes[i].contentWindow.postMessage(message, '*');
       }
     }
 
