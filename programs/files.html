@@ -1,3 +1,4 @@
+<!--width="600" height="400"-->
 <!DOCTYPE html>
 <html>
 
@@ -27,16 +28,15 @@
   </style>
 </head>
 
-<body>
-  <div class="osElemBase windowRidgeBorder shadow">
-    <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
-    <div class="flexRowLarge">
-      <input id="fileDir">
-      <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
-    </div>
-    <hr>
-    <div id="topLevelObjects"></div>
+<body class="program">
+  <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
+  <div class="flexRowLarge">
+    <input id="fileDir">
+    <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
   </div>
+  <hr>
+  <div id="topLevelObjects"></div>
+
 
   <script>
     var diskBackup = {};

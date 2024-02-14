@@ -1,3 +1,4 @@
+<!--width="300" height="100"-->
 <!DOCTYPE html>
 <html>
 
@@ -23,19 +24,16 @@
   </style>
 </head>
 
-<body>
-
-  <div class="osElemBase windowRidgeBorder shadow">
-    <div class="setting">
+<body class="program">
+  <div class="setting">
+    <div class="flexRow">
       <div class="flexRow">
-        <div class="flexRow">
-          <div>System Accent Color</div>
-          <div class="colorBox" style="background-color: var(--primColor);"></div>
-        </div>
-        <!-- Hidden color picker input -->
-        <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
-        <button class="oSButton osElemBase" onclick="document.getElementById('colorPicker').click()">Change</button>
+        <div>System Accent Color</div>
+        <div class="colorBox" style="background-color: var(--primColor);"></div>
       </div>
+      <!-- Hidden color picker input -->
+      <input type="color" id="colorPicker" style="display:none" onchange="changeColor(this.value)" />
+      <button class="oSButton osElemBase" onclick="document.getElementById('colorPicker').click()">Change</button>
     </div>
   </div>
 

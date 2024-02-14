@@ -27,10 +27,7 @@ body {
 }
 
 .windowRidgeBorder {
-  padding: 4px;
-  border-right: calc(var(--borderWidth)* 2) ridge;
-  border-left: calc(var(--borderWidth)* 2) ridge;
-  border-bottom: calc(var(--borderWidth)* 2) ridge;
+  border: calc(var(--borderWidth)* 2) ridge;
 }
 
 input {
@@ -96,11 +93,12 @@ input {
 
 .window {
   width: fit-content;
-  height: fit-content;
+  background-color: var(--secColor);
+  box-shadow: 5px 5px 0 0 rgba(0,0,0,0.25);
 }
 
-.shadow {
-  box-shadow: 0 5px 0 0 rgba(0,0,0,0.25);
+.program {
+  padding: 4px;
 }
 
 #screen {
