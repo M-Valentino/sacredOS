@@ -56,23 +56,11 @@
     <input type="file" id="fileInput" style="display:none;">
   </div>
 
-  <div id="mainMenu">
-    <div class="menuHeader">Sacred OS</div>
-    <div id="menuContent" class="osElemBase"></div>
-  </div>
-  <div id="programBar" class="osElemBase">
-    <button id="menuButton" class="osElemBase oSButton h-100" onclick="toggleOpenmenu()">~Menu~</button>
-    <div id="clock"></div>
-  </div>
-
   <script>
-    // Hide until user decides to upload JSON or not
-    document.getElementById("mainMenu").style.display = "none";
-    document.getElementById("programBar").style.display = "none";
-
     var fileTable = {
       system: [
         "gui.css",
+        "gui.frag.html",
         "gui.js",
         "kernel.js",
         {
@@ -154,11 +142,16 @@
     }
 
     async function afterFileContentLoaded() {
-      // Hide user prompt and show main menu
-      document.getElementById("bootScreen").style.display = "none";
-      document.getElementById("programBar").style.display = "initial";
       // Check if fileContents are loaded
       if (fileContents && fileContents.system) {
+        if (fileContents.system['gui.frag.html']) {
+          var guiHTML = document.createElement('div');
+          guiHTML.innerHTML = fileContents.system['gui.frag.html'];
+          document.body.appendChild(guiHTML);
+          // Hide user prompt and show main menu
+          document.getElementById("bootScreen").style.display = "none";
+          // document.getElementById("programBar").style.display = "initial";
+        }
         if (fileContents.system['gui.css']) {
           var styleElement = document.createElement('style');
           styleElement.type = 'text/css';
