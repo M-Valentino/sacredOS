@@ -1,0 +1,20 @@
+{
+  "system": [
+    "gui.css",
+    "gui.frag.html",
+    "gui.js",
+    "kernel.js",
+    "fileTable.json",
+    {
+      "icons": [
+        "document.json",
+        "folder.json"
+      ]
+    }
+  ],
+  "programs": [
+    "files.html",
+    "doug.html",
+    "settings.html"
+  ]
+}

@@ -57,12 +57,15 @@
   </div>
 
   <script>
+    // The data already here is the file paths for the OS to boot with a fresh install.
+    // This gets overwritten when "fileTable.json" is loaded.
     var fileTable = {
       system: [
         "gui.css",
         "gui.frag.html",
         "gui.js",
         "kernel.js",
+        "fileTable.json",
         {
           icons: [
             "document.json",
@@ -90,16 +93,16 @@
         const reader = new FileReader();
         reader.onload = async function (e) {
           fileContents = JSON.parse(e.target.result);
-          await afterFileContentLoaded(); // Call after content loaded
+          await afterFileContentLoaded();
         };
         reader.readAsText(file);
       }
     });
 
     document.getElementById("defaultSettings").addEventListener("click", async function () {
-      defaultFileContents = await loadfileContents(fileTable); // Load default contents here
-      fileContents = defaultFileContents; // Assign loaded contents to fileContents
-      afterFileContentLoaded(); // Call after content loaded
+      defaultFileContents = await loadfileContents(fileTable);
+      fileContents = defaultFileContents;
+      afterFileContentLoaded();
     });
 
     async function fetchContent(fileURL) {
@@ -150,7 +153,6 @@
           document.body.appendChild(guiHTML);
           // Hide user prompt and show main menu
           document.getElementById("bootScreen").style.display = "none";
-          // document.getElementById("programBar").style.display = "initial";
         }
         if (fileContents.system['gui.css']) {
           var styleElement = document.createElement('style');
@@ -169,6 +171,9 @@
           kernelScript.type = 'text/javascript';
           kernelScript.textContent = fileContents.system['kernel.js'];
           document.body.appendChild(kernelScript);
+        }
+        if (fileContents.system['fileTable.json']) {
+          fileTable = JSON.parse(fileContents.system['fileTable.json']);
           populateMenu();
         }
       }
