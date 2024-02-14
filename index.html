@@ -344,8 +344,10 @@
         // If the id matches the specified window, bring it to the front
         if (win.id === winID) {
           win.style.zIndex = '5';
+          win.style.boxShadow = "10px 10px 0 0 rgba(0,0,0,0.25)";
         } else {
           win.style.zIndex = '4';
+          win.style.boxShadow = "4px 4px 0 0 rgba(0,0,0,0.25)";
         }
       });
       document.getElementById(buttID).style.border = "var(--borderWidth) inset var(--secColorDark)";
