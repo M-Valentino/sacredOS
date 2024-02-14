@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #doug {
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="osElemBase windowRidgeBorder shadow">
+    <iframe id="doug" width="314" height="321" scrolling="no"
+      src="https://gifypet.neocities.org/pet/pet.html?name=Doug&dob=1707872964&gender=m&element=Earth&pet=dog.gif&map=night.gif&background=wood.jpg&tablecolor=white&textcolor=white"
+      frameborder="0"></iframe>
+  </div>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+
+  </script>
+</body>
+
+</html>
