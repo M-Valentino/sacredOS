@@ -15,6 +15,7 @@
   "programs": [
     "files.html",
     "doug.html",
-    "settings.html"
+    "settings.html",
+    "about.html"
   ]
 }

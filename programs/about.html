@@ -1,0 +1,79 @@
+<!--width="700" height="600"-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    h1 {
+      margin-top: 5px;
+    }
+    h2 {
+      margin-bottom: 5px;
+    }
+    p {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <h1>
+    About Sacred OS
+  </h1>
+  <h2>
+    Intro
+  </h2>
+  <p>
+    Sacred OS is an operating system that runs in your web browser and is written in vanilla JavaScript, which
+    might actually be the first of it's kind. Sacred OS uses a bootloader so you can use the OS with your saved
+    settings, programs, files, etc. Sacred OS is inspired by operating systems from the Windows 9x era. It is
+    open source, and <a target="_blank" rel="noopener noreferrer" href="https://github.com/M-Valentino/sacredOS">
+      the code can be found here</a>.
+  </p>
+  <h2>
+    How it works
+  </h2>
+  <p>
+    Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernal, programs,
+    and more are all stored here. The bootloader writes to this object either by uploading a disk backup or by
+    fetching all the necessary files and storing them (what happens when you boot from a fresh install). Sacred
+    OS and the bootloader uses a file table so that they can properly index files (like NTFS or ext4).
+  </p>
+  <p>
+    In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
+    contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
+    the system's main style sheet or writing to the disk.
+  </p>
+  <h2>
+    Current State
+  </h2>
+  <p>
+    Currently, you cannot create files <i>inside</i> Sacred OS, but if you beleive that this is fake and I'm
+    not simulating a bootloader and a hard disk in JavaScript, you can download a disk backup, modify it, and
+    then boot from it. I'm currently in the process of making a file editor and expanding upon the files.html
+    program so it should feel like an actual OS really soon.
+  </p>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+
+  </script>
+</body>
+
+</html>
