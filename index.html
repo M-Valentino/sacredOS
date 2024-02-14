@@ -185,10 +185,10 @@
       menuOpen = !menuOpen;
       if (menuOpen) {
         document.getElementById("mainMenu").style.display = "initial";
-        document.getElementById("menuButton").style.border = "var(--borderWidth) inset";
+        document.getElementById("menuButton").style.border = "var(--borderWidth) inset var(--secColorDark)";
       } else {
         document.getElementById("mainMenu").style.display = "none";
-        document.getElementById("menuButton").style.border = "var(--borderWidth) outset";
+        document.getElementById("menuButton").style.border = "var(--borderWidth) outset var(--secColorDark)";
       }
     }
 
@@ -301,7 +301,7 @@
       var menuBarButton = document.createElement('button');
       menuBarButton.id = `men${currentWindowID}`;
       menuBarButton.classList = "osElemBase oSButton h-100";
-      menuBarButton.style.border = "var(--borderWidth) inset";
+      menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
       menuBarButton.textContent = programName;
       menuBarButton.addEventListener('mousedown', function (e) {
         bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
@@ -334,7 +334,7 @@
 
     function minimizeProgram(windowID, menuButtonID) {
       document.getElementById(windowID).style.display = "none";
-      document.getElementById(menuButtonID).style.border = "var(--borderWidth) outset";
+      document.getElementById(menuButtonID).style.border = "var(--borderWidth) outset var(--secColorDark)";
     }
 
     function bringWindowToFront(winID, buttID) {
@@ -348,7 +348,7 @@
           win.style.zIndex = '4';
         }
       });
-      document.getElementById(buttID).style.border = "var(--borderWidth) inset";
+      document.getElementById(buttID).style.border = "var(--borderWidth) inset var(--secColorDark)";
     }
 
     function sendMessageToAllIframes(message) {

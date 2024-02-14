@@ -1,6 +1,8 @@
 :root {
   --primColor: #d08010;
   --secColor: #ccc;
+  --secColorLight: #e7e7e7;
+  --secColorDark: #aaa;
   --guiPadding: 2px;
   --borderWidth: 2px;
   --programBarHeight: 48px;
@@ -27,11 +29,11 @@ body {
 }
 
 .windowRidgeBorder {
-  border: calc(var(--borderWidth)* 2) ridge;
+  border: calc(var(--borderWidth)* 2) ridge var(--secColor);
 }
 
 input {
-  border: var(--borderWidth) inset;
+  border: var(--borderWidth) inset var(--secColorDark);
 }
 
 #programBar {
@@ -41,16 +43,16 @@ input {
   bottom: 0;
   width: 100%;
   height: var(--programBarHeight);
-  border: var(--borderWidth) outset;
+  border: var(--borderWidth) outset var(--secColorDark);
 }
 
 .oSButton {
   font-family: 'Times New Roman', Times, serif;
-  border: var(--borderWidth) outset;
+  border: var(--borderWidth) outset var(--secColorDark);
   cursor: pointer;
 }
 .oSButton:hover {
-  background-color: #e7e7e7;
+  background-color:  var(--secColorLight);
 }
 
 .windowControlButton {
@@ -79,7 +81,7 @@ input {
   position: relative;
   float: right;
   height: 100%;
-  border: var(--borderWidth) inset;
+  border: var(--borderWidth) inset var(--secColorDark);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -97,8 +99,8 @@ input {
 }
 
 #menuContent {
-  border-left: calc(var(--borderWidth)* 2) ridge;
-  border-right: calc(var(--borderWidth)* 2) ridge;
+  border-left: calc(var(--borderWidth)* 2) ridge var(--secColorDark);
+  border-right: calc(var(--borderWidth)* 2) ridge var(--secColorDark);
   min-height: 300px;
 }
 
