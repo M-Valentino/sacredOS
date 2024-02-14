@@ -185,8 +185,10 @@
       menuOpen = !menuOpen;
       if (menuOpen) {
         document.getElementById("mainMenu").style.display = "initial";
+        document.getElementById("menuButton").style.border = "var(--borderWidth) inset";
       } else {
         document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("menuButton").style.border = "var(--borderWidth) outset";
       }
     }
 
@@ -217,7 +219,7 @@
       closeButton.textContent = "X";
       closeButton.style.float = "right";
       closeButton.onclick = function () {
-        closeProgram(`win${currentWindowID}`);
+        closeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
       };
       header.appendChild(closeButton);
 
@@ -252,7 +254,7 @@
         if (e.target === closeButton || e.target === maximizeButton) {
           return; // Don't start dragging if clicking on the close button
         }
-        bringWindowToFront(`win${currentWindowID}`);
+        bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
         e.preventDefault(); // Prevent any default actions that might interfere with the drag
         overlay.style.display = 'block'; // Show the overlay
         let rect = window.getBoundingClientRect();
@@ -285,10 +287,23 @@
       iframe.style.border = '0';
       iframe.allowFullscreen = true;
       window.appendChild(iframe);
+
+      var menuBarButton = document.createElement('button');
+      menuBarButton.id = `men${currentWindowID}`;
+      menuBarButton.classList = "osElemBase oSButton h-100";
+      menuBarButton.style.border = "var(--borderWidth) outset";
+      menuBarButton.textContent = programName;
+      menuBarButton.addEventListener('mousedown', function (e) {
+        bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+      });
+      document.getElementById("programBar").appendChild(menuBarButton);
+
+      bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     }
 
-    function closeProgram(id) {
-      document.getElementById(id).outerHTML = "";
+    function closeProgram(windowID, menuBarButtonID) {
+      document.getElementById(windowID).outerHTML = "";
+      document.getElementById(menuBarButtonID).outerHTML = "";
     }
 
     function toggleMaximizeProgram(windowID, programID, maximizeButtonID, width, height) {
@@ -307,14 +322,23 @@
       }
     }
 
-    function bringWindowToFront(id) {
+    function bringWindowToFront(winID, buttID) {
       const windows = document.querySelectorAll('div[id^="win"]');
       windows.forEach(function (win) {
         // If the id matches the specified window, bring it to the front
-        if (win.id === id) {
+        if (win.id === winID) {
           win.style.zIndex = '5';
         } else {
           win.style.zIndex = '4';
+        }
+      });
+      const buttons = document.querySelectorAll('button[id^="men"]');
+      buttons.forEach(function (butt) {
+        // If the id matches the specified button, make it pressed
+        if (butt.id === buttID) {
+          butt.style.border = "var(--borderWidth) inset";
+        } else {
+          butt.style.border = "var(--borderWidth) outset";
         }
       });
     }
