@@ -61,7 +61,7 @@
     <div id="menuContent" class="osElemBase"></div>
   </div>
   <div id="programBar" class="osElemBase">
-    <button id="menuButton" class="osElemBase oSButton" onclick="toggleOpenmenu()">~Menu~</button>
+    <button id="menuButton" class="osElemBase oSButton h-100" onclick="toggleOpenmenu()">~Menu~</button>
     <div id="clock"></div>
   </div>
 
@@ -212,7 +212,7 @@
 
       var closeButton = document.createElement('button');
       closeButton.id = `close${currentWindowID}`; // Unique ID for the close button
-      closeButton.classList = "osElemBase oSButton";
+      closeButton.classList = "osElemBase oSButton windowControlButton";
       closeButton.textContent = "X";
       closeButton.style.float = "right";
       closeButton.onclick = function () {

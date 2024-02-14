@@ -52,7 +52,12 @@ input {
   background-color: #e7e7e7;
 }
 
-#menuButton {
+.windowControlButton {
+  width: 30px;
+  height: 100%;
+}
+
+.h-100 {
   height: 100%;
 }
 
