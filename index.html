@@ -221,6 +221,16 @@
       };
       header.appendChild(closeButton);
 
+      var maximizeButton = document.createElement('button');
+      maximizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
+      maximizeButton.classList = "osElemBase oSButton windowControlButton";
+      maximizeButton.textContent = "[ ]";
+      maximizeButton.style.float = "right";
+      maximizeButton.onclick = function () {
+        maximizeProgram(`win${currentWindowID}`, `prog${currentWindowID}`);
+      };
+      header.appendChild(maximizeButton);
+
       // Create a transparent overlay but don't add it to the document yet
       var overlay = document.createElement('div');
       overlay.style.position = 'fixed';
@@ -235,7 +245,7 @@
       document.body.appendChild(overlay);
 
       header.addEventListener('mousedown', function (e) {
-        if (e.target === closeButton) {
+        if (e.target === closeButton || e.target === maximizeButton) {
           return; // Don't start dragging if clicking on the close button
         }
         bringWindowToFront(`win${currentWindowID}`);
@@ -262,6 +272,7 @@
       });
 
       var iframe = document.createElement('iframe');
+      iframe.id = `prog${currentWindowID}`;
       iframe.srcdoc = data;
       const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);
       const width = sizeMatch ? sizeMatch[1] : '600';
@@ -277,6 +288,15 @@
 
     function closeProgram(id) {
       document.getElementById(id).outerHTML = "";
+    }
+
+    function maximizeProgram(windowID, programID) {
+      document.getElementById(windowID).style.width = "100%";
+      document.getElementById(windowID).style.height = "calc(100vh - var(--programBarHeight))";
+      document.getElementById(windowID).style.left = 0;
+      document.getElementById(windowID).style.top = 0;
+      document.getElementById(programID).style.width = "100%";
+      document.getElementById(programID).style.height = "calc(100vh - var(--programBarHeight))";
     }
 
     function bringWindowToFront(id) {
