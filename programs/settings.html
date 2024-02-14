@@ -1,4 +1,4 @@
-<!--width="300" height="100"-->
+<!--width="320" height="150"-->
 <!DOCTYPE html>
 <html>
 
@@ -37,7 +37,7 @@
   <div class="setting">
     <div class="flexRow">
       <div class="flexRow">
-        <div class="text">System Accent Color</div>
+        <div class="text">Accent Color</div>
         <div class="colorBox" style="background-color: var(--primColor);"></div>
       </div>
       <!-- Hidden color picker input -->
@@ -49,7 +49,7 @@
   <div class="setting">
     <div class="flexRow">
       <div class="flexRow">
-        <div class="text">Main System Color</div>
+        <div class="text">Main Color</div>
         <div class="colorBox" style="background-color: var(--secColor);"></div>
       </div>
       <!-- Hidden color picker input -->
@@ -57,6 +57,17 @@
       <button class="oSButton osElemBase change"
         onclick="document.getElementById('colorPicker2').click()">Change</button>
     </div>
+    <div class="setting">
+      <div class="flexRow">
+        <div class="flexRow">
+          <div class="text">Highlight Color</div>
+          <div class="colorBox" style="background-color: var(--secColorLight);"></div>
+        </div>
+        <!-- Hidden color picker input -->
+        <input type="color" id="colorPicker3" style="display:none" onchange="changeSecColorLight(this.value)" />
+        <button class="oSButton osElemBase change"
+          onclick="document.getElementById('colorPicker3').click()">Change</button>
+      </div>
   </div>
 
   <script>
@@ -66,6 +77,9 @@
     }
     function changeSecColorSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
+    }
+    function changeSecColorLSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
     }
 
     function changePrimColor(color) {
@@ -78,6 +92,12 @@
       document.querySelector(':root').style.setProperty('--secColor', color);
       window.top.postMessage(`U:SECC${color}`, "*");
       window.top.postMessage(changeSecColorSystemWide(color), "*");
+    }
+
+    function changeSecColorLight(color) {
+      document.querySelector(':root').style.setProperty('--secColorLight', color);
+      window.top.postMessage(`U:SECCL${color}`, "*");
+      window.top.postMessage(changeSecColorLSystemWide(color), "*");
     }
 
     window.onmessage = function (e) {
