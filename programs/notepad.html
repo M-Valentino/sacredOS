@@ -16,6 +16,7 @@
       width: 100%;
       resize: none;
     }
+
     .menuButt {
       height: 26px;
     }
@@ -30,6 +31,24 @@
   <script>
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:PH", "*");
+    const fileToOpen = data.match(/<!--path="(".+")"-->/);
+
+    if (fileToOpen) {
+      window.top.postMessage(`REQ:PH[${fileToOpen}]`, "*");
+
+      window.addEventListener('message', function (e) {
+        // Check if the message matches the expected pattern
+        const pattern = /^PH:\[\S+\]/; // Adjust \S+ to match your filePath pattern
+        if (pattern.test(e.data)) {
+          // Extract file content by removing the initial part of the message
+          const fileContentStartIndex = e.data.indexOf(']') + 1;
+          const fileContent = e.data.substring(fileContentStartIndex);
+
+          // Set the content to the textarea
+          document.getElementById('textarea').value = fileContent;
+        }
+      });
+    }
 
     function save() {
       // TODO put path in brackets
@@ -52,7 +71,7 @@
         var string = e.data.substring(3);
         document.getElementById("mainTextarea").value = string;
         return;
-      } 
+      }
     };
 
   </script>

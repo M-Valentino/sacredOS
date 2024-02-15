@@ -26,7 +26,7 @@ function toggleOpenmenu() {
 
 var windowCount = -1;
 
-function openProgram(programName, data, dontToggleMenu) {
+function openProgram(programName, data, dontToggleMenu, withFile) {
   if (dontToggleMenu) {
     toggleOpenmenu();
   }
@@ -54,6 +54,10 @@ function openProgram(programName, data, dontToggleMenu) {
     closeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
   };
   header.appendChild(closeButton);
+
+  if (withFile) {
+    data = data.replace (/^/, `<!--path="${withFile}"-->`);
+  }
 
   const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);
   const width = sizeMatch ? sizeMatch[1] : '600';

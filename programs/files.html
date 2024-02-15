@@ -67,6 +67,12 @@
             };
             window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
             return;
+          } else if (key.match(/\..*/)) {
+            const message = {
+              action: "openProgram",
+              params: { fileName: key, fileData: backupObject[key], withFile: `${displayArea.innerHTML}/key`}
+            };
+            window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
           }
           displayTopLevelObjects(backupObject[key]);
           document.getElementById("fileDir").value += `${key}/`;
