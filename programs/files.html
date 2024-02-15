@@ -155,6 +155,8 @@
         var jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
+          // TODO remove this ducktaped fix. Files should maintain the current dir.
+          document.getElementById("fileDir").value = "://";
           displayTopLevelObjects(diskBackup);
           console.log(diskBackup);
         } catch (error) {
