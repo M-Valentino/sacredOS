@@ -56,7 +56,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   header.appendChild(closeButton);
 
   if (withFile) {
-    data = data.replace (/^/, `<!--path="${withFile}"-->`);
+    data = data.replace ("<html>", `<html><!--path="${withFile}"-->`);
   }
 
   const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);

@@ -1,4 +1,4 @@
-<!--width="320" height="150"-->
+<!--width="620" height="450"-->
 <!DOCTYPE html>
 <html>
 
@@ -30,25 +30,25 @@
   </div>
   <script>
     window.top.postMessage("REQ:SS", "*");
-    window.top.postMessage("REQ:PH", "*");
-    const fileToOpen = data.match(/<!--path="(".+")"-->/);
+    // window.top.postMessage("REQ:PH", "*");
 
-    if (fileToOpen) {
-      window.top.postMessage(`REQ:PH[${fileToOpen}]`, "*");
-
-      window.addEventListener('message', function (e) {
-        // Check if the message matches the expected pattern
-        const pattern = /^PH:\[\S+\]/; // Adjust \S+ to match your filePath pattern
-        if (pattern.test(e.data)) {
-          // Extract file content by removing the initial part of the message
-          const fileContentStartIndex = e.data.indexOf(']') + 1;
-          const fileContent = e.data.substring(fileContentStartIndex);
-
-          // Set the content to the textarea
-          document.getElementById('textarea').value = fileContent;
+    // Function to extract file path from comments within the HTML
+    function extractFilePath() {
+      const nodes = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+      let node;
+      while (node = nodes.nextNode()) {
+        const content = node.nodeValue.trim();
+        const match = content.match(/path="([^"]+)"/); // Regular expression to extract path
+        if (match) {
+          return match[1]; // Return the extracted path
         }
-      });
+      }
+      return null; // Return null if no matching comment is found
     }
+
+    const filePath = extractFilePath(); // Extract the file path from a comment
+    window.top.postMessage(`REQ:PH[${filePath}]`, "*");
+    console.log(filePath);
 
     function save() {
       // TODO put path in brackets
@@ -67,11 +67,21 @@
           console.error("Error requesting stylesheet:", error);
         }
         return;
-      } else if (e.data.startsWith("PH:")) {
-        var string = e.data.substring(3);
-        document.getElementById("mainTextarea").value = string;
-        return;
-      }
+      } else
+        if (e.data.startsWith("PH:")) {
+          const expectedPattern = `PH:[${filePath}]`;
+          if (e.data.startsWith(expectedPattern)) {
+            // Extract file content by removing the initial part of the message
+            const fileContent = e.data.substring(expectedPattern.length);
+            // Set the content to the textarea
+            document.getElementById('mainTextarea').value = fileContent;
+          }
+        }
+      // else if (e.data.startsWith("PH:")) {
+      //   var string = e.data.substring(3);
+      //   document.getElementById("mainTextarea").value = string;
+      //   return;
+      // }
     };
 
   </script>

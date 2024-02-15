@@ -70,9 +70,10 @@
           } else if (key.match(/\..*/)) {
             const message = {
               action: "openProgram",
-              params: { fileName: key, fileData: backupObject[key], withFile: `${displayArea.innerHTML}/key`}
+              params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
             };
             window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+            return;
           }
           displayTopLevelObjects(backupObject[key]);
           document.getElementById("fileDir").value += `${key}/`;
