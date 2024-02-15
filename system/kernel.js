@@ -5,6 +5,27 @@ function sendMessageToAllIframes(message) {
   }
 }
 
+function findFileContents(directoryPath, fileContents, fileName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+    if (directories.length === 0) {
+      // Reached the final directory, check for the file
+      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
+        return fileContents[currentDirectory][fileName];
+      }
+    } else {
+      // Continue recursively for nested directories
+      const nestedDirectoryPath = directories.join("/");
+      return findFileContents(nestedDirectoryPath, fileContents[currentDirectory], fileName);
+    }
+  }
+
+  return null; // File not found
+}
+
+
 window.onmessage = function (e) {
   if (typeof e.data === "string") {
     // Ensure e.data is a string
@@ -18,19 +39,19 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-
-      // Check if the directory and file exist in fileContents
-      if (
-        fileContents.hasOwnProperty(directoryPath) &&
-        fileContents[directoryPath].hasOwnProperty(fileName)
-      ) {
-        const fileContent = fileContents[directoryPath][fileName];
+    
+      // Check if the directory and file exist in fileContents using recursive function
+      const fileContent = findFileContents(directoryPath, fileContents, fileName);
+    
+      if (fileContent !== null) {
         sendMessageToAllIframes(`PH:[${filePath}]` + fileContent, "*");
       } else {
         console.error("File not found:", filePath);
       }
+    
       return;
-    } else if (e.data.startsWith("U:PRIMC")) {
+    }
+     else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
       updatePrimaryColor(jsonString);
       return;
@@ -49,17 +70,17 @@ window.onmessage = function (e) {
       return;
     } else if (e.data.startsWith("SF:[")) {
       // Find the index of the right bracket to correctly separate the file path from the data
-      const rightBracketIndex = e.data.indexOf(']');
-    
+      const rightBracketIndex = e.data.indexOf("]");
+
       // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
       const filePath = e.data.slice(4, rightBracketIndex);
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-    
+
       // Extract the data content, which starts immediately after the right bracket
       const fileContent = e.data.substring(rightBracketIndex + 1);
-    
+
       // Check if the directory and file exist in fileContents
       if (
         fileContents.hasOwnProperty(directoryPath) &&
@@ -71,8 +92,7 @@ window.onmessage = function (e) {
         console.error("File not found:", filePath);
       }
       return;
-    }
-     else if (e.data.startsWith("OP:")) {
+    } else if (e.data.startsWith("OP:")) {
       try {
         const message = JSON.parse(e.data.substring(3));
         if (
