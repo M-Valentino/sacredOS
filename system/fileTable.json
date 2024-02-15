@@ -15,8 +15,12 @@
   "programs": [
     "files.html",
     "doug.html",
+    "notepad.html",
     "calculator.html",
     "settings.html",
     "about.html"
+  ],
+  "documents": [
+    "message.txt"
   ]
 }

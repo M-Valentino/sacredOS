@@ -36,6 +36,11 @@ input {
   border: var(--borderWidth) inset var(--secColorDark);
 }
 
+textarea {
+  font-family: 'Times New Roman', Times, serif;
+  border: 1px solid var(--secColorDark);
+}
+
 #programBar {
   z-index: 999;
   position: fixed;

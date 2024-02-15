@@ -1,0 +1,62 @@
+<!--width="320" height="150"-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #textareaContainer {
+      height: calc(100vh - 8px - 26px);
+      /* max-height: calc(100vh - var(--programBarHeight) - 8px); */
+    }
+
+    #mainTextarea {
+      box-sizing: border-box;
+      height: 100%;
+      width: 100%;
+      resize: none;
+    }
+    .menuButt {
+      height: 26px;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <button class="oSButton osElemBase" onclick="save()">Save</button>
+  <div id="textareaContainer">
+    <textarea id="mainTextarea"></textarea>
+  </div>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:PH", "*");
+
+    function save() {
+      // TODO put path in brackets
+      window.top.postMessage(`SF:[]${document.getElementById("mainTextarea").value}`, "*");
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PH:")) {
+        var string = e.data.substring(3);
+        document.getElementById("mainTextarea").value = string;
+        return;
+      } 
+    };
+
+  </script>
+
+</body>
+
+</html>

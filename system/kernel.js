@@ -10,6 +10,10 @@ window.onmessage = function (e) {
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), '*');
       return;
+    // TODO convert this line to regex match paths 
+    } else if (e.data == "REQ:PH") {
+      sendMessageToAllIframes("PH:" + fileContents["documents"]["message.txt"], '*');
+      return;
     } else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
       updatePrimaryColor(jsonString);
@@ -22,13 +26,18 @@ window.onmessage = function (e) {
       var jsonString = e.data.substring(6);
       updateSecondaryColor(jsonString);
       return;
-    }
-    else if (e.data == "REQ:SS") {
+    } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system['gui.css']) {
         e.source.postMessage("SS:" + fileContents.system['gui.css'], '*');
       }
       return;
-    } else if (e.data.startsWith("OP:")) {
+      // TODO convert this line to regex match paths
+    } else if (e.data.startsWith("SF:[]")) {
+      var string = e.data.substring(5);
+      fileContents["documents"]["message.txt"] = string;
+      return;
+    }
+     else if (e.data.startsWith("OP:")) {
       try {
         const message = JSON.parse(e.data.substring(3));
         if (message.action && message.action === "openProgram" && message.params) {
