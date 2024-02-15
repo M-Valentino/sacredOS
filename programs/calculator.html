@@ -1,0 +1,236 @@
+<!--width="280" height="240"-->
+<!DOCTYPE html>
+<html lang="en">
+<!-- MIT licensed Code modified from https://github.com/Diegogagan2587/Calculator -->
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    .main-header {
+      text-align: center;
+    }
+
+    .calculator-container {
+      /*Contains Calculator, buttons and calculator screen*/
+      margin: auto;
+      text-align: center;
+      width: 100%;
+      padding: 0;
+      margin: 0 auto;
+    }
+
+    #screenCalculator {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      height: 40px;
+      background-color: #b6df7d;
+      border: var(--borderWidth) inset var(--secColorDark);
+    }
+
+    #result {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .calc-buttons-container {
+      /*only containes the butotn section*/
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-areas: 'reStartButton delete remainer divisor'
+        'seven eight nine x'
+        'four five six -'
+        'one two three plus'
+        'point zero equalToButton equalToButton';
+    }
+
+    button {
+      width: 100%;
+      min-height: 35px;
+      font-size: 18px;
+    }
+
+    /*Operands buttons section*/
+    .reStartButton {
+      grid-area: reStartButton;
+    }
+
+    .deleteButton {
+      grid-template-columns: delete;
+    }
+
+    .equalToButton {
+      grid-area: equalToButton;
+    }
+
+    .plusButton {
+      grid-area: plus;
+    }
+
+    .remainer {
+      grid-area: remainer;
+    }
+
+    .divisor {
+      grid-area: divisor;
+    }
+
+    .pointButton {
+      grid-area: point;
+    }
+
+
+    /*Number buttons section*/
+    .one {
+      grid-area: one;
+    }
+
+    .two {
+      grid-area: two;
+    }
+
+    .three {
+      grid-area: three;
+    }
+
+    .four {
+      grid-area: four;
+    }
+
+    .five {
+      grid-area: five;
+    }
+
+    .six {
+      grid-area: six;
+    }
+
+    .seven {
+      grid-area: seven;
+    }
+
+    .eight {
+      grid-area: eight;
+    }
+
+    .nine {
+      grid-area: nine;
+    }
+
+    .zero {
+      grid-area: zero;
+    }
+  </style>
+
+</head>
+
+<body class="program">
+  <div class="calculator-container">
+    <div id="screenCalculator">
+      <p id="result"></p>
+    </div>
+    <div id="CalcButtonsContainer" class="calc-buttons-container">
+      <div class="reStartButton"><button class="oSButton osElemBase" type="reset">Clear</button></div>
+      <div class="delete"> <button class="oSButton osElemBase" type="button">Delete</button> </div>
+      <div class="remainer"><button class="oSButton osElemBase" type="button">%</button></div>
+      <div class="divisor"><button class="oSButton osElemBase" type="button">/</button></div>
+      <div><button class="oSButton osElemBase" type="button">x</button></div>
+      <div><button class="oSButton osElemBase" type="button">-</button></div>
+      <div class="plusButton"><button class="oSButton osElemBase" type="button">+</button></div>
+      <div class="equalToButton"><button class="oSButton osElemBase" type="button">=</button></div>
+      <div class="pointButton"><button class="oSButton osElemBase" type="button">.</button></div>
+      <div class="one"><button class="oSButton osElemBase" type="but">1</button></div>
+      <div class="two"><button class="oSButton osElemBase" type="button">2</button></div>
+      <div class="three"><button class="oSButton osElemBase" type="button">3</button></div>
+      <div class="four"><button class="oSButton osElemBase" type="button">4</button></div>
+      <div class="five"><button class="oSButton osElemBase" type="button">5</button></div>
+      <div class="six"><button class="oSButton osElemBase" type="button">6</button></div>
+      <div class="seven"><button class="oSButton osElemBase" type="button">7</button> </div>
+      <div class="eight"><button class="oSButton osElemBase" type="button">8</button> </div>
+      <div class="nine"><button class="oSButton osElemBase" type="button">9</button></div>
+      <div class="zero"><button class="oSButton osElemBase" type="button">0</button></div>
+      <div></div>
+    </div>
+  </div>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    const calcButtonsContainer = document.getElementById('CalcButtonsContainer');
+    calcButtonsContainer.addEventListener('click', addElementsToScreen);
+
+    function addElementsToScreen(e) {
+      console.log(e.target);//shows button pressed;
+      let screenText = document.getElementById('screenCalculator').querySelector('p').innerText;
+      let buttonText = e.target.innerText;
+      console.log(screenText, buttonText);
+      screenText += buttonText;
+      if (buttonText == 'Clear') {
+        screenText = '';
+      }
+      if (buttonText == 'Delete') {
+        screenText = document.getElementById('screenCalculator').querySelector('p').innerText;
+        console.log('before remobing=', screenText)
+        screenText = screenText.slice(0, -1);
+        console.log('after removing last element=', screenText);
+      }
+      if (buttonText == '=') {
+        screenText = getCalculatedResult(screenText);
+      }
+      return document.getElementById('screenCalculator').querySelector('p').innerText = screenText;
+    }
+
+    //helper functions below;
+    function getCalculatedResult(str) {
+      let result;
+      let arrFromStr = str.split(/[^0-9|.]/);
+      let operand = str.split(/[0-9]/);
+      console.log('running getResult(', str, ')');
+      operand = operand.filter((element) => {
+        if (element && element != '=' && element != '.') {
+          return element;
+        }
+      })
+      arrFromStr = arrFromStr.filter((element) => {
+        if (element) {
+          return element;
+        }
+      })
+      if (operand == '+') {
+        result = (+arrFromStr[0]) + (+arrFromStr[1]);
+      } else if (operand == '-') {
+        result = (+arrFromStr[0]) - (+arrFromStr[1]);
+      } else if (operand == 'x' | 'X') {
+        result = (+arrFromStr[0]) * (+arrFromStr[1]);
+      } else if (operand == '/') {
+        result = (+arrFromStr[0]) / (+arrFromStr[1]);
+      } else if (operand == '%') {
+        result = (+arrFromStr[0]) * (+arrFromStr[1] / 100);
+      }
+      console.log('str=', str, 'arr =', arrFromStr, 'operand =', operand)
+      console.log('result = ', result);
+      return result;
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        var stylesheet = e.data.substring(3);
+        try {
+          var styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+  </script>
+
+</body>
+
+</html>

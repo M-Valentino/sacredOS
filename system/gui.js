@@ -158,8 +158,10 @@ function toggleMaximizeProgram(windowID, programID, maximizeButtonID, width, hei
     document.getElementById(programID).style.height = "calc(100vh - var(--programBarHeight))";
     document.getElementById(maximizeButtonID).textContent = "[]";
   } else {
-    document.getElementById(windowID).style.width = width + "px";
-    document.getElementById(windowID).style.height = height + "px";
+    document.getElementById(windowID).style.width = "fit-content";
+    document.getElementById(windowID).style.height = "fit-content";
+    document.getElementById(programID).style.width = width + "px";
+    document.getElementById(programID).style.height = height + "px";
     document.getElementById(maximizeButtonID).textContent = "[ ]";
   }
 }
