@@ -52,7 +52,6 @@
         <div class="text">Main Color</div>
         <div class="colorBox" style="background-color: var(--secColor);"></div>
       </div>
-      <!-- Hidden color picker input -->
       <input type="color" id="colorPicker2" style="display:none" onchange="changeSecColor(this.value)" />
       <button class="oSButton osElemBase change"
         onclick="document.getElementById('colorPicker2').click()">Change</button>
@@ -63,11 +62,20 @@
           <div class="text">Highlight Color</div>
           <div class="colorBox" style="background-color: var(--secColorLight);"></div>
         </div>
-        <!-- Hidden color picker input -->
         <input type="color" id="colorPicker3" style="display:none" onchange="changeSecColorLight(this.value)" />
         <button class="oSButton osElemBase change"
           onclick="document.getElementById('colorPicker3').click()">Change</button>
       </div>
+      <div class="setting">
+        <div class="flexRow">
+          <div class="flexRow">
+            <div class="text">Border Color</div>
+            <div class="colorBox" style="background-color: var(--secColorDark);"></div>
+          </div>
+          <input type="color" id="colorPicker4" style="display:none" onchange="changeSecColorDark(this.value)" />
+          <button class="oSButton osElemBase change"
+            onclick="document.getElementById('colorPicker4').click()">Change</button>
+        </div>
   </div>
 
   <script>
@@ -80,6 +88,9 @@
     }
     function changeSecColorLSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
+    }
+    function changeSecColorDSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
     }
 
     function changePrimColor(color) {
@@ -98,6 +109,12 @@
       document.querySelector(':root').style.setProperty('--secColorLight', color);
       window.top.postMessage(`U:SECCL${color}`, "*");
       window.top.postMessage(changeSecColorLSystemWide(color), "*");
+    }
+
+    function changeSecColorDark(color) {
+      document.querySelector(':root').style.setProperty('--secColorDark', color);
+      window.top.postMessage(`U:SECCD${color}`, "*");
+      window.top.postMessage(changeSecColorDSystemWide(color), "*");
     }
 
     window.onmessage = function (e) {

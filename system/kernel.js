@@ -101,6 +101,10 @@ window.onmessage = function (e) {
       var jsonString = e.data.substring(7);
       updateColorVariable("--secColorLight", jsonString);
       return;
+    } else if (e.data.startsWith("U:SECCD")) {
+      var jsonString = e.data.substring(7);
+      updateColorVariable("--secColorDark", jsonString);
+      return;
     } else if (e.data.startsWith("U:SECC")) {
       var jsonString = e.data.substring(6);
       updateColorVariable("--secColor", jsonString);
