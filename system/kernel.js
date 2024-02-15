@@ -18,13 +18,44 @@ function findFileContents(directoryPath, fileContents, fileName) {
     } else {
       // Continue recursively for nested directories
       const nestedDirectoryPath = directories.join("/");
-      return findFileContents(nestedDirectoryPath, fileContents[currentDirectory], fileName);
+      return findFileContents(
+        nestedDirectoryPath,
+        fileContents[currentDirectory],
+        fileName
+      );
     }
   }
 
   return null; // File not found
 }
 
+function saveFileContentsRecursive(
+  directoryPath,
+  fileContents,
+  fileName,
+  fileContent
+) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  if (!fileContents.hasOwnProperty(currentDirectory)) {
+    fileContents[currentDirectory] = {};
+  }
+
+  if (directories.length === 0) {
+    // Reached the final directory, save the file content
+    fileContents[currentDirectory][fileName] = fileContent;
+  } else {
+    // Continue recursively for nested directories
+    const nestedDirectoryPath = directories.join("/");
+    saveFileContentsRecursive(
+      nestedDirectoryPath,
+      fileContents[currentDirectory],
+      fileName,
+      fileContent
+    );
+  }
+}
 
 window.onmessage = function (e) {
   if (typeof e.data === "string") {
@@ -39,19 +70,22 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-    
+
       // Check if the directory and file exist in fileContents using recursive function
-      const fileContent = findFileContents(directoryPath, fileContents, fileName);
-    
+      const fileContent = findFileContents(
+        directoryPath,
+        fileContents,
+        fileName
+      );
+
       if (fileContent !== null) {
         sendMessageToAllIframes(`PH:[${filePath}]` + fileContent, "*");
       } else {
         console.error("File not found:", filePath);
       }
-    
+
       return;
-    }
-     else if (e.data.startsWith("U:PRIMC")) {
+    } else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
       updatePrimaryColor(jsonString);
       return;
@@ -81,16 +115,15 @@ window.onmessage = function (e) {
       // Extract the data content, which starts immediately after the right bracket
       const fileContent = e.data.substring(rightBracketIndex + 1);
 
-      // Check if the directory and file exist in fileContents
-      if (
-        fileContents.hasOwnProperty(directoryPath) &&
-        fileContents[directoryPath].hasOwnProperty(fileName)
-      ) {
-        fileContents[directoryPath][fileName] = fileContent; // Assign the correctly extracted content
-        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
-      } else {
-        console.error("File not found:", filePath);
-      }
+      // Save the file content in the fileContents object using recursive function
+      saveFileContentsRecursive(
+        directoryPath,
+        fileContents,
+        fileName,
+        fileContent
+      );
+
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
     } else if (e.data.startsWith("OP:")) {
       try {
