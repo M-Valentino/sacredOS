@@ -57,6 +57,14 @@ function saveFileContentsRecursive(
   }
 }
 
+function updateColorVariable(variableName, newColor) {
+  const regex = new RegExp(`(${variableName}: ).*?;`);
+  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+    regex,
+    `$1 ${newColor};`
+  );
+}
+
 window.onmessage = function (e) {
   if (typeof e.data === "string") {
     // Ensure e.data is a string
@@ -87,15 +95,15 @@ window.onmessage = function (e) {
       return;
     } else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
-      updatePrimaryColor(jsonString);
+      updateColorVariable("--primColor", jsonString);
       return;
     } else if (e.data.startsWith("U:SECCL")) {
       var jsonString = e.data.substring(7);
-      updateSecondaryColorLight(jsonString);
+      updateColorVariable("--secColorLight", jsonString);
       return;
     } else if (e.data.startsWith("U:SECC")) {
       var jsonString = e.data.substring(6);
-      updateSecondaryColor(jsonString);
+      updateColorVariable("--secColor", jsonString);
       return;
     } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system["gui.css"]) {

@@ -191,21 +191,6 @@ function bringWindowToFront(winID, buttID) {
   document.getElementById(buttID).style.border = "var(--borderWidth) inset var(--secColorDark)";
 }
 
-function updatePrimaryColor(newColor) {
-  const regex = /(--primColor: ).*?;/;
-  fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
-}
-
-function updateSecondaryColor(newColor) {
-  const regex = /(--secColor: ).*?;/;
-  fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
-}
-
-function updateSecondaryColorLight(newColor) {
-  const regex = /(--secColorLight: ).*?;/;
-  fileContents.system['gui.css'] = fileContents.system['gui.css'].replace(regex, `$1 ${newColor};`);
-}
-
 // https://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock
 function checkTime(i) {
   if (i < 10) { i = "0" + i };
