@@ -51,8 +51,11 @@
     console.log(filePath);
 
     function save() {
-      // TODO put path in brackets
-      window.top.postMessage(`SF:[]${document.getElementById("mainTextarea").value}`, "*");
+      if (filePath !== null)  {
+        window.top.postMessage(`SF:[${filePath}]${document.getElementById("mainTextarea").value}`, "*");
+      } else {
+        alert("You currently can't create new files at the momemnt. It's comming soon.")
+      }
     }
 
     window.onmessage = function (e) {

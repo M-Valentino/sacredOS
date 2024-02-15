@@ -47,12 +47,32 @@ window.onmessage = function (e) {
         e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");
       }
       return;
-      // TODO convert this line to regex match paths
-    } else if (e.data.startsWith("SF:[]")) {
-      var string = e.data.substring(5);
-      fileContents["documents"]["message.txt"] = string;
+    } else if (e.data.startsWith("SF:[")) {
+      // Find the index of the right bracket to correctly separate the file path from the data
+      const rightBracketIndex = e.data.indexOf(']');
+    
+      // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
+      const filePath = e.data.slice(4, rightBracketIndex);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+    
+      // Extract the data content, which starts immediately after the right bracket
+      const fileContent = e.data.substring(rightBracketIndex + 1);
+    
+      // Check if the directory and file exist in fileContents
+      if (
+        fileContents.hasOwnProperty(directoryPath) &&
+        fileContents[directoryPath].hasOwnProperty(fileName)
+      ) {
+        fileContents[directoryPath][fileName] = fileContent; // Assign the correctly extracted content
+        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      } else {
+        console.error("File not found:", filePath);
+      }
       return;
-    } else if (e.data.startsWith("OP:")) {
+    }
+     else if (e.data.startsWith("OP:")) {
       try {
         const message = JSON.parse(e.data.substring(3));
         if (

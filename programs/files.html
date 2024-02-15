@@ -150,7 +150,7 @@
       document.body.removeChild(element);
     }
 
-    window.onmessage = function (e) {
+    window.addEventListener("message", function(e) {
       if (e.data.startsWith("AF:")) {
         var jsonString = e.data.substring(3);
         try {
@@ -173,7 +173,7 @@
         }
         return;
       }
-    };
+    });
   </script>
 </body>
 
