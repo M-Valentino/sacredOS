@@ -76,63 +76,63 @@
           <button class="oSButton osElemBase change"
             onclick="document.getElementById('colorPicker4').click()">Change</button>
         </div>
-  </div>
+      </div>
 
-  <script>
-    window.top.postMessage("REQ:SS", "*");
-    function changePrimColorSystemWide(color) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
-    }
-    function changeSecColorSystemWide(color) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
-    }
-    function changeSecColorLSystemWide(color) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
-    }
-    function changeSecColorDSystemWide(color) {
-      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
-    }
-
-    function changePrimColor(color) {
-      document.querySelector(':root').style.setProperty('--primColor', color);
-      window.top.postMessage(`U:PRIMC${color}`, "*");
-      window.top.postMessage(changePrimColorSystemWide(color), "*");
-    }
-
-    function changeSecColor(color) {
-      document.querySelector(':root').style.setProperty('--secColor', color);
-      window.top.postMessage(`U:SECC${color}`, "*");
-      window.top.postMessage(changeSecColorSystemWide(color), "*");
-    }
-
-    function changeSecColorLight(color) {
-      document.querySelector(':root').style.setProperty('--secColorLight', color);
-      window.top.postMessage(`U:SECCL${color}`, "*");
-      window.top.postMessage(changeSecColorLSystemWide(color), "*");
-    }
-
-    function changeSecColorDark(color) {
-      document.querySelector(':root').style.setProperty('--secColorDark', color);
-      window.top.postMessage(`U:SECCD${color}`, "*");
-      window.top.postMessage(changeSecColorDSystemWide(color), "*");
-    }
-
-    window.onmessage = function (e) {
-      if (e.data.startsWith("SS:")) {
-        var stylesheet = e.data.substring(3);
-        try {
-          var styleElement = document.createElement('style');
-          styleElement.type = 'text/css';
-          styleElement.innerText = stylesheet;
-          document.head.appendChild(styleElement);
-        } catch (error) {
-          console.error("Error requesting stylesheet:", error);
+      <script>
+        window.top.postMessage("REQ:SS", "*");
+        function changePrimColorSystemWide(color) {
+          return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
         }
-        return;
-      }
-    };
+        function changeSecColorSystemWide(color) {
+          return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
+        }
+        function changeSecColorLSystemWide(color) {
+          return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
+        }
+        function changeSecColorDSystemWide(color) {
+          return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
+        }
 
-  </script>
+        function changePrimColor(color) {
+          document.querySelector(':root').style.setProperty('--primColor', color);
+          window.top.postMessage(`U:PRIMC${color}`, "*");
+          window.top.postMessage(changePrimColorSystemWide(color), "*");
+        }
+
+        function changeSecColor(color) {
+          document.querySelector(':root').style.setProperty('--secColor', color);
+          window.top.postMessage(`U:SECC${color}`, "*");
+          window.top.postMessage(changeSecColorSystemWide(color), "*");
+        }
+
+        function changeSecColorLight(color) {
+          document.querySelector(':root').style.setProperty('--secColorLight', color);
+          window.top.postMessage(`U:SECCL${color}`, "*");
+          window.top.postMessage(changeSecColorLSystemWide(color), "*");
+        }
+
+        function changeSecColorDark(color) {
+          document.querySelector(':root').style.setProperty('--secColorDark', color);
+          window.top.postMessage(`U:SECCD${color}`, "*");
+          window.top.postMessage(changeSecColorDSystemWide(color), "*");
+        }
+
+        window.onmessage = function (e) {
+          if (e.data.startsWith("SS:")) {
+            var stylesheet = e.data.substring(3);
+            try {
+              var styleElement = document.createElement('style');
+              styleElement.type = 'text/css';
+              styleElement.innerText = stylesheet;
+              document.head.appendChild(styleElement);
+            } catch (error) {
+              console.error("Error requesting stylesheet:", error);
+            }
+            return;
+          }
+        };
+
+      </script>
 
 </body>
 
