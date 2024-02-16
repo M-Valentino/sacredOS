@@ -35,4 +35,16 @@ at the top of the HTML file that follows this structure:
 `<!--width="160" height="144" noRS-->`.
 
 - `width` and `height`: window size in CSS pixel units.
-- `noRS`: stands for "no resize". This disables a maximize button from appearing on the program. 
+- `noRS`: stands for "no resize". This disables a maximize button from appearing on the program.
+
+## Deploying
+### Easy Deployment
+Deploying Sacred OS to any site is really simple. All you have to do is copy all the files inside the `public`
+folder. 
+### Automatic Deployment to Neocities
+For my personal deployment on Neocities, I use a GitHub action to automatically upload changed files in
+the `public` folder after every merge to the <b>main</b> branch. The reason why the `public` folder exists is
+because Neocities only allows specific file types, and this repo has some files that aren't uploadable, so they
+are stored in the root of this repo. To learn more about deploying to Neocities, read this guide:
+https://liassica.codeberg.page/posts/0002-neocities-github/
+
