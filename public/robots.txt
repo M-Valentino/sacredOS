@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+Sitemap: /sitemap.xml
