@@ -57,6 +57,28 @@ function saveFileContentsRecursive(
   }
 }
 
+function deleteFileFromTable(fileTable, fileName) {
+  for (const key in fileTable) {
+    if (Array.isArray(fileTable[key])) {
+      const index = fileTable[key].indexOf(fileName);
+      if (index !== -1) {
+        fileTable[key].splice(index, 1);
+        return true; // File found and deleted
+      } else {
+        // Continue recursively for nested structures
+        for (let i = 0; i < fileTable[key].length; i++) {
+          if (typeof fileTable[key][i] === "object") {
+            if (deleteFileFromTable(fileTable[key][i], fileName)) {
+              return true; // File found and deleted
+            }
+          }
+        }
+      }
+    }
+  }
+  return false; // File not found
+}
+
 function deleteFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
@@ -66,17 +88,37 @@ function deleteFile(directoryPath, fileContents, fileName) {
       // Reached the final directory, delete the file if it exists
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
         delete fileContents[currentDirectory][fileName];
+
+        // Remove the filename from fileTable.json
+        if (
+          fileContents.system &&
+          fileContents.system["fileTable.json"] &&
+          typeof fileContents.system["fileTable.json"] === "string"
+        ) {
+          try {
+            const parsedFileTable = JSON.parse(
+              fileContents.system["fileTable.json"]
+            );
+
+            if (parsedFileTable && typeof parsedFileTable === "object") {
+              if (deleteFileFromTable(parsedFileTable, fileName)) {
+                fileContents.system["fileTable.json"] =
+                  JSON.stringify(parsedFileTable);
+              } else {
+                console.error("File not found in fileTable.json:", fileName);
+              }
+            }
+          } catch (error) {
+            console.error("Error parsing or updating fileTable.json:", error);
+          }
+        }
       } else {
         console.error("File not found:", fileName);
       }
     } else {
       // Continue recursively for nested directories
       const nestedDirectoryPath = directories.join("/");
-      deleteFile(
-        nestedDirectoryPath,
-        fileContents[currentDirectory],
-        fileName
-      );
+      deleteFile(nestedDirectoryPath, fileContents[currentDirectory], fileName);
     }
   }
 }
@@ -118,15 +160,14 @@ window.onmessage = function (e) {
       }
 
       return;
-    } else if (e.data.startsWith("DEL:")){
+    } else if (e.data.startsWith("DEL:")) {
       const filePath = e.data.substring(4);
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
       deleteFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
-    }
-    else if (e.data.startsWith("U:PRIMC")) {
+    } else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
       updateColorVariable("--primColor", jsonString);
       return;

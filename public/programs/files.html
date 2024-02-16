@@ -84,6 +84,7 @@
 
     function handleDelete(key) {
       window.top.postMessage(`DEL:${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
+      toggleDeleteMode();
     }
 
     function displayTopLevelObjects(backupObject) {
