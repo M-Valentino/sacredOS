@@ -30,6 +30,7 @@
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
+  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()">Delete File</button>
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -37,17 +38,55 @@
   <hr>
   <div id="topLevelObjects"></div>
 
-
   <script>
     var diskBackup = {};
+    const MODES = {
+      DELETE: "DELETE",
+      OPEN: "OPEN"
+    }
+    var mode = MODES.OPEN;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
 
     document.getElementById("fileDir").value = "://";
 
-    function displayTopLevelObjects(backupObject) {
+    function handleOpen(key, backupObject) {
+      let keyToCheck = key;
+      if (keyToCheck.split('.').pop() === "html") {
+        const message = {
+          action: "openProgram",
+          params: { fileName: key, fileData: backupObject[key] }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      } else if (key.match(/\..*/)) {
+        const message = {
+          action: "openProgram",
+          params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      }
+      displayTopLevelObjects(backupObject[key]);
+      document.getElementById("fileDir").value += `${key}/`;
+    }
 
+    function toggleDeleteMode() {
+      if (mode !== MODES.DELETE) {
+        document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
+        mode = MODES.DELETE;
+      } else {
+        document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
+        mode = MODES.OPEN;
+      }
+    }
+
+    function handleDelete(key) {
+      window.top.postMessage(`DEL:${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
+    }
+
+    function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
       var displayArea = document.getElementById("topLevelObjects");
@@ -59,24 +98,11 @@
         button.textContent = key;
         button.classList = "oSButton osElemBase";
         button.onclick = function () {
-          let keyToCheck = key;
-          if (keyToCheck.split('.').pop() === "html") {
-            const message = {
-              action: "openProgram",
-              params: { fileName: key, fileData: backupObject[key] }
-            };
-            window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
-            return;
-          } else if (key.match(/\..*/)) {
-            const message = {
-              action: "openProgram",
-              params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
-            };
-            window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
-            return;
+          if (mode === MODES.OPEN) {
+            handleOpen(key, backupObject);
+          } else if (mode === MODES.DELETE) {
+            handleDelete(key);
           }
-          displayTopLevelObjects(backupObject[key]);
-          document.getElementById("fileDir").value += `${key}/`;
         };
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
@@ -150,7 +176,7 @@
       document.body.removeChild(element);
     }
 
-    window.addEventListener("message", function(e) {
+    window.addEventListener("message", function (e) {
       if (e.data.startsWith("AF:")) {
         var jsonString = e.data.substring(3);
         try {

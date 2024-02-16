@@ -57,6 +57,30 @@ function saveFileContentsRecursive(
   }
 }
 
+function deleteFile(directoryPath, fileContents, fileName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+    if (directories.length === 0) {
+      // Reached the final directory, delete the file if it exists
+      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
+        delete fileContents[currentDirectory][fileName];
+      } else {
+        console.error("File not found:", fileName);
+      }
+    } else {
+      // Continue recursively for nested directories
+      const nestedDirectoryPath = directories.join("/");
+      deleteFile(
+        nestedDirectoryPath,
+        fileContents[currentDirectory],
+        fileName
+      );
+    }
+  }
+}
+
 function updateColorVariable(variableName, newColor) {
   const regex = new RegExp(`(${variableName}: ).*?;`);
   fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
@@ -67,6 +91,7 @@ function updateColorVariable(variableName, newColor) {
 
 window.onmessage = function (e) {
   if (typeof e.data === "string") {
+    console.log(e.data);
     // Ensure e.data is a string
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
@@ -93,7 +118,15 @@ window.onmessage = function (e) {
       }
 
       return;
-    } else if (e.data.startsWith("U:PRIMC")) {
+    } else if (e.data.startsWith("DEL:")){
+      const filePath = e.data.substring(4);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+      deleteFile(directoryPath, fileContents, fileName);
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    }
+    else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
       updateColorVariable("--primColor", jsonString);
       return;
