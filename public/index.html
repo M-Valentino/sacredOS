@@ -98,7 +98,6 @@
     });
 
     document.getElementById("fileInput").addEventListener("change", async function (event) {
-      document.getElementById("screen").style.cursor = "wait";
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -111,7 +110,6 @@
     });
 
     document.getElementById("defaultSettings").addEventListener("click", async function () {
-      document.getElementById("screen").style.cursor = "wait";
       defaultFileContents = await loadfileContents(fileTable);
       fileContents = defaultFileContents;
       afterFileContentLoaded();
@@ -188,7 +186,6 @@
           fileTable = JSON.parse(fileContents.system['fileTable.json']);
           populateMenu();
         }
-        document.getElementById("screen").style.cursor = "revert";
       }
     }
 
