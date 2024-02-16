@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0"/>
+  <meta http-equiv="Expires" content="0" />
 
   <style>
     #screen {
@@ -17,9 +17,11 @@
     #bootScreen {
       margin: auto;
       width: 90vw;
-      height: 90vh;
+      min-height: 90vh;
       background-color: #00a;
       padding: 20px;
+      user-select: none;
+      overflow: hidden;
     }
 
     .biosButton {
@@ -35,10 +37,33 @@
       letter-spacing: 1px;
     }
 
-    .biosText {
+    .biosTextMain {
       font-size: 24px;
       font-family: 'Courier New', Courier, monospace;
       color: #fff;
+    }
+
+    .biosTextSub {
+      font-size: 20px;
+      margin-top: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      color: #c2c2c2;
+    }
+
+
+    .warning {
+      font-size: 22px;
+      margin-top: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      color: #ff0000;
+    }
+
+    .mb-20 {
+      margin-bottom: 20px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
     }
 
     #biosTitle {
@@ -53,14 +78,40 @@
 <body id="screen">
   <div id="bootScreen">
     <div id="biosTitle">Sacred OS Boot Menu</div>
-    <div class="biosText">░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░</div>
-    <div class="biosText">Do you want to boot Sacred OS from your JSON disk backup?</div>
+    <div class="biosTextMain mb-20">░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░</div>
+    <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
     <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
+    <div class="biosTextMain mt-20">_____________________________________________________</div>
+    <div class="biosTextMain mt-20">System Checks</div>
+    <div id="screenRes" class="biosTextSub"></div>
+    <div id="screenResWarning" class="warning"></div>
+    <div id="CPU" class="biosTextSub"></div>
+    <div id="language" class="biosTextSub"></div>
+    <div id="languageWarning" class="warning"></div>
     <input type="file" id="fileInput" style="display:none;">
   </div>
 
   <script>
+    ////////// System Check Code //////////
+
+    document.getElementById("screenRes").innerHTML =
+      "Screen Resolution: <b>" +
+      window.innerWidth + "x" +  window.innerHeight + "</b>.";
+    if (window.innerWidth < 720 || window.innerHeight < 720) {
+      document.getElementById("screenResWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support your screen resolutions smaller than 720x720`;
+    }
+
+    document.getElementById("CPU").innerHTML =
+      "Detected <b>" + navigator.hardwareConcurrency + " CPU cores</b>.";
+
+    document.getElementById("language").innerHTML =
+      "Detected Language: <b>" + navigator.language + "</b>."
+    if (navigator.language !== "en-US") {
+      document.getElementById("languageWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support the ${navigator.language} language.`;
+    }
+    ////////// End of System Check Code //////////
+
     // The data already here is the file paths for the OS to boot with a fresh install.
     // This gets overwritten when "fileTable.json" is loaded.
     var fileTable = {
