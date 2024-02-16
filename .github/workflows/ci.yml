@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy to Neocities fallback
         if: ${{ steps.deploy.outcome == 'failure' && github.ref == 'refs/heads/main' }}
-        uses: M-Valentino/deploy-neocities@master
+        uses: M-Valentino/sacredOS@main
         with:
           key: ${{ secrets.NEOCITIES_API_KEY }}
           dir: _site
