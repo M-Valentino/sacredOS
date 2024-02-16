@@ -7,7 +7,11 @@
   <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0" />
-
+  <meta name="description"
+    content="A Windows 9x inspired operating system written in Vanilla JS where every HTML file is executable. ">
+  <meta name="keywords" content="JavaScript, operating system, your browser, retro, Sacred OS, OS">
+  <meta name="author" content="Mark Valentino">
+  <title>Sacred OS</title>
   <style>
     #screen {
       background-color: #000;
@@ -67,6 +71,8 @@
     }
 
     #biosTitle {
+      margin-top: 0;
+      margin-bottom: 0;
       letter-spacing: 4px;
       font-size: 48px;
       color: #fff;
@@ -77,7 +83,7 @@
 
 <body id="screen">
   <div id="bootScreen">
-    <div id="biosTitle">Sacred OS Boot Menu</div>
+    <h1 id="biosTitle">Sacred OS Boot Menu</h1>
     <div class="biosTextMain mb-20">░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░</div>
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
@@ -94,10 +100,9 @@
 
   <script>
     ////////// System Check Code //////////
-
     document.getElementById("screenRes").innerHTML =
       "Screen Resolution: <b>" +
-      window.innerWidth + "x" +  window.innerHeight + "</b>.";
+      window.innerWidth + "x" + window.innerHeight + "</b>.";
     if (window.innerWidth < 720 || window.innerHeight < 720) {
       document.getElementById("screenResWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support screen resolutions smaller than 720x720`;
     }
