@@ -61,25 +61,28 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     data = data.replace("<html>", `<html><!--path="${withFile}"-->`);
   }
 
-  const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)"-->/);
+  const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)".*-->/);
   const width = sizeMatch ? sizeMatch[1] : "600";
   const height = sizeMatch ? sizeMatch[2] : "400";
 
-  var maximizeButton = document.createElement("button");
-  maximizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
-  maximizeButton.classList = "osElemBase oSButton windowControlButton";
-  maximizeButton.textContent = "[ ]";
-  maximizeButton.style.float = "right";
-  maximizeButton.onclick = function () {
-    toggleMaximizeProgram(
-      `win${currentWindowID}`,
-      `prog${currentWindowID}`,
-      `max${currentWindowID}`,
-      width,
-      height
-    );
-  };
-  header.appendChild(maximizeButton);
+  const noResizeMatch = data.match(/<!--.*noRS.*-->/);
+  if (!noResizeMatch) {
+    var maximizeButton = document.createElement("button");
+    maximizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
+    maximizeButton.classList = "osElemBase oSButton windowControlButton";
+    maximizeButton.textContent = "[ ]";
+    maximizeButton.style.float = "right";
+    maximizeButton.onclick = function () {
+      toggleMaximizeProgram(
+        `win${currentWindowID}`,
+        `prog${currentWindowID}`,
+        `max${currentWindowID}`,
+        width,
+        height
+      );
+    };
+    header.appendChild(maximizeButton);
+  }
 
   var minimizeButton = document.createElement("button");
   minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
