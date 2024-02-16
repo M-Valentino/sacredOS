@@ -18,9 +18,21 @@ Currently, you cannot create files <i>inside</i> Sacred OS, but you can edit non
 them in the file explorer (which opens them up in notepad). You could create files by editing the JSON
 disk backup if you really wanted to.
 
-## Running
+## Running Locally
 In order for Sacred OS to function properly in a local environment, the files need to have an origin to them.
 Otherwise, you will expirience CORS errors. One solution is to use Node.js to create an http server.
-### Starting the http Server
+#### Starting the http Server
 After cloning the repo, go into your terminal and change the current directory to `public` and run
+
 `npx http-server --cors`.
+
+## Developing in Sacred OS
+Right now Sacred OS isn't stable and is in it's early phase of development, so things like syntax for messages
+to the kernel may change.
+### Sacred OS HTML Program Headers
+If you want to assign a specific default window size to a program or disable resizing, you must put a comment
+at the top of the HTML file that follows this structure:
+`<!--width="160" height="144" noRS-->`.
+
+- `width` and `height`: window size in CSS pixel units.
+- `noRS`: stands for "no resize". This disables a maximize button from appearing on the program. 
