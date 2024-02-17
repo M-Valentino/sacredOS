@@ -22,15 +22,28 @@
       width: 100%;
     }
 
+    .fileOrDir {
+      width: 96px;
+      height: 96px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     img {
       margin-top: 4px;
+    }
+
+    .redX {
+      color: #f00;
+      font-weight: bold;
+      margin-right: 5px;
     }
   </style>
 </head>
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
-  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()">Delete File</button>
+  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span class="redX">X</span>Delete</button>
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -76,9 +89,24 @@
       if (mode !== MODES.DELETE) {
         document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
         mode = MODES.DELETE;
+
+        var documentFiles = document.querySelectorAll(".document");
+
+        documentFiles.forEach(file => {
+          var delIcon = document.createElement('img');
+          delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).small;
+          delIcon.classList = "delIcon";
+          file.appendChild(delIcon); // Append delIcon to each element with the 'document' class
+        });
+
       } else {
         document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
         mode = MODES.OPEN;
+        // Remove the delIcon elements when switching back to OPEN mode
+        var delIcons = document.querySelectorAll('.delIcon');
+        delIcons.forEach(icon => {
+          icon.parentNode.removeChild(icon);
+        });
       }
     }
 
@@ -97,7 +125,7 @@
       topLevelKeys.forEach(function (key) {
         var button = document.createElement('button');
         button.textContent = key;
-        button.classList = "oSButton osElemBase";
+        button.classList = "oSButton osElemBase fileOrDir";
         button.onclick = function () {
           if (mode === MODES.OPEN) {
             handleOpen(key, backupObject);
@@ -115,6 +143,7 @@
         // if (key.split('.').pop() === "json") 
         {
           icon.src = documentImage;
+          button.classList.add("document");
         }
 
         button.appendChild(icon);

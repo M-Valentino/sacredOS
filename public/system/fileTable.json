@@ -8,7 +8,8 @@
     {
       "icons": [
         "document.json",
-        "folder.json"
+        "folder.json",
+        "deleteIndicator.json"
       ]
     }
   ],
