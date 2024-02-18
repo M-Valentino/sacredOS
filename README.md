@@ -1,8 +1,8 @@
 # Sacred OS
 Sacred OS is a simulated operating system that runs in your browser. It is a Windows 9x inspired OS, and every
-HTML file is executable. Sacred OS is written in vanilla JavaScript, which might actually be the first of it's 
-kind. Sacred OS uses a bootloader so you can use the OS with your saved settings, programs, files, etc.
-<img src="https://private-user-images.githubusercontent.com/79779618/305524927-e71e630d-550d-43bd-9439-9673eca7d008.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDgxMDg3MDksIm5iZiI6MTcwODEwODQwOSwicGF0aCI6Ii83OTc3OTYxOC8zMDU1MjQ5MjctZTcxZTYzMGQtNTUwZC00M2JkLTk0MzktOTY3M2VjYTdkMDA4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDAyMTYlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwMjE2VDE4MzMyOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTU2YmZmMWZmNTIzY2RhZDIxZWUwYTdhN2RjMTFmNTE3YWIyYzM5OWFjYjE2MDUwOWUzZDA1NTMxZjY1ZThiYzQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.gAtqNkafzkidKnV2osK7MJO2duZMWGHZnkba1iQvlmI">
+HTML file is executable. Sacred OS is written in vanilla JavaScript. Sacred OS uses a bootloader so you can
+use the OS with your saved settings, programs, files, etc.
+<img src="https://i.imgur.com/79paNsU.png">
 
 ## How it works
 Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernal, programs,
