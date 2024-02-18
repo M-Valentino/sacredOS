@@ -15,9 +15,7 @@ contains an iframe of the HTML file. These HTML files can communicate with the k
 the system's main style sheet or writing to the disk.
 
 ## Current State
-Currently, you cannot create files <i>inside</i> Sacred OS, but you can edit non-html files by clicking on
-them in the file explorer (which opens them up in notepad). You could create files by editing the JSON
-disk backup if you really wanted to.
+ File creation is limited at the moment in Sacred OS. Right now you can only create txt files and create one new file per directory. You can delete files, but you can't delete folders. Eventually you will be able to edit HTML files. Right now clicking on HTML files in the file explorer just executes them in a window.
 
 ## Running Locally
 In order for Sacred OS to function properly in a local environment, the files need to have an origin to them.
