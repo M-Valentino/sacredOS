@@ -92,14 +92,16 @@
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
     <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
-    <div class="biosTextMain mt-20">_____________________________________________________</div>
-    <div class="biosTextMain mt-20">System Checks</div>
-    <div id="screenRes" class="biosTextSub"></div>
-    <div id="screenResWarning" class="warning"></div>
-    <div id="CPU" class="biosTextSub"></div>
-    <div id="language" class="biosTextSub"></div>
-    <div id="languageWarning" class="warning"></div>
-    <input type="file" id="fileInput" style="display:none;">
+    <span id="sysChecks">
+      <div class="biosTextMain mt-20">_____________________________________________________</div>
+      <div class="biosTextMain mt-20">System Checks</div>
+      <div id="screenRes" class="biosTextSub"></div>
+      <div id="screenResWarning" class="warning"></div>
+      <div id="CPU" class="biosTextSub"></div>
+      <div id="language" class="biosTextSub"></div>
+      <div id="languageWarning" class="warning"></div>
+      <input type="file" id="fileInput" style="display:none;">
+    </span>
     <span id="freshInstallInfo">
       <div class="biosTextMain mt-20">_____________________________________________________</div>
       <div class="biosTextMain mt-20">Compiling OS From Source</div>
@@ -198,6 +200,7 @@
     }
 
     async function loadfileContents(fileTable, basePath = '') {
+      document.getElementById("sysChecks").style.display = "none";
       document.getElementById("freshInstallInfo").style.display = "initial";
       let tempFileContent = {};
       let tempObjectConent = {};
