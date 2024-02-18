@@ -29,6 +29,28 @@ function findFileContents(directoryPath, fileContents, fileName) {
   return null; // File not found
 }
 
+function makeFile(directoryPath, fileContents, fileName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+    if (directories.length === 0) {
+      fileContents[currentDirectory][fileName] = "";
+      return;
+    } else {
+      // Continue recursively for nested directories
+      const nestedDirectoryPath = directories.join("/");
+      return findFileContents(
+        nestedDirectoryPath,
+        fileContents[currentDirectory],
+        fileName
+      );
+    }
+  }
+
+  alert("Could not create new file here.");
+}
+
 function saveFileContentsRecursive(
   directoryPath,
   fileContents,
@@ -225,6 +247,13 @@ window.onmessage = function (e) {
       } catch (error) {
         console.error("Error parsing message:", error);
       }
+    } else if (e.data.startsWith("MK:F[")) {
+      const filePath = e.data.slice(5, -1);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+      makeFile(directoryPath, fileContents, fileName);
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
     }
   }
   try {

@@ -38,12 +38,20 @@
       font-weight: bold;
       margin-right: 5px;
     }
+
+    .greenPlus {
+      color: #007d00;
+      font-weight: bolder;
+      margin-right: 5px;
+    }
   </style>
 </head>
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
-  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span class="redX">X</span>Delete</button>
+  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span
+      class="redX">X</span>Delete</button>
+  <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -113,6 +121,10 @@
     function handleDelete(key) {
       window.top.postMessage(`DEL:${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
       toggleDeleteMode();
+    }
+
+    function makeNewFile() {
+      window.top.postMessage(`MK:F[${document.getElementById("fileDir").value.substring(3)}newFile.txt]`, '*');
     }
 
     function displayTopLevelObjects(backupObject) {
