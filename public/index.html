@@ -209,7 +209,7 @@
             if (typeof item === 'string') {
               let fileURL = `${basePath}${key}/${item}`;
               tempFileContent[key][item] = await fetchContent(fileURL);
-              document.getElementById("compile").textContent += `Loaded ${fileURL}\n`;
+              document.getElementById("compile").innerHTML += `Loaded: ${fileURL}<br/>`;
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
                 tempObjectConent = tempFileContent;
