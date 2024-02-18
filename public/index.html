@@ -78,6 +78,10 @@
       color: #fff;
       font-weight: 600;
     }
+
+    #freshInstallInfo {
+      display: none;
+    }
   </style>
 </head>
 
@@ -96,6 +100,12 @@
     <div id="language" class="biosTextSub"></div>
     <div id="languageWarning" class="warning"></div>
     <input type="file" id="fileInput" style="display:none;">
+    <span id="freshInstallInfo">
+      <div class="biosTextMain mt-20">_____________________________________________________</div>
+      <div class="biosTextMain mt-20">Compiling OS From Source</div>
+      <div id="compile" class="biosTextSub"></div>
+    </span>
+
   </div>
 
   <script>
@@ -188,6 +198,7 @@
     }
 
     async function loadfileContents(fileTable, basePath = '') {
+      document.getElementById("freshInstallInfo").style.display = "initial";
       let tempFileContent = {};
       let tempObjectConent = {};
 
@@ -198,6 +209,7 @@
             if (typeof item === 'string') {
               let fileURL = `${basePath}${key}/${item}`;
               tempFileContent[key][item] = await fetchContent(fileURL);
+              document.getElementById("compile").textContent += `Loaded ${fileURL}\n`;
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
                 tempObjectConent = tempFileContent;
