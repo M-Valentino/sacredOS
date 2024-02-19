@@ -6,6 +6,7 @@
   --guiPadding: 2px;
   --borderWidth: 2px;
   --programBarHeight: 48px;
+  --headerBarHeight: 34px;
 }
 
 * {
@@ -107,7 +108,7 @@ textarea:focus {
   font-size: 18px;
   font-weight: 600;
   padding-left: 4px;
-  height: 34px;
+  height: var(--headerBarHeight);
   width: 100%;
   background-color: var(--primColor);
   border: calc(var(--borderWidth)* 2) ridge var(--primColor);

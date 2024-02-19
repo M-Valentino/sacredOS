@@ -178,12 +178,12 @@ function toggleMaximizeProgram(
   if (document.getElementById(maximizeButtonID).textContent === "[ ]") {
     document.getElementById(windowID).style.width = "100%";
     document.getElementById(windowID).style.height =
-      "calc(100vh - var(--programBarHeight))";
+      "calc(100vh - var(--programBarHeight) - var(--headerBarHeight))";
     document.getElementById(windowID).style.left = 0;
     document.getElementById(windowID).style.top = 0;
     document.getElementById(programID).style.width = "100%";
     document.getElementById(programID).style.height =
-      "calc(100vh - var(--programBarHeight))";
+      "calc(100vh - var(--programBarHeight) - var(--headerBarHeight))";
     document.getElementById(maximizeButtonID).textContent = "[]";
   } else {
     document.getElementById(windowID).style.width = "fit-content";
