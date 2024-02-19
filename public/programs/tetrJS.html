@@ -25,7 +25,7 @@ Ghost: ['Normal', 'Colored', 'Off'],
 Grid: ['Off', 'On'],
 Outline: ['Off', 'On'],
 };
-var frame,srtPseTm,pauseTime,lineLimit,rplyKs,toGreyRow,gametype,lastX,lastY,lastPos,landed,lines,statsFinesse,piecesSet,startTime,digLines,keysDown,lastKeys,released,gameState=3,paused=!1,watchingReplay=!1;
+var frame,srtPseTm,pauseTime,lineLimit,rplyKs,toGreyRow,gametype,lastX,lastY,lastPos,landed,lines,stsFss,piecesSet,startTime,digLines,keysDown,lastKeys,released,gameState=3,paused=!1,wtRply=!1;
 var binds={pause:27,moveLeft:37,moveRight:39,moveDown:40,hardDrop:32,hldPc:67,rotRight:88,rotLeft:90,rot180:16,retry:82},flags={hardDrop:1,moveRight:2,moveLeft:4,moveDown:8,hldPc:16,rotRight:32,rotLeft:64,rot180:128};
 function resize() {
 var a=document.getElementById('a');var b=document.getElementById('b');var c=document.getElementById('c');var content=document.getElementById('content');var screenHeight=window.innerHeight - 34;var screenWidth=~~(screenHeight * 1.024);
@@ -53,9 +53,9 @@ hold.draw();
   addEventListener('resize', resize, false);
 function init(gt) {
 if (gt === 'replay') {
-watchingReplay = true;
+wtRply = true;
 } else {
-watchingReplay = false;
+wtRply = false;
 rplyKs = {};
 rplyKs.seed = ~~(Math.random() * 2147483645) + 1;
 gametype = gt;
@@ -63,7 +63,7 @@ gametype = gt;
 lineLimit=40;column=0;keysDown=0;lastKeys=0;released=255;piece.shiftDir=0;piece.shtRlsed=true;srtPseTm=0;pauseTime=0;paused=false;rng.seed=rplyKs.seed;toGreyRow=21;frame=0;lastPos='reset';stack.new(10, 22);
 hold.piece = void 0;
 if (settings.Gravity === 0) gravity = gravityUnit * 4;
-startTime=Date.now();preview.init();statsFinesse=0;lines=0;piecesSet=0;statsPiece.innerHTML=piecesSet;statsLines.innerHTML=lineLimit - lines;statistics();clear(stackCtx);clear(activeCtx);clear(holdCtx);
+startTime=Date.now();preview.init();stsFss=0;lines=0;piecesSet=0;statsPiece.innerHTML=piecesSet;statsLines.innerHTML=lineLimit - lines;statistics();clear(stackCtx);clear(activeCtx);clear(holdCtx);
 if (gametype === 3) {
 digLines = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 statsLines.innerHTML = 10;
@@ -218,7 +218,7 @@ if (paused) {
 if (e.keyCode === binds.retry) {
 init(gametype);
 }
-if (!watchingReplay) {
+if (!wtRply) {
 if (e.keyCode === binds.moveLeft) {
 keysDown |= flags.moveLeft;
 } else if (e.keyCode === binds.moveRight) {
@@ -243,7 +243,7 @@ false,
   addEventListener(
 'keyup',
 function (e) {
-if (!watchingReplay) {
+if (!wtRply) {
 if (e.keyCode === binds.moveLeft && keysDown & flags.moveLeft) {
 keysDown ^= flags.moveLeft;
 } else if (e.keyCode === binds.moveRight && keysDown & flags.moveRight) {
@@ -264,7 +264,7 @@ keysDown ^= flags.hldPc;
 false,
   );
 function update() {
-if (lastKeys !== keysDown && !watchingReplay) {
+if (lastKeys !== keysDown && !wtRply) {
 rplyKs[frame] = keysDown;
 } else if (frame in rplyKs) {
 keysDown = rplyKs[frame];
@@ -341,7 +341,7 @@ gameState = 0;
 startTime = Date.now();
 piece.new(preview.next());
 }
-if (lastKeys !== keysDown && !watchingReplay) {
+if (lastKeys !== keysDown && !wtRply) {
 rplyKs[frame] = keysDown;
 } else if (frame in rplyKs) {
 keysDown = rplyKs[frame];
@@ -631,7 +631,7 @@ for (var y = row; y >= -1; y--) {
   for (var x = 0; x < 10; x++) {
 this.grid[x][y] = this.grid[x][y - 1];
 }}}}
-statsFinesse += piece.finesse - finesse[piece.index][piece.pos][column];
+stsFss += piece.finesse - finesse[piece.index][piece.pos][column];
 piecesSet++;
 column = 0;
 statsPiece.innerHTML = piecesSet;
