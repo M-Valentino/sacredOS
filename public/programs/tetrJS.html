@@ -4,19 +4,11 @@
 <script>
 'use strict';
 var cellSize,column,msg=document.getElementById("msg"),stats=document.getElementById("stats"),statsTime=document.getElementById("time"),statsLines=document.getElementById("line"),statsPiece=document.getElementById("piece"),h3=document.getElementsByTagName("h3"),set=document.getElementById("settings"),holdCanvas=document.getElementById("hold"),bsc=document.getElementById("bgStack"),stackCanvas=document.getElementById("stack"),activeCanvas=document.getElementById("active"),prvewCnvs=document.getElementById("preview"),spriteCanvas=document.getElementById("sprite"),holdCtx=holdCanvas.getContext("2d"),bgStackCtx=bsc.getContext("2d"),stackCtx=stackCanvas.getContext("2d"),activeCtx=activeCanvas.getContext("2d"),previewCtx=prvewCnvs.getContext("2d"),spriteCtx=spriteCanvas.getContext("2d");var kickData=[[[0,0],[0,0],[0,0],[0,0],[0,0]],[[0,0],[1,0],[1,1],[0,-2],[1,-2]],[[0,0],[0,0],[0,0],[0,0],[0,0]],[[0,0],[-1,0],[-1,1],[0,-2],[-1,-2]],],kickDataI=[[[0,0],[-1,0],[2,0],[-1,0],[2,0]],[[-1,0],[0,0],[0,0],[0,-1],[0,2]],[[-1,-1],[1,-1],[-2,-1],[1,0],[-2,0]],[[0,-1],[0,-1],[0,-1],[0,1],[0,-2]],],kickDataO=[[[0,0]],[[0,0]],[[0,0]],[[0,0]]],PieceI={index:0,x:2,y:-1,kickData:kickDataI,tetro:[[0,0,0,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],]},PieceJ={index:1,x:3,y:0,kickData:kickData,tetro:[[2,2,0],[0,2,0],[0,2,0]]};var PieceL={index:2,x:3,y:0,kickData:kickData,tetro:[[0,3,0],[0,3,0],[3,3,0]]},PieceO={index:3,x:4,y:0,kickData:kickDataO,tetro:[[4,4],[4,4]]},PieceS={index:4,x:3,y:0,kickData:kickData,tetro:[[0,5,0],[5,5,0],[5,0,0]]},PieceT={index:5,x:3,y:0,kickData:kickData,tetro:[[0,6,0],[6,6,0],[0,6,0]]},PieceZ={index:6,x:3,y:0,kickData:kickData,tetro:[[7,0,0],[7,7,0],[0,7,0]]},pieces=[PieceI,PieceJ,PieceL,PieceO,PieceS,PieceT,PieceZ];var finesse=[[[1,2,1,0,1,2,1],[2,2,2,2,1,1,2,2,2,2],[1,2,1,0,1,2,1],[2,2,2,2,1,1,2,2,2,2],],[[1,2,1,0,1,2,2,1],[2,2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2,2],],[[1,2,1,0,1,2,2,1],[2,2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2,2],],[[1,2,2,1,0,1,2,2,1],[1,2,2,1,0,1,2,2,1],[1,2,2,1,0,1,2,2,1],[1,2,2,1,0,1,2,2,1],],[[1,2,1,0,1,2,2,1],[2,2,2,1,1,2,3,2,2],[1,2,1,0,1,2,2,1],[2,2,2,1,1,2,3,2,2],],[[1,2,1,0,1,2,2,1],[2,2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2],[2,3,2,1,2,3,3,2,2],],[[1,2,1,0,1,2,2,1],[2,2,2,1,1,2,3,2,2],[1,2,1,0,1,2,2,1],[2,2,2,1,1,2,3,2,2],],];var gravityUnit=0.00390625;var gravity;
-var gravityArr = (function () {var array = [];array.push(0);
-for (var i = 1; i < 64; i++) array.push(i / 64);
-for (var i = 1; i <= 20; i++) array.push(i);
-return array;
-})();
+var gravityArr = (function () {var array = [];array.push(0);for (var i = 1; i < 64; i++) {array.push(i / 64);}for (var i = 1; i <= 20; i++) {array.push(i)};return array;})();
 var settings={DAS:10,ARR:1,Gravity:0,"Soft Drop":31,"Lock Delay":30,Size:0,Sound:0,Volume:100,Block:0,Ghost:0,Grid:0,Outline:0};
-var setting = {
-DAS: range(0, 31),
-ARR: range(0, 11),
-Gravity: (function () {
-var array = [];
-array.push('Auto');
-array.push('0G');
+var setting = {DAS: range(0, 31),ARR: range(0, 11),
+Gravity: (function () {var array = [];
+array.push('Auto');array.push('0G');
 for (var i = 1; i < 64; i++) array.push(i + '/64G');
 for (var i = 1; i <= 20; i++) array.push(i + 'G');
 return array;
@@ -37,63 +29,16 @@ Grid: ['Off', 'On'],
 Outline: ['Off', 'On'],
 };
 var frame,srtPseTm,pauseTime,lineLimit,rplyKs,toGreyRow,gametype,lastX,lastY,lastPos,landed,lines,statsFinesse,piecesSet,startTime,digLines,keysDown,lastKeys,released,gameState=3,paused=!1,watchingReplay=!1;
-var binds = {
-pause: 27,
-moveLeft: 37,
-moveRight: 39,
-moveDown: 40,
-hardDrop: 32,
-hldPc: 67,
-rotRight: 88,
-rotLeft: 90,
-rot180: 16,
-retry: 82,
-};
-var flags = {
-hardDrop: 1,
-moveRight: 2,
-moveLeft: 4,
-moveDown: 8,
-hldPc: 16,
-rotRight: 32,
-rotLeft: 64,
-rot180: 128,
-};
+var binds={pause:27,moveLeft:37,moveRight:39,moveDown:40,hardDrop:32,hldPc:67,rotRight:88,rotLeft:90,rot180:16,retry:82},flags={hardDrop:1,moveRight:2,moveLeft:4,moveDown:8,hldPc:16,rotRight:32,rotLeft:64,rot180:128};
 function resize() {
-var a = document.getElementById('a');
-var b = document.getElementById('b');
-var c = document.getElementById('c');
-var content = document.getElementById('content');
-var screenHeight = window.innerHeight - 34;
-var screenWidth = ~~(screenHeight * 1.024);
+var a=document.getElementById('a');var b=document.getElementById('b');var c=document.getElementById('c');var content=document.getElementById('content');var screenHeight=window.innerHeight - 34;var screenWidth=~~(screenHeight * 1.024);
 if (screenWidth > window.innerWidth)
 screenHeight = ~~(window.innerWidth / 1.024);
 if (settings.Size === 1 && screenHeight > 602) cellSize = 15;
 else if (settings.Size === 2 && screenHeight > 602) cellSize = 30;
 else if (settings.Size === 3 && screenHeight > 902) cellSize = 45;
 else cellSize = Math.max(~~(screenHeight / 20), 10);
-var pad = (window.innerHeight - (cellSize * 20 + 2)) / 2 + 'px';
-content.style.padding = pad + ' 0';
-stats.style.bottom = pad;
-a.style.padding = '0 0.5rem ' + ~~(cellSize / 2) + 'px';
-stackCanvas.width = activeCanvas.width = bsc.width = cellSize * 10;
-stackCanvas.height = activeCanvas.height = bsc.height =
-cellSize * 20;
-b.style.width = stackCanvas.width + 'px';
-b.style.height = stackCanvas.height + 'px';
-holdCanvas.width = cellSize * 4;
-holdCanvas.height = cellSize * 2;
-a.style.width = holdCanvas.width + 'px';
-a.style.height = holdCanvas.height + 'px';
-prvewCnvs.width = cellSize * 4;
-prvewCnvs.height = stackCanvas.height;
-c.style.width = prvewCnvs.width + 'px';
-c.style.height = b.style.height;
-msg.style.lineHeight = b.style.height;
-msg.style.fontSize = ~~(stackCanvas.width / 6) + 'px';
-stats.style.fontSize = ~~(stackCanvas.width / 11) + 'px';
-document.documentElement.style.fontSize = ~~(stackCanvas.width / 16) + 'px';
-stats.style.width = a.style.width;
+var pad=(window.innerHeight - (cellSize * 20 + 2)) / 2 + 'px';content.style.padding=pad + ' 0';stats.style.bottom=pad;a.style.padding='0 0.5rem ' + ~~(cellSize / 2) + 'px';stackCanvas.width=activeCanvas.width=bsc.width=cellSize * 10;stackCanvas.height=activeCanvas.height=bsc.height=cellSize * 20;b.style.width=stackCanvas.width + 'px';b.style.height=stackCanvas.height + 'px';holdCanvas.width=cellSize * 4;holdCanvas.height=cellSize * 2;a.style.width=holdCanvas.width + 'px';a.style.height=holdCanvas.height + 'px';prvewCnvs.width=cellSize * 4;prvewCnvs.height=stackCanvas.height;c.style.width=prvewCnvs.width + 'px';c.style.height=b.style.height;msg.style.lineHeight=b.style.height;msg.style.fontSize=~~(stackCanvas.width / 6) + 'px';stats.style.fontSize=~~(stackCanvas.width / 11) + 'px';document.documentElement.style.fontSize=~~(stackCanvas.width / 16) + 'px';stats.style.width=a.style.width;
 for (var i = 0, len = h3.length; i < len; i++) {
 h3[i].style.lineHeight = a.style.height;
 h3[i].style.fontSize = stats.style.fontSize;
@@ -118,21 +63,7 @@ rplyKs = {};
 rplyKs.seed = ~~(Math.random() * 2147483645) + 1;
 gametype = gt;
 }
-lineLimit = 40;
-column = 0;
-keysDown = 0;
-lastKeys = 0;
-released = 255;
-piece.shiftDir = 0;
-piece.shtRlsed = true;
-srtPseTm = 0;
-pauseTime = 0;
-paused = false;
-rng.seed = rplyKs.seed;
-toGreyRow = 21;
-frame = 0;
-lastPos = 'reset';
-stack.new(10, 22);
+lineLimit=40;column=0;keysDown=0;lastKeys=0;released=255;piece.shiftDir=0;piece.shtRlsed=true;srtPseTm=0;pauseTime=0;paused=false;rng.seed=rplyKs.seed;toGreyRow=21;frame=0;lastPos='reset';stack.new(10, 22);
 hold.piece = void 0;
 if (settings.Gravity === 0) gravity = gravityUnit * 4;
 startTime = Date.now();
@@ -215,10 +146,10 @@ return (this.seed = (this.seed * 16807) % 2147483647);
 }();
 function statistics() {
 var time = Date.now() - startTime - pauseTime;
-var seconds = ((time / 1000) % 60).toFixed(2);
+var scns = ((time / 1000) % 60).toFixed(2);
 var minutes = ~~(time / 60000);
 statsTime.innerHTML =
-(minutes < 10 ? '0' : '') + minutes + (seconds < 10 ? ':0' : ':') + seconds;
+(minutes < 10 ? '0' : '') + minutes + (scns < 10 ? ':0' : ':') + scns;
 }
 function bg(ctx) {
 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -249,37 +180,13 @@ cellSize,
 
 function makeSprite() {
 var shaded=[["#c1c1c1","#dddddd","#a6a6a6","#8b8b8b"],["#25bb9b","#4cd7b6","#009f81","#008568"],["#3397d9","#57b1f6","#007dbd","#0064a2"],["#e67e23","#ff993f","#c86400","#a94b00"],["#efc30f","#ffdf3a","#d1a800","#b38e00"],["#9ccd38","#b9e955","#81b214","#659700"],["#9c5ab8","#b873d4","#81409d","#672782"],["#e64b3c","#ff6853","#c62c25","#a70010"],["#898989","#a3a3a3","#6f6f6f","#575757"],],glossy=[["#ffffff","#ffffff","#ffffff","#888888","#4d4d4d"],["#7bffdf","#9fffff","#ccffff","#008165","#00442e"],["#6cdcff","#93feff","#c2ffff","#00629f","#002c60"],["#ffc166","#ffe386","#ffffb0","#aa4800","#650500"],["#ffff6a","#ffff8c","#ffffb8","#b68a00","#714f00"],["#efff81","#ffffa2","#ffffcd","#6b9200","#2c5600"],["#dc9dfe","#ffbeff","#ffe9ff","#5d287e","#210043"],["#ff9277","#ffb497","#ffe0bf","#a7000a","#600000"],["#cbcbcb","#ededed","#ffffff","#545454","#1f1f1f"],],tgm=[["#7b7b7b","#303030","#6b6b6b","#363636"],["#f08000","#a00000","#e86008","#b00000"],["#00a8f8","#0000b0","#0090e8","#0020c0"],["#f8a800","#b84000","#e89800","#c85800"],["#e8e000","#886800","#d8c800","#907800"],["#f828f8","#780078","#e020e0","#880088"],["#00e8f0","#0070a0","#00d0e0","#0080a8"],["#78f800","#007800","#58e000","#008800"],["#7b7b7b","#303030","#6b6b6b","#363636"],];
-var world = [];
-world[0] = tgm[0];
-world[1] = tgm[6];
-world[2] = tgm[2];
-world[3] = tgm[3];
-world[4] = tgm[4];
-world[5] = tgm[7];
-world[6] = tgm[5];
-world[7] = tgm[1];
-world[8] = tgm[8];
+var world=[];world[0]=tgm[0],world[1]=tgm[6],world[2]=tgm[2],world[3]=tgm[3],world[4]=tgm[4],world[5]=tgm[7],world[6]=tgm[5],world[7]=tgm[1],world[8]=tgm[8];
 spriteCanvas.width = cellSize * 9;
 spriteCanvas.height = cellSize;
 for (var i = 0; i < 9; i++) {
 var x = i * cellSize;
 if (settings.Block === 0) {
-spriteCtx.fillStyle = shaded[i][1];
-spriteCtx.fillRect(x, 0, cellSize, cellSize);
-spriteCtx.fillStyle = shaded[i][3];
-spriteCtx.fillRect(x, cellSize / 2, cellSize, cellSize / 2);
-spriteCtx.fillStyle = shaded[i][0];
-spriteCtx.beginPath();
-spriteCtx.moveTo(x, 0);
-spriteCtx.lineTo(x + cellSize / 2, cellSize / 2);
-spriteCtx.lineTo(x, cellSize);
-spriteCtx.fill();
-spriteCtx.fillStyle = shaded[i][2];
-spriteCtx.beginPath();
-spriteCtx.moveTo(x + cellSize, 0);
-spriteCtx.lineTo(x + cellSize / 2, cellSize / 2);
-spriteCtx.lineTo(x + cellSize, cellSize);
-spriteCtx.fill();
+spriteCtx.fillStyle=shaded[i][1];spriteCtx.fillRect(x, 0, cellSize, cellSize);spriteCtx.fillStyle=shaded[i][3];spriteCtx.fillRect(x, cellSize / 2, cellSize, cellSize / 2);spriteCtx.fillStyle=shaded[i][0];spriteCtx.beginPath();spriteCtx.moveTo(x, 0);spriteCtx.lineTo(x + cellSize / 2, cellSize / 2);spriteCtx.lineTo(x, cellSize);spriteCtx.fill();spriteCtx.fillStyle=shaded[i][2];spriteCtx.beginPath();spriteCtx.moveTo(x + cellSize, 0);spriteCtx.lineTo(x + cellSize / 2, cellSize / 2);spriteCtx.lineTo(x + cellSize, cellSize);spriteCtx.fill();
 } else if (settings.Block === 1) {
 spriteCtx.fillStyle = shaded[i][0];
 spriteCtx.fillRect(x, 0, cellSize, cellSize);
@@ -503,22 +410,7 @@ toGreyRow--;
 }}}
 </script>
 <script>
-function Piece() {
-this.x;
-this.y;
-this.pos = 0;
-this.tetro;
-this.index;
-this.kickData;
-this.lockDelay = 0;
-this.shiftDelay = 0;
-this.shiftDir;
-this.shtRlsed;
-this.arrDelay = 0;
-this.held = false;
-this.finesse = 0;
-this.dirty = false;
-}
+function Piece(){this.x;this.y;this.pos=0;this.tetro;this.index;this.kickData;this.lockDelay=0;this.shiftDelay=0;this.shiftDir;this.shtRlsed;this.arrDelay=0;this.held=false;this.finesse=0;this.dirty=false}
   Piece.prototype.new = function (index) {
 this.pos = 0;
 this.tetro = [];
@@ -907,14 +799,7 @@ this.grid[x][y - 1]
 lineCtx.moveTo(x * c + b, y * c - 2 * c);
 lineCtx.lineTo(x * c, y * c - 2 * c);
 lineCtx.lineTo(x * c, y * c - 2 * c + b);
-lineCtx.arc(
-  x * c,
-  y * c - 2 * c,
-  b,
-  Math.PI / 2,
-  Math.PI * 2,
-  true,
-);}}}}}
+lineCtx.arc( x * c, y * c - 2 * c, b, Math.PI / 2, Math.PI * 2, true,)}}}}}
 lineCtx.fill();
 stackCtx.drawImage(lneCnvs, 0, 0);
 }};
@@ -991,10 +876,7 @@ draw(
 var preview = new Preview();
 </script>
 <script>
-var version = '0.1.8';
-var setLoop;
-var arrwRlsd = true;
-var arrowDelay = 0;
+var version='0.1.8';var setLoop;var arrwRlsd=true;var arrowDelay=0;
 var key={8:"Backspace",9:"Tab",13:"Enter",16:"Shift",17:"Ctrl",18:"Alt",19:"Pause",20:"Caps Lock",27:"Esc",32:"Space",33:"PgUp",34:"PgDn",35:"End",36:"Home",37:"←",38:"↑",39:"→",40:"↓",45:"Insert",46:"Delete",48:"0",49:"1",50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",59:";",61:"=",65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",71:"G",72:"H",73:"I",74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",82:"R",83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z",96:"0kpad",97:"1kpad",98:"2kpad",99:"3kpad",100:"4kpad",101:"5kpad",102:"6kpad",103:"7kpad",104:"8kpad",105:"9kpad",106:"*",107:"+",109:"-",110:".",111:"/",112:"F1",113:"F2",114:"F3",115:"F4",116:"F5",117:"F6",118:"F7",119:"F8",120:"F9",121:"F10",122:"F11",123:"F12",173:"-",187:"=",188:",",190:".",191:"/",192:"`",219:"[",220:"\\",221:"]",222:"'"};
 var menus = document.getElementsByClassName('menu');
 function menu(menuIndex) {
@@ -1087,23 +969,11 @@ settings = JSON.parse(localStorage.getItem('settings'));
 }}
   loadLocalData();
   for (var s in settings) {
-var div = document.createElement('div');
-var b = document.createElement('b');
-var iLeft = document.createElement('i');
-var span = document.createElement('span');
-var iRight = document.createElement('i');
+var div=document.createElement('div');var b=document.createElement('b');var iLeft=document.createElement('i');var span=document.createElement('span');var iRight=document.createElement('i');
 div.id = s;
 b.innerHTML = s + ':';
 span.innerHTML = setting[s][settings[s]];
-iLeft.className = 'left';
-iRight.className = 'right';
-iLeft.onmousedown = left;
-iRight.onmousedown = right;
-set.appendChild(div);
-div.appendChild(b);
-div.appendChild(iLeft);
-div.appendChild(span);
-div.appendChild(iRight);
+iLeft.className='left';iRight.className='right';iLeft.onmousedown=left;iRight.onmousedown=right;set.appendChild(div);div.appendChild(b);div.appendChild(iLeft);div.appendChild(span);div.appendChild(iRight);
 }
   resize();
 </script>
