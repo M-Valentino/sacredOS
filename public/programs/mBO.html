@@ -14,7 +14,6 @@
       const close = document.getElementById('close-' + id);
       app.style.display = 'block';
       close.style.display = 'inline';
-
       const otherApps = document.querySelectorAll('.app');
       otherApps.forEach(otherApp => {
         if (otherApp.id !== id && otherApp.style.display !== 'none') {
@@ -22,19 +21,16 @@
           document.getElementById('close-' + otherApp.id).style.display = 'none';
         }
       });
-
       const iconWrappers = document.querySelectorAll('.icon-wrapper');
       iconWrappers.forEach(wrapper => {
         wrapper.style.display = "none";
       });
-
       if (id === 'calendar-app') {
         displayCalendar();
       } else if (id === 'clock-app') {
         updateClock();
       }
     }
-
     function updateNoteSelect() {
       const noteSelect = document.getElementById('note-select');
       noteSelect.innerHTML = notes.map((note, index) => '<option value="' + index + '">' + (note.title || 'Unnamed') + '</option>').join('');
@@ -43,7 +39,6 @@
         loadTextApp(noteSelect.value);
       });
     }
-
     function loadTextApp(noteIndex) {
       const selectedIndex = parseInt(noteIndex);
       if (notes[selectedIndex]) {
@@ -54,7 +49,6 @@
         document.getElementById('text-input').value = '';
       }
     }
-
     function closeApp(id) {
       document.getElementById(id).style.display = 'none';
       document.getElementById('close-' + id).style.display = 'none';
@@ -64,27 +58,22 @@
         wrapper.style.display = "inline-block"; // Use inline-block because the wrapper is a block-level element
       });
     }
-
     function saveTextApp() {
       const noteSelect = document.getElementById('note-select');
       const selectedIndex = noteSelect.selectedIndex;
       const title = document.getElementById('note-title').value.trim();
       const content = document.getElementById('text-input').value;
-
       notes[selectedIndex] = { title: title, content: content };
       localStorage.setItem('magicianBoyOS_notes', JSON.stringify(notes));
       updateNoteSelect();
     }
-
     function addNote() {
       notes.push({ title: "", content: "" });
       updateNoteSelect();
-
       const noteSelect = document.getElementById('note-select');
       noteSelect.selectedIndex = notes.length - 1;
       loadTextApp(noteSelect.value);
     }
-
     function deleteNote() {
       const noteSelect = document.getElementById('note-select');
       const selectedIndex = noteSelect.selectedIndex;
@@ -93,11 +82,9 @@
       loadTextApp(0);
       saveNotesToLocalStorage();
     }
-
     function saveNotesToLocalStorage() {
       localStorage.setItem('magicianBoyOS_notes', JSON.stringify(notes));
     }
-
     function displayCalendar() {
       const calendarTable = document.getElementById('calendar-table');
       const now = new Date();
@@ -107,14 +94,12 @@
       const firstDayOfWeek = new Date(year, month, 1).getDay();
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
       const generateCalendarHTML = () => {
         let html = '<tr>';
         for (const day of daysOfWeek) {
           html += `<th>${day}</th>`;
         }
         html += '</tr><tr>';
-        // Fill the empty days before the first day with empty cells
         for (let i = 0; i < firstDayOfWeek; i++) {
           html += '<td></td>';
         }
@@ -128,59 +113,37 @@
         html += '</tr>';
         return html;
       };
-
       calendarTable.innerHTML = generateCalendarHTML();
       document.getElementById('month-display').textContent = monthNames[month];
-
       displayNextHoliday();
     }
-
     function displayNextHoliday() {
-      const holidays = [
-        { date: '1/1', name: 'New Year&#39;s Day' },
-        { date: '7/4', name: 'Independence Day' },
-        { date: '12/25', name: 'Christmas Day' },
-      ];
-
+      const holidays=[ { date: '1/1', name: 'New Year&#39;s Day'}, { date: '7/4', name: 'Independence Day'}, { date: '12/25', name: 'Christmas Day'}, ];
       const now = new Date();
       const year = now.getFullYear();
-
       const nextHoliday = holidays.find(holiday => {
         const [month, day] = holiday.date.split('/').map(Number);
         const holidayDate = new Date(year, month - 1, day);
         return now <= holidayDate;
       });
-
       document.getElementById('holiday-display').textContent = nextHoliday ? (`Next holiday: ${nextHoliday.name} (${nextHoliday.date})`) : '';
     }
-
     function formatTime(num) {
       return num.toString().padStart(2, '0');
     }
-
     function updateClock() {
       updateTimezoneClocks();
       updateLocalTime();
     }
-
     function updateTimezoneClocks() {
-      const timezones = [
-        { id: 'timezone-new-orleans', offset: -360 },
-        { id: 'timezone-havana', offset: -300 },
-        { id: 'timezone-ho-chi-minh-city', offset: 420 },
-        { id: 'timezone-beijing', offset: 480 },
-        { id: 'timezone-pyongyang', offset: 510 },
-      ];
-
+      const timezones=[ { id: 'timezone-new-orleans', offset: -360}, { id: 'timezone-havana', offset: -300}, { id: 'timezone-ho-chi-minh-city', offset: 420}, { id: 'timezone-beijing', offset: 480}, { id: 'timezone-pyongyang', offset: 510}, ];
       const now = new Date();
-
       timezones.forEach(({ id, offset }) => {
         const currentTime = new Date(now.getTime() + (now.getTimezoneOffset() + offset) * 60 * 1000);
         const timeString = formatTime(currentTime.getHours()) + ':' + formatTime(currentTime.getMinutes()) + ':' + formatTime(currentTime.getSeconds());
         document.getElementById(id).textContent = timeString;
       });
     }
-
     function updateLocalTime() {
       const now = new Date();
       const timeString = formatTime(now.getHours()) + ':' + formatTime(now.getMinutes()) + ':' + formatTime(now.getSeconds());
@@ -195,33 +158,20 @@
       setInterval(function () {
         updateClock();
       }, 1000);
-
       const startupScreen = document.querySelector('.startup-screen');
       startupScreen.addEventListener('click', () => {
         startupScreen.style.display = 'none';
       });
-
-      // Load notes from local storage
       notes = JSON.parse(localStorage.getItem('magicianBoyOS_notes')) || [];
       updateNoteSelect();
       loadTextApp(document.getElementById('note-select').value);
     };
     function shakeAndAnswer() {
       const container = document.querySelector('.container');
-      const answers = [
-        "Yes, definitely.",
-        "Outlook good.",
-        "You may rely on it.",
-        "Ask again later.",
-        "Better not tell you now.",
-        "Cannot predict now.",
-        "Don't count on it.",
-        "My sources say no."
-      ];
+      const answers=[ "Yes, definitely.", "Outlook good.", "You may rely on it.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Don't count on it.", "My sources say no." ];
       container.classList.add('shaking');
       container.addEventListener('animationend', function () {
         container.classList.remove('shaking');
-
         const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
         document.getElementById('magic-8ball-answer').innerText = randomAnswer;
       }, { once: true });
