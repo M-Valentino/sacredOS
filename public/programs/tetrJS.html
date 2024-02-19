@@ -539,9 +539,7 @@ grad.addColorStop(0, tgm[i][2]);
 grad.addColorStop(1, tgm[i][1]);
 spriteCtx.fillStyle = grad;
 spriteCtx.fillRect(x + cellSize - k, 0, k, cellSize - k);
-}
-}
-}
+}}}
 function clear(ctx) {
 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
@@ -550,9 +548,7 @@ for (var x = 0, len = tetro.length; x < len; x++) {
 for (var y = 0, wid = tetro[x].length; y < wid; y++) {
 if (tetro[x][y])
   drawCell(x + cx, y + cy, color !== void 0 ? color : tetro[x][y], ctx);
-}
-}
-}
+}}}
   addEventListener(
 'keydown',
 function (e) {
@@ -569,21 +565,21 @@ init(gametype);
 }
 if (!watchingReplay) {
 if (e.keyCode === binds.moveLeft) {
-  keysDown |= flags.moveLeft;
+keysDown |= flags.moveLeft;
 } else if (e.keyCode === binds.moveRight) {
-  keysDown |= flags.moveRight;
+keysDown |= flags.moveRight;
 } else if (e.keyCode === binds.moveDown) {
-  keysDown |= flags.moveDown;
+keysDown |= flags.moveDown;
 } else if (e.keyCode === binds.hardDrop) {
-  keysDown |= flags.hardDrop;
+keysDown |= flags.hardDrop;
 } else if (e.keyCode === binds.rotRight) {
-  keysDown |= flags.rotRight;
+keysDown |= flags.rotRight;
 } else if (e.keyCode === binds.rotLeft) {
-  keysDown |= flags.rotLeft;
+keysDown |= flags.rotLeft;
 } else if (e.keyCode === binds.rot180) {
-  keysDown |= flags.rot180;
+keysDown |= flags.rot180;
 } else if (e.keyCode === binds.hldPc) {
-  keysDown |= flags.hldPc;
+keysDown |= flags.hldPc;
 }
 }
 },
@@ -594,21 +590,21 @@ false,
 function (e) {
 if (!watchingReplay) {
 if (e.keyCode === binds.moveLeft && keysDown & flags.moveLeft) {
-  keysDown ^= flags.moveLeft;
+keysDown ^= flags.moveLeft;
 } else if (e.keyCode === binds.moveRight && keysDown & flags.moveRight) {
-  keysDown ^= flags.moveRight;
+keysDown ^= flags.moveRight;
 } else if (e.keyCode === binds.moveDown && keysDown & flags.moveDown) {
-  keysDown ^= flags.moveDown;
+keysDown ^= flags.moveDown;
 } else if (e.keyCode === binds.hardDrop && keysDown & flags.hardDrop) {
-  keysDown ^= flags.hardDrop;
+keysDown ^= flags.hardDrop;
 } else if (e.keyCode === binds.rotRight && keysDown & flags.rotRight) {
-  keysDown ^= flags.rotRight;
+keysDown ^= flags.rotRight;
 } else if (e.keyCode === binds.rotLeft && keysDown & flags.rotLeft) {
-  keysDown ^= flags.rotLeft;
+keysDown ^= flags.rotLeft;
 } else if (e.keyCode === binds.rot180 && keysDown & flags.rot180) {
-  keysDown ^= flags.rot180;
+keysDown ^= flags.rot180;
 } else if (e.keyCode === binds.hldPc && keysDown & flags.hldPc) {
-  keysDown ^= flags.hldPc;
+keysDown ^= flags.hldPc;
 }
 }
 },
