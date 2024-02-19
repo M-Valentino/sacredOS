@@ -16,14 +16,7 @@ for (var i = 1; i < 64; i++) array.push(i + '/64G');
 for (var i = 1; i <= 20; i++) array.push(i + 'G');
 return array;
 })(),
-'Lock Delay': range(0, 101),
-Size: ['Auto', 'Small', 'Medium', 'Large'],
-Sound: ['Off', 'On'],
-Volume: range(0, 101),
-Block: ['Shaded', 'Solid', 'Glossy', 'Arika', 'World'],
-Ghost: ['Normal', 'Colored', 'Off'],
-Grid: ['Off', 'On'],
-Outline: ['Off', 'On'],
+'Lock Delay': range(0, 101),Size: ['Auto', 'Small', 'Medium', 'Large'],Sound: ['Off', 'On'],Volume: range(0, 101),Block: ['Shaded', 'Solid', 'Glossy', 'Arika', 'World'],Ghost: ['Normal', 'Colored', 'Off'],Grid: ['Off', 'On'],Outline: ['Off', 'On'],
 };
 var frame,srtPseTm,pauseTime,lineLimit,rplyKs,toGreyRow,gametype,lastX,lastY,lastPos,landed,lines,stsFss,piecesSet,startTime,digLines,keysDown,lastKeys,released,gameState=3,paused=!1,wtRply=!1;
 var binds={pause:27,moveLeft:37,moveRight:39,moveDown:40,hardDrop:32,hldPc:67,rotRight:88,rotLeft:90,rot180:16,retry:82},flags={hardDrop:1,moveRight:2,moveLeft:4,moveDown:8,hldPc:16,rotRight:32,rotLeft:64,rot180:128};
@@ -184,12 +177,7 @@ var grad = spriteCtx.createLinearGradient(
   x + cellSize - k,
   cellSize - k,
 );
-grad.addColorStop(0, shaded[i][0]);
-grad.addColorStop(0.5, glossy[i][0]);
-grad.addColorStop(0.5, shaded[i][0]);
-grad.addColorStop(1, glossy[i][0]);
-spriteCtx.fillStyle = grad;
-spriteCtx.fillRect(x + k, k, cellSize - k * 2, cellSize - k * 2);
+grad.addColorStop(0, shaded[i][0]);grad.addColorStop(0.5, glossy[i][0]);grad.addColorStop(0.5, shaded[i][0]);grad.addColorStop(1, glossy[i][0]);spriteCtx.fillStyle=grad;spriteCtx.fillRect(x + k, k, cellSize - k * 2, cellSize - k * 2);
 } else if (settings.Block === 3 || settings.Block === 4) {
 if (settings.Block === 4) tgm = world;
 var k = Math.max(~~(cellSize * 0.125), 1);
@@ -700,17 +688,7 @@ lineCtx.fillRect(x * c + c - b, y * c - 2 * c, b, b);
 this.grid[x + 1][y] &&
 this.grid[x][y - 1]
 ) {
-lineCtx.moveTo(x * c + c - b, y * c - 2 * c);
-lineCtx.lineTo(x * c + c, y * c - 2 * c);
-lineCtx.lineTo(x * c + c, y * c - 2 * c + b);
-lineCtx.arc(
-  x * c + c,
-  y * c - 2 * c,
-  b,
-  Math.PI / 2,
-  Math.PI,
-  false,
-);
+lineCtx.moveTo(x * c + c - b, y * c - 2 * c);lineCtx.lineTo(x * c + c, y * c - 2 * c);lineCtx.lineTo(x * c + c, y * c - 2 * c + b);lineCtx.arc( x * c + c, y * c - 2 * c, b, Math.PI / 2, Math.PI, false,);
 }
 }
 if (x > 0 && y < 21) {
@@ -722,17 +700,7 @@ lineCtx.fillRect(x * c, y * c - 2 * c + c - b, b, b);
 this.grid[x - 1][y] &&
 this.grid[x][y + 1]
 ) {
-lineCtx.moveTo(x * c, y * c - 2 * c + c - b);
-lineCtx.lineTo(x * c, y * c - 2 * c + c);
-lineCtx.lineTo(x * c + b, y * c - 2 * c + c);
-lineCtx.arc(
-  x * c,
-  y * c - 2 * c + c,
-  b,
-  Math.PI * 2,
-  (3 * Math.PI) / 2,
-  true,
-);
+lineCtx.moveTo(x * c, y * c - 2 * c + c - b);lineCtx.lineTo(x * c, y * c - 2 * c + c);lineCtx.lineTo(x * c + b, y * c - 2 * c + c);lineCtx.arc( x * c, y * c - 2 * c + c, b, Math.PI * 2, (3 * Math.PI) / 2, true,);
 }
 }
 if (x > 0) {
@@ -744,12 +712,7 @@ lineCtx.fillRect(x * c, y * c - 2 * c, b, b);
 this.grid[x - 1][y] &&
 this.grid[x][y - 1]
 ) {
-lineCtx.moveTo(x * c + b, y * c - 2 * c);
-lineCtx.lineTo(x * c, y * c - 2 * c);
-lineCtx.lineTo(x * c, y * c - 2 * c + b);
-lineCtx.arc( x * c, y * c - 2 * c, b, Math.PI / 2, Math.PI * 2, true,)}}}}}
-lineCtx.fill();
-stackCtx.drawImage(lneCnvs, 0, 0);
+lineCtx.moveTo(x * c + b, y * c - 2 * c);lineCtx.lineTo(x * c, y * c - 2 * c);lineCtx.lineTo(x * c, y * c - 2 * c + b);lineCtx.arc( x * c, y * c - 2 * c, b, Math.PI / 2, Math.PI * 2, true,)}}}}}lineCtx.fill();stackCtx.drawImage(lneCnvs, 0, 0);
 }};
 var stack = new Stack();
 </script>
@@ -945,9 +908,7 @@ var width = bgCanvas.offsetWidth;
 var shift = (width - window.innerWidth) / 2;
 if (shift < 0) shift = 0;
 bgCanvas.style.left = -shift + 'px';
-bgCanvas.style.top = 0;
-}
-}
+bgCanvas.style.top = 0;}}
   addEventListener('resize', bgResize, false);
   bgResize();
 </script>
