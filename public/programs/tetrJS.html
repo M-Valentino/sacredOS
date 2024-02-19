@@ -370,17 +370,7 @@ toGreyRow--;
 <script>
 function Piece(){this.x;this.y;this.pos=0;this.tetro;this.index;this.kickData;this.lockDelay=0;this.shiftDelay=0;this.shiftDir;this.shtRlsed;this.arrDelay=0;this.held=false;this.finesse=0;this.dirty=false}
   Piece.prototype.new = function (index) {
-this.pos = 0;
-this.tetro = [];
-this.held = false;
-this.finesse = 0;
-this.dirty = true;
-landed = false;
-this.tetro = pieces[index].tetro;
-this.kickData = pieces[index].kickData;
-this.x = pieces[index].x;
-this.y = pieces[index].y;
-this.index = index;
+this.pos=0;this.tetro=[];this.held=false;this.finesse=0;this.dirty=true;landed=false;this.tetro=pieces[index].tetro;this.kickData=pieces[index].kickData;this.x=pieces[index].x;this.y=pieces[index].y;this.index=index;
 if (!this.moveValid(0, 0, this.tetro)) {
 gameState = 9;
 msg.innerHTML = 'BLOCK OUT!';
