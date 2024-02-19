@@ -178,7 +178,7 @@ function toggleMaximizeProgram(
   if (document.getElementById(maximizeButtonID).textContent === "[ ]") {
     document.getElementById(windowID).style.width = "100%";
     document.getElementById(windowID).style.height =
-      "calc(100vh - var(--programBarHeight) - var(--headerBarHeight))";
+      "calc(100vh - var(--programBarHeight))";
     document.getElementById(windowID).style.left = 0;
     document.getElementById(windowID).style.top = 0;
     document.getElementById(programID).style.width = "100%";
