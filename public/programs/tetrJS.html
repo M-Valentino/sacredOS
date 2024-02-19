@@ -481,21 +481,18 @@ activeCtx.globalAlpha = 1;
 }
 };
 var piece = new Piece();
-</script>
-<script>
+</script><script>
 function Stack() {
 }
-  Stack.prototype.new = function (x, y) {
+Stack.prototype.new = function (x, y) {
 var cells = new Array(x);
 for (var i = 0; i < x; i++) {
 cells[i] = new Array(y);
 }
 this.grid = cells;
 };
-  Stack.prototype.addPiece = function (tetro) {
-var once = false;
-var range = [];
-var valid = false;
+Stack.prototype.addPiece = function (tetro) {
+var once=!1,range=[],valid=!1;
 for (var x = 0; x < tetro.length; x++) {
 for (var y = 0; y < tetro[x].length; y++) {
 if (tetro[x][y]) {
@@ -546,14 +543,7 @@ stackCtx.fillStyle = 'rgba(0,0,0,0.3)';
 stackCtx.fillRect(0, 0, stackCanvas.width, stackCanvas.height);
 stackCtx.globalCompositeOperation = 'source-over';
 if (settings.Outline) {
-var b = ~~(cellSize / 8);
-var c = cellSize;
-var lneCnvs = document.createElement('canvas');
-lneCnvs.width = stackCanvas.width;
-lneCnvs.height = stackCanvas.height;
-var lineCtx = lneCnvs.getContext('2d');
-lineCtx.fillStyle = 'rgba(255,255,255,0.5)';
-lineCtx.beginPath();
+var b=~~(cellSize/8),c=cellSize,lneCnvs=document.createElement("canvas");lneCnvs.width=stackCanvas.width,lneCnvs.height=stackCanvas.height;var lineCtx=lneCnvs.getContext("2d");lineCtx.fillStyle="rgba(255,255,255,0.5)",lineCtx.beginPath();
 for (var x = 0, len = this.grid.length; x < len; x++) {
 for (var y = 0, wid = this.grid[x].length; y < wid; y++) {
   if (this.grid[x][y]) {
@@ -739,28 +729,7 @@ arrowDelay++;
 }
 setLoop = setTimeout(settingsLoop, 50);
 }
-var s;
-var settingsArrow;
-function arrowRelease() {
-resize();
-arrwRlsd = true;
-arrowDelay = 0;
-clearTimeout(setLoop);
-}
-function left() {
-settingsArrow = 1;
-s = this.parentNode.id;
-this.onmouseup = arrowRelease;
-this.onmouseout = arrowRelease;
-settingsLoop();
-}
-function right() {
-settingsArrow = 0;
-s = this.parentNode.id;
-this.onmouseup = arrowRelease;
-this.onmouseout = arrowRelease;
-settingsLoop();
-}
+var s,settingsArrow;function arrowRelease(){resize(),arrwRlsd=!0,arrowDelay=0,clearTimeout(setLoop)}function left(){settingsArrow=1,s=this.parentNode.id,this.onmouseup=arrowRelease,this.onmouseout=arrowRelease,settingsLoop()}function right(){settingsArrow=0,s=this.parentNode.id,this.onmouseup=arrowRelease,this.onmouseout=arrowRelease,settingsLoop()}
 function saveSetting(s) {
 localStorage['version'] = version;
 document.getElementById(s).getElementsByTagName('span')[0].innerHTML =
@@ -788,9 +757,8 @@ b.innerHTML = s + ':';
 span.innerHTML = setting[s][settings[s]];
 iLeft.className='left';iRight.className='right';iLeft.onmousedown=left;iRight.onmousedown=right;set.appendChild(div);div.appendChild(b);div.appendChild(iLeft);div.appendChild(span);div.appendChild(iRight);
 }
-  resize();
-</script>
-<script>
+resize();
+</script><script>
 var bgCanvas = document.getElementById('bg');
 var vidAr = bgCanvas.offsetWidth / bgCanvas.offsetHeight;
 function bgResize() {
@@ -811,6 +779,4 @@ var shift = (width - window.innerWidth) / 2;
 if (shift < 0) shift = 0;
 bgCanvas.style.left = -shift + 'px';
 bgCanvas.style.top = 0;}}
-  addEventListener('resize', bgResize, false);
-  bgResize();
-</script><script>_gaq = [['_setAccount', 'UA-30472693-1'], ['_trackPageview']]; (function (d) { var g = d.createElement('script'), s = d.scripts[0]; g.src = '//www.google-analytics.com/ga.js'; s.parentNode.insertBefore(g, s) })(document)</script>
+addEventListener('resize', bgResize, false);bgResize();</script><script>_gaq = [['_setAccount', 'UA-30472693-1'], ['_trackPageview']]; (function (d) { var g = d.createElement('script'), s = d.scripts[0]; g.src = '//www.google-analytics.com/ga.js'; s.parentNode.insertBefore(g, s) })(document)</script>
