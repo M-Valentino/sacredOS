@@ -49,6 +49,18 @@ function createOverlay() {
   return overlay;
 }
 
+function createMinimizeButton(currentWindowID) {
+  let minimizeButton = document.createElement("button");
+  minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
+  minimizeButton.classList = "osElemBase oSButton windowControlButton";
+  minimizeButton.textContent = "__";
+  minimizeButton.style.float = "right";
+  minimizeButton.onclick = function () {
+    minimizeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
+  };
+  return minimizeButton;
+}
+
 var windowCount = -1;
 
 function openProgram(programName, data, dontToggleMenu, withFile) {
@@ -102,14 +114,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     header.appendChild(maximizeButton);
   }
 
-  let minimizeButton = document.createElement("button");
-  minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
-  minimizeButton.classList = "osElemBase oSButton windowControlButton";
-  minimizeButton.textContent = "__";
-  minimizeButton.style.float = "right";
-  minimizeButton.onclick = function () {
-    minimizeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
-  };
+  let minimizeButton = createMinimizeButton(currentWindowID);
   header.appendChild(minimizeButton);
 
   // Create a transparent overlay to have smooth dragging of windows
@@ -147,7 +152,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     document.addEventListener("mouseup", onMouseUp);
   });
 
-  var iframe = document.createElement("iframe");
+  let iframe = document.createElement("iframe");
   iframe.id = `prog${currentWindowID}`;
   iframe.srcdoc = data;
   iframe.width = width;
@@ -158,7 +163,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   iframe.allowFullscreen = true;
   window.appendChild(iframe);
 
-  var menuBarButton = document.createElement("button");
+  let menuBarButton = document.createElement("button");
   menuBarButton.id = `men${currentWindowID}`;
   menuBarButton.classList = "osElemBase oSButton h-100";
   menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
