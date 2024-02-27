@@ -26,6 +26,29 @@ function toggleOpenmenu() {
   }
 }
 
+function createWindow(currentWindowID) {
+  let window = document.createElement("div");
+  window.id = `win${currentWindowID}`;
+  window.style.zIndex = "5";
+  window.classList = "window windowRidgeBorder";
+  document.body.appendChild(window);
+  return window;
+}
+
+function createOverlay() {
+  let overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.cursor = "grabbing";
+  overlay.style.zIndex = "9999"; // Ensure it's on top of everything
+  overlay.style.display = "none"; // Start hidden
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
 var windowCount = -1;
 
 function openProgram(programName, data, dontToggleMenu, withFile) {
@@ -34,12 +57,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   }
   windowCount++;
   const currentWindowID = windowCount;
-
-  let window = document.createElement("div");
-  window.id = `win${currentWindowID}`;
-  window.style.zIndex = "5";
-  window.classList = "window windowRidgeBorder";
-  document.body.appendChild(window);
+  let window = createWindow(currentWindowID);
 
   let header = document.createElement("div");
   header.id = `hed${currentWindowID}`;
@@ -94,18 +112,8 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   };
   header.appendChild(minimizeButton);
 
-  // Create a transparent overlay but don't add it to the document yet
-  let overlay = document.createElement("div");
-  overlay.style.position = "fixed";
-  overlay.style.top = "0";
-  overlay.style.left = "0";
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.cursor = "grabbing";
-  overlay.style.zIndex = "9999"; // Ensure it's on top of everything
-  overlay.style.display = "none"; // Start hidden
-
-  document.body.appendChild(overlay);
+  // Create a transparent overlay to have smooth dragging of windows
+  let overlay = createOverlay();
 
   header.addEventListener("mousedown", function (e) {
     if (
