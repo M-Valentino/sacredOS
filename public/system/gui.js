@@ -35,19 +35,19 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   windowCount++;
   const currentWindowID = windowCount;
 
-  var window = document.createElement("div");
+  let window = document.createElement("div");
   window.id = `win${currentWindowID}`;
   window.style.zIndex = "5";
   window.classList = "window windowRidgeBorder";
   document.body.appendChild(window);
 
-  var header = document.createElement("div");
+  let header = document.createElement("div");
   header.id = `hed${currentWindowID}`;
   header.classList = "menuHeader";
   header.textContent = programName;
   window.appendChild(header);
 
-  var closeButton = document.createElement("button");
+  let closeButton = document.createElement("button");
   closeButton.id = `close${currentWindowID}`; // Unique ID for the close button
   closeButton.classList = "osElemBase oSButton windowControlButton";
   closeButton.textContent = "X";
@@ -84,7 +84,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     header.appendChild(maximizeButton);
   }
 
-  var minimizeButton = document.createElement("button");
+  let minimizeButton = document.createElement("button");
   minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
   minimizeButton.classList = "osElemBase oSButton windowControlButton";
   minimizeButton.textContent = "__";
@@ -95,7 +95,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   header.appendChild(minimizeButton);
 
   // Create a transparent overlay but don't add it to the document yet
-  var overlay = document.createElement("div");
+  let overlay = document.createElement("div");
   overlay.style.position = "fixed";
   overlay.style.top = "0";
   overlay.style.left = "0";
@@ -118,13 +118,13 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     e.preventDefault(); // Prevent any default actions that might interfere with the drag
     overlay.style.display = "block"; // Show the overlay
-    let rect = window.getBoundingClientRect();
-    var dragOffsetX = e.clientX - rect.left;
-    var dragOffsetY = e.clientY - rect.top;
+    const rect = window.getBoundingClientRect();
+    const dragOffsetX = e.clientX - rect.left;
+    const dragOffsetY = e.clientY - rect.top;
 
     function onMouseMove(e) {
       window.style.position = "absolute";
-      var yResult = e.clientY - dragOffsetY;
+      const yResult = e.clientY - dragOffsetY;
       window.style.left = e.clientX - dragOffsetX + "px";
       window.style.top = (0 > yResult ? 0 : yResult) + "px";
     }
