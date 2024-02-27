@@ -114,6 +114,8 @@
       <div class="biosTextMain mt-20">System Checks</div>
       <div id="screenRes" class="biosTextSub"></div>
       <div id="screenResWarning" class="warning"></div>
+      <div id="inputDev" class="biosTextSub"></div>
+      <div id="inputDevWarning" class="warning"></div>
       <div id="CPU" class="biosTextSub"></div>
       <div id="language" class="biosTextSub"></div>
       <div id="languageWarning" class="warning"></div>
@@ -133,6 +135,12 @@
       window.innerWidth + "x" + window.innerHeight + "</b>.";
     if (window.innerWidth < 720 || window.innerHeight < 720) {
       document.getElementById("screenResWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support screen resolutions smaller than 720x720`;
+    }
+
+    const device = window.matchMedia("(any-pointer: coarse)").matches ? "Touchscreen" : "Mouse";
+    document.getElementById("inputDev").innerHTML = "Detected <b>" + device +"</b>.";
+    if (device !=="Mouse") {
+      document.getElementById("inputDevWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support ${device} devices.`;
     }
 
     document.getElementById("CPU").innerHTML =
