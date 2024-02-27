@@ -1,13 +1,7 @@
 <!--width="160" height="144" noRS-->
-<!--Code Source https://erikhoudini.com/tools/MagicianBoyOS -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Silkscreen:regular" />
-  <style>.container,body{overflow:hidden;display:flex}*,body{margin:0;padding:0}.container,.top-bar{background-color:#0f380f}.app,.icon,.icon-wrapper,.startup-text{text-align:center}.app textarea,.icon,.icon-label,.startup-text,.top-bar{color:#9bbc0f}#note-title,#question-input,#text-input{width:90%;outline:0}body{font-family:Silkscreen,monospace;justify-content:center;align-items:center;height:100vh;background-color:#000;width:100vw}.container{position:relative;flex-direction:column;justify-content:space-around;align-items:center;width:160px;height:144px}.icon-container{display:flex;flex-wrap:wrap;justify-content:space-around;align-items:center;max-width:90%;margin:0 auto;align-self:flex-start}.icon{font-size:14px}.icon-wrapper{display:flex;flex-direction:column;align-items:center;cursor:pointer;margin:5px;min-width:calc(100% / 4);width:40px}.startup-screen,.top-bar{position:absolute;display:flex;width:100%}.icon,.icon-label{vertical-align:middle}.icon-label{font-size:6px}*{box-sizing:border-box}.top-bar{top:0;justify-content:space-between;align-items:center;font-size:8px;padding:2px;height:8px;min-height:8px;max-height:8px}.startup-screen{justify-content:center;align-items:center;height:100%;background-color:rgba(15,56,15,.8);z-index:10;cursor:pointer}.app,.close{position:absolute;display:none}#note-select,#note-title,#question-input,#save-note,.app textarea,.coin-flip-button,button{background-color:#306230;border:1px solid #9bbc0f}.startup-text{font-size:12px;padding:4px}.app{top:20px;right:0;left:0;bottom:22px;overflow-y:auto;flex-grow:0;flex-shrink:0}.close{top:2px;right:2px;font-size:8px;color:#8bac0f;cursor:pointer}#text-input{padding:2px;font-size:8px;resize:none;height:24px;margin-bottom:4px}#save-note,button{padding:2px 6px;font-size:8px;color:#9bbc0f;cursor:pointer;margin-right:4px}#note-select{font-size:8px;color:#9bbc0f}#calendar-table{font-size:8px;border-spacing:2px}#calendar-table th{padding:1px}#calendar-table td{padding:2px}#about-title,#clock-display,#coin-flip-result{font-size:12px;color:#9bbc0f;margin-bottom:4px}#date-display{font-size:12px;color:#9bbc0f}#holiday-display,#magic-8ball-answer,#month-display{font-size:8px;color:#9bbc0f;margin-top:4px}#note-title{font-size:8px;color:#9bbc0f;padding:2px;margin-bottom:4px}.timezone-display{font-size:8px;color:#9bbc0f;margin-top:2px}.timezone-label{display:block;font-size:8px;color:#8bac0f}#about-description,#magic-8ball-question,#question-input,.coin-flip-button{color:#9bbc0f;font-size:8px;margin-bottom:4px}.app::-webkit-scrollbar{width:4px;height:4px}.app::-webkit-scrollbar-track{background-color:#306230}.app::-webkit-scrollbar-thumb{background-color:#9bbc0f}.coin-flip-button{cursor:pointer;padding:2px;margin-right:4px}#question-input{padding:2px;resize:none;height:24px}@keyframes shake{10%,90%{transform:translate3d(-1px,0,0)}20%,80%{transform:translate3d(2px,0,0)}30%,50%,70%{transform:translate3d(-4px,0,0)}40%,60%{transform:translate3d(4px,0,0)}}.shaking{animation:.82s cubic-bezier(.36,.07,.19,.97) both shake}</style>
-  <script>
+<!--Minified from https://erikhoudini.com/tools/MagicianBoyOS -->
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Silkscreen:regular" /><style>.container,body{overflow:hidden;display:flex}*,body{margin:0;padding:0}.container,.top-bar{background-color:#0f380f}.app,.icon,.icon-wrapper,.startup-text{text-align:center}.app textarea,.icon,.icon-label,.startup-text,.top-bar{color:#9bbc0f}#note-title,#question-input,#text-input{width:90%;outline:0}body{font-family:Silkscreen,monospace;justify-content:center;align-items:center;height:100vh;background-color:#000;width:100vw}.container{position:relative;flex-direction:column;justify-content:space-around;align-items:center;width:160px;height:144px}.icon-container{display:flex;flex-wrap:wrap;justify-content:space-around;align-items:center;max-width:90%;margin:0 auto;align-self:flex-start}.icon{font-size:14px}.icon-wrapper{display:flex;flex-direction:column;align-items:center;cursor:pointer;margin:5px;min-width:calc(100% / 4);width:40px}.startup-screen,.top-bar{position:absolute;display:flex;width:100%}.icon,.icon-label{vertical-align:middle}.icon-label{font-size:6px}*{box-sizing:border-box}.top-bar{top:0;justify-content:space-between;align-items:center;font-size:8px;padding:2px;height:8px;min-height:8px;max-height:8px}.startup-screen{justify-content:center;align-items:center;height:100%;background-color:rgba(15,56,15,.8);z-index:10;cursor:pointer}.app,.close{position:absolute;display:none}#note-select,#note-title,#question-input,#save-note,.app textarea,.coin-flip-button,button{background-color:#306230;border:1px solid #9bbc0f}.startup-text{font-size:12px;padding:4px}.app{top:20px;right:0;left:0;bottom:22px;overflow-y:auto;flex-grow:0;flex-shrink:0}.close{top:2px;right:2px;font-size:8px;color:#8bac0f;cursor:pointer}#text-input{padding:2px;font-size:8px;resize:none;height:24px;margin-bottom:4px}#save-note,button{padding:2px 6px;font-size:8px;color:#9bbc0f;cursor:pointer;margin-right:4px}#note-select{font-size:8px;color:#9bbc0f}#calendar-table{font-size:8px;border-spacing:2px}#calendar-table th{padding:1px}#calendar-table td{padding:2px}#about-title,#clock-display,#coin-flip-result{font-size:12px;color:#9bbc0f;margin-bottom:4px}#date-display{font-size:12px;color:#9bbc0f}#holiday-display,#magic-8ball-answer,#month-display{font-size:8px;color:#9bbc0f;margin-top:4px}#note-title{font-size:8px;color:#9bbc0f;padding:2px;margin-bottom:4px}.timezone-display{font-size:8px;color:#9bbc0f;margin-top:2px}.timezone-label{display:block;font-size:8px;color:#8bac0f}#about-description,#magic-8ball-question,#question-input,.coin-flip-button{color:#9bbc0f;font-size:8px;margin-bottom:4px}.app::-webkit-scrollbar{width:4px;height:4px}.app::-webkit-scrollbar-track{background-color:#306230}.app::-webkit-scrollbar-thumb{background-color:#9bbc0f}.coin-flip-button{cursor:pointer;padding:2px;margin-right:4px}#question-input{padding:2px;resize:none;height:24px}@keyframes shake{10%,90%{transform:translate3d(-1px,0,0)}20%,80%{transform:translate3d(2px,0,0)}30%,50%,70%{transform:translate3d(-4px,0,0)}40%,60%{transform:translate3d(4px,0,0)}}.shaking{animation:.82s cubic-bezier(.36,.07,.19,.97) both shake}</style>
+<script>
     let notes = [];
     function loadApp(id) {
       const app = document.getElementById(id);
@@ -40,10 +34,10 @@
       });
     }
     function loadTextApp(noteIndex) {
-      const selectedIndex = parseInt(noteIndex);
-      if (notes[selectedIndex]) {
-        document.getElementById('note-title').value = notes[selectedIndex].title || '';
-        document.getElementById('text-input').value = notes[selectedIndex].content || '';
+      const sI = parseInt(noteIndex);
+      if (notes[sI]) {
+        document.getElementById('note-title').value = notes[sI].title || '';
+        document.getElementById('text-input').value = notes[sI].content || '';
       } else {
         document.getElementById('note-title').value = '';
         document.getElementById('text-input').value = '';
@@ -60,10 +54,10 @@
     }
     function saveTextApp() {
       const noteSelect = document.getElementById('note-select');
-      const selectedIndex = noteSelect.selectedIndex;
+      const sI = noteSelect.sI;
       const title = document.getElementById('note-title').value.trim();
       const content = document.getElementById('text-input').value;
-      notes[selectedIndex] = { title: title, content: content };
+      notes[sI] = { title: title, content: content };
       localStorage.setItem('magicianBoyOS_notes', JSON.stringify(notes));
       updateNoteSelect();
     }
@@ -71,13 +65,13 @@
       notes.push({ title: "", content: "" });
       updateNoteSelect();
       const noteSelect = document.getElementById('note-select');
-      noteSelect.selectedIndex = notes.length - 1;
+      noteSelect.sI = notes.length - 1;
       loadTextApp(noteSelect.value);
     }
     function deleteNote() {
       const noteSelect = document.getElementById('note-select');
-      const selectedIndex = noteSelect.selectedIndex;
-      notes.splice(selectedIndex, 1);
+      const sI = noteSelect.sI;
+      notes.splice(sI, 1);
       updateNoteSelect();
       loadTextApp(0);
       saveNotesToLocalStorage();
@@ -86,37 +80,8 @@
       localStorage.setItem('magicianBoyOS_notes', JSON.stringify(notes));
     }
     function displayCalendar() {
-      const calendarTable = document.getElementById('calendar-table');
-      const now = new Date();
-      const month = now.getMonth();
-      const year = now.getFullYear();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const firstDayOfWeek = new Date(year, month, 1).getDay();
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const generateCalendarHTML = () => {
-        let html = '<tr>';
-        for (const day of daysOfWeek) {
-          html += `<th>${day}</th>`;
-        }
-        html += '</tr><tr>';
-        for (let i = 0; i < firstDayOfWeek; i++) {
-          html += '<td></td>';
-        }
-        for (let i = 1; i <= daysInMonth; i++) {
-          const dayOfWeek = (i + firstDayOfWeek - 1) % 7;
-          if (dayOfWeek === 0 && i != 1) {
-            html += '</tr><tr>';
-          }
-          html += `<td>${i}</td>`;
-        }
-        html += '</tr>';
-        return html;
-      };
-      calendarTable.innerHTML = generateCalendarHTML();
-      document.getElementById('month-display').textContent = monthNames[month];
-      displayNextHoliday();
-    }
+      const calt = document.getElementById('calendar-table');const now = new Date();const month = now.getMonth();const year = now.getFullYear();const daysInMonth = new Date(year, month + 1, 0).getDate();const fDOW = new Date(year, month, 1).getDay();const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const generateCalendarHTML=()=>{ let html='<tr>'; for (const day of daysOfWeek){ html +=`<th>${day}</th>`;} html +='</tr><tr>'; for (let i=0; i < fDOW; i++){ html +='<td></td>';} for (let i=1; i <=daysInMonth; i++){ const dayOfWeek=(i + fDOW - 1) % 7; if (dayOfWeek===0 && i !=1){ html +='</tr><tr>';} html +=`<td>${i}</td>`;} html +='</tr>'; return html;}; calt.innerHTML=generateCalendarHTML(); document.getElementById('month-display').textContent=monthNames[month]; displayNextHoliday();}
     function displayNextHoliday() {
       const holidays=[ { date: '1/1', name: 'New Year&#39;s Day'}, { date: '7/4', name: 'Independence Day'}, { date: '12/25', name: 'Christmas Day'}, ];
       const now = new Date();
@@ -135,25 +100,8 @@
       updateTimezoneClocks();
       updateLocalTime();
     }
-    function updateTimezoneClocks() {
-      const timezones=[ { id: 'timezone-new-orleans', offset: -360}, { id: 'timezone-havana', offset: -300}, { id: 'timezone-ho-chi-minh-city', offset: 420}, { id: 'timezone-beijing', offset: 480}, { id: 'timezone-pyongyang', offset: 510}, ];
-      const now = new Date();
-      timezones.forEach(({ id, offset }) => {
-        const currentTime = new Date(now.getTime() + (now.getTimezoneOffset() + offset) * 60 * 1000);
-        const timeString = formatTime(currentTime.getHours()) + ':' + formatTime(currentTime.getMinutes()) + ':' + formatTime(currentTime.getSeconds());
-        document.getElementById(id).textContent = timeString;
-      });
-    }
-    function updateLocalTime() {
-      const now = new Date();
-      const timeString = formatTime(now.getHours()) + ':' + formatTime(now.getMinutes()) + ':' + formatTime(now.getSeconds());
-      document.getElementById('clock-display').textContent = timeString;
-    }
-    function coinFlip(numCoins = 1) {
-      const outcomes = ['heads', 'tails'];
-      const result = Array.from({ length: numCoins }, () => outcomes[Math.floor(Math.random() * 2)]).join(', ');
-      document.getElementById('coin-flip-result').innerText = 'Result: ' + result;
-    }
+ function updateTimezoneClocks(){ const timezones=[{ id: 'timezone-new-orleans', offset: -360},{ id: 'timezone-havana', offset: -300},{ id: 'timezone-ho-chi-minh-city', offset: 420},{ id: 'timezone-beijing', offset: 480},{ id: 'timezone-pyongyang', offset: 510}, ]; const now=new Date(); timezones.forEach(({ id, offset})=>{ const currentTime=new Date(now.getTime() + (now.getTimezoneOffset() + offset) * 60 * 1000); const timeString=formatTime(currentTime.getHours()) + ':' + formatTime(currentTime.getMinutes()) + ':' + formatTime(currentTime.getSeconds()); document.getElementById(id).textContent=timeString;});}
+ function updateLocalTime(){ const now=new Date(); const timeString=formatTime(now.getHours()) + ':' + formatTime(now.getMinutes()) + ':' + formatTime(now.getSeconds()); document.getElementById('clock-display').textContent=timeString;} function coinFlip(numCoins=1){ const outcomes=['heads', 'tails']; const result=Array.from({ length: numCoins}, ()=>outcomes[Math.floor(Math.random() * 2)]).join(', '); document.getElementById('coin-flip-result').innerText='Result: ' + result;}
     window.onload = function () {
       setInterval(function () {
         updateClock();
@@ -166,16 +114,7 @@
       updateNoteSelect();
       loadTextApp(document.getElementById('note-select').value);
     };
-    function shakeAndAnswer() {
-      const container = document.querySelector('.container');
-      const answers=[ "Yes, definitely.", "Outlook good.", "You may rely on it.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Don't count on it.", "My sources say no." ];
-      container.classList.add('shaking');
-      container.addEventListener('animationend', function () {
-        container.classList.remove('shaking');
-        const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
-        document.getElementById('magic-8ball-answer').innerText = randomAnswer;
-      }, { once: true });
-    }
+    function shakeAndAnswer(){ const container=document.querySelector('.container'); const answers=[ "Yes, definitely.", "Outlook good.", "You may rely on it.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Don't count on it.", "My sources say no." ]; container.classList.add('shaking'); container.addEventListener('animationend', function (){ container.classList.remove('shaking'); const rA=answers[Math.floor(Math.random() * answers.length)]; document.getElementById('magic-8ball-answer').innerText=rA;},{ once: true});}
   </script>
 </head>
 <div class=container><div class=startup-screen><p class=startup-text>⛦Welcome to Magician Boy OS⛦</div><div class=top-bar><span id=date-display>⛦OS v.02</span></div><div class=icon-container><div class=icon-wrapper onclick='loadApp("text-app"),loadTextApp(document.getElementById("note-select").value)'><p class=icon>⍍</p><span class=icon-label>note</span></div><div class=icon-wrapper onclick='loadApp("calendar-app")'><p class=icon>㉘</p><span class=icon-label>cldr</span></div><div class=icon-wrapper onclick='loadApp("clock-app")'><p class=icon>☉</p><span class=icon-label>clck</span></div><div class=icon-wrapper onclick='loadApp("coin-flip-app")'><p class=icon>⍜</p><span class=icon-label>coin</span></div><div class=icon-wrapper onclick='loadApp("magic-8ball-app")'><p class=icon>⑧</p><span class=icon-label>magi</span></div><div class=icon-wrapper onclick='loadApp("about-app")'><p class=icon>?</p><span class=icon-label>help</span></div></div><div class=app id=text-app><select id=note-select></select> <button onclick=addNote()>Add Note</button> <button onclick=deleteNote()>Delete Note</button> <input id=note-title onblur=saveTextApp() placeholder=Title> <textarea id=text-input onblur=saveTextApp()></textarea> <button onclick=saveTextApp() id=save-note>Save</button> <span class=close id=close-text-app onclick='closeApp("text-app")'>x</span></div><div class=app id=calendar-app><table id=calendar-table></table><span id=month-display></span> <span id=holiday-display></span> <span class=close id=close-calendar-app onclick='closeApp("calendar-app")'>x</span></div><div class=app id=clock-app><span id=clock-display></span><br><span class=timezone-label>New Orleans <span class=timezone-display id=timezone-new-orleans></span></span> <span class=timezone-label>Havana <span class=timezone-display id=timezone-havana></span></span> <span class=timezone-label>Ho Chi Minh City <span class=timezone-display id=timezone-ho-chi-minh-city></span></span> <span class=timezone-label>Beijing <span class=timezone-display id=timezone-beijing></span></span> <span class=timezone-label>Pyongyang <span class=timezone-display id=timezone-pyongyang></span></span> <span class=close id=close-clock-app onclick='closeApp("clock-app")'>x</span></div><div class=app id=coin-flip-app><span id=coin-flip-result></span><br><button onclick=coinFlip(1) class=coin-flip-button>Flip 1 Coin</button> <button onclick=coinFlip(2) class=coin-flip-button>Flip 2 Coins</button> <button onclick=coinFlip(3) class=coin-flip-button>Flip 3 Coins</button> <span class=close id=close-coin-flip-app onclick='closeApp("coin-flip-app")'>x</span></div><div class=app id=magic-8ball-app><p id=magic-8ball-question>Think of a Question!</p><button onclick=shakeAndAnswer()>Ask the Magic 8 Ball</button><p id=magic-8ball-answer></p><span class=close id=close-magic-8ball-app onclick='closeApp("magic-8ball-app")'>x</span></div><div class=app id=about-app><h1 id=about-title>About Magician Boy OS</h1><p id=about-description>Welcome to "Magician Boy OS" - a distinctive faux-OS inspired by platforms like Pico-8. What sets Magician Boy OS apart? It's not just about replicating the past; it's about reimagining it with constraints that spur creativity.<br><br><p id=about-description><b>Canvas Constraints</b>: The OS operates within a 4-color palette and a screen resolution of 160px by 144px, mirroring the original Gameboy's display.<p id=about-description><b>Single-Page Concept</b>: Every aspect of the OS, including its applications, is contained within a single HTML file, emphasizing simplicity and cohesion.<p id=about-description><b>Visual Assets</b>: Emphasis on utilizing non-emoji Unicode characters combined with CSS and JavaScript for creating visual elements. The use of external images is discouraged.<p id=about-description><b>Offline Functionality</b>: While not a strict rule, applications should ideally function offline, ensuring accessibility if the HTML file is saved and operated locally without internet connectivity.<p id=about-description><b>Keyboard Input</b>: Full-range keyboard input is permitted for textual functions. However, non-text inputs should be restricted to a maximum of six buttons, such as the classic up, down, left, right, and z/x configurations.<p id=about-description><b>Novelty and Fun</b>: The OS is designed with novelty in mind. While there are constraints, they're intended to challenge and inspire creativity, not hinder it. Developers are encouraged to have fun and experiment within the set boundaries.<p id=about-description>These constraints serve not only as guidelines but as an integral part of the OS's identity, fusing retro charm with modern web capabilities.</p><br><br>Envisioned as an open-source project (GitHub repository coming soon!), I would like to foster a community where enthusiasts can craft their custom versions for their websites. And as for adding applications? I'm working to structure the code to ensure that integrating, adding, or removing "apps" is seamless and intuitive.<br><br>Dive in, explore, and be a part of this unique fusion of past and present!</p><span class=close id=close-about-app onclick='closeApp("about-app")'>x</span></div></div>
