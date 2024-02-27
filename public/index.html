@@ -192,9 +192,9 @@
 
     async function fetchContent(fileURL) {
       try {
-        let response = await fetch(fileURL);
+        const response = await fetch(fileURL);
         if (response.ok) {
-          let content = await response.text();
+          const content = await response.text();
           return content;
         } else {
           console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
@@ -236,26 +236,26 @@
       // Check if fileContents are loaded
       if (fileContents && fileContents.system) {
         if (fileContents.system['gui.frag.html']) {
-          var guiHTML = document.createElement('div');
+          let guiHTML = document.createElement('div');
           guiHTML.innerHTML = fileContents.system['gui.frag.html'];
           document.body.appendChild(guiHTML);
           // Hide user prompt and show main menu
           document.getElementById("bootScreen").style.display = "none";
         }
         if (fileContents.system['gui.css']) {
-          var styleElement = document.createElement('style');
+          let styleElement = document.createElement('style');
           styleElement.type = 'text/css';
           styleElement.innerText = fileContents.system['gui.css'];
           document.head.appendChild(styleElement);
         }
         if (fileContents.system['gui.js']) {
-          var guiScript = document.createElement('script');
+          let guiScript = document.createElement('script');
           guiScript.type = 'text/javascript';
           guiScript.textContent = fileContents.system['gui.js'];
           document.body.appendChild(guiScript);
         }
         if (fileContents.system['kernel.js']) {
-          var kernelScript = document.createElement('script');
+          let kernelScript = document.createElement('script');
           kernelScript.type = 'text/javascript';
           kernelScript.textContent = fileContents.system['kernel.js'];
           document.body.appendChild(kernelScript);
