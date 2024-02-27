@@ -49,6 +49,18 @@ function createOverlay() {
   return overlay;
 }
 
+function createCloseButton(currentWindowID) {
+  let closeButton = document.createElement("button");
+  closeButton.id = `close${currentWindowID}`; // Unique ID for the close button
+  closeButton.classList = "osElemBase oSButton windowControlButton";
+  closeButton.textContent = "X";
+  closeButton.style.float = "right";
+  closeButton.onclick = function () {
+    closeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
+  };
+  return closeButton;
+}
+
 function createMinimizeButton(currentWindowID) {
   let minimizeButton = document.createElement("button");
   minimizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
@@ -77,14 +89,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   header.textContent = programName;
   window.appendChild(header);
 
-  let closeButton = document.createElement("button");
-  closeButton.id = `close${currentWindowID}`; // Unique ID for the close button
-  closeButton.classList = "osElemBase oSButton windowControlButton";
-  closeButton.textContent = "X";
-  closeButton.style.float = "right";
-  closeButton.onclick = function () {
-    closeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
-  };
+  const closeButton = createCloseButton(currentWindowID);
   header.appendChild(closeButton);
 
   if (withFile) {
@@ -114,7 +119,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     header.appendChild(maximizeButton);
   }
 
-  let minimizeButton = createMinimizeButton(currentWindowID);
+  const minimizeButton = createMinimizeButton(currentWindowID);
   header.appendChild(minimizeButton);
 
   // Create a transparent overlay to have smooth dragging of windows
