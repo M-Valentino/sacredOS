@@ -78,6 +78,18 @@
       font-weight: 600;
     }
 
+    .biosHrMain {
+      border-top: 10px solid #fff;
+      border-bottom: 10px solid #fff;
+      border-left: 0;
+      border-right: 0;
+      border-style: double;
+    }
+
+    .biosHrSub {
+      border: 2px solid #fff;
+    }
+
     #freshInstallInfo {
       display: none;
     }
@@ -93,12 +105,12 @@
 <body id="screen">
   <div id="bootScreen">
     <h1 id="biosTitle">Sacred OS Boot Menu</h1>
-    <div class="biosTextMain mb-20">░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░▒▒▓▓▓████▓▓▓▒▒░</div>
+    <hr class="biosHrMain mb-20" />
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
     <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
     <span id="sysChecks">
-      <div class="biosTextMain mt-20">_____________________________________________________</div>
+      <hr class="biosHrSub mt-20" />
       <div class="biosTextMain mt-20">System Checks</div>
       <div id="screenRes" class="biosTextSub"></div>
       <div id="screenResWarning" class="warning"></div>
@@ -108,7 +120,7 @@
       <input type="file" id="fileInput" style="display:none;">
     </span>
     <span id="freshInstallInfo">
-      <div class="biosTextMain mt-20">_____________________________________________________</div>
+      <hr class="biosHrSub mt-20" />
       <div class="biosTextMain mt-20">Compiling OS From Source</div>
       <div id="compile" class="biosTextSub"></div>
     </span>
