@@ -66,6 +66,7 @@
       OPEN: "OPEN"
     }
     var mode = MODES.OPEN;
+    var firstLoad = true;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
@@ -218,14 +219,32 @@
       document.body.removeChild(element);
     }
 
+    function displayCurrentDirectory() {
+      const currentDir = document.getElementById("fileDir").value.substring(3);
+      const pathParts = currentDir.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", currentDir);
+          return;
+        }
+      }
+      displayTopLevelObjects(currentObject);
+    }
+
     window.addEventListener("message", function (e) {
       if (e.data.startsWith("AF:")) {
         var jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
-          // TODO remove this ducktaped fix. Files should maintain the current dir.
-          document.getElementById("fileDir").value = "://";
-          displayTopLevelObjects(diskBackup);
+          if (firstLoad) {
+            document.getElementById("fileDir").value = "://";
+            firstLoad = false;
+          }
+          displayCurrentDirectory(); // Display the current directory recursively
           console.log(diskBackup);
         } catch (error) {
           console.error("Error parsing JSON data:", error);
