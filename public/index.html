@@ -117,6 +117,7 @@
       <div id="inputDev" class="biosTextSub"></div>
       <div id="inputDevWarning" class="warning"></div>
       <div id="CPU" class="biosTextSub"></div>
+      <div id="CPUWarning" class="warning"></div>
       <div id="language" class="biosTextSub"></div>
       <div id="languageWarning" class="warning"></div>
       <input type="file" id="fileInput" style="display:none;">
@@ -145,6 +146,9 @@
 
     document.getElementById("CPU").innerHTML =
       "Detected: <b>" + navigator.hardwareConcurrency + " logical CPU cores</b>.";
+      if (navigator.hardwareConcurrency === 1) {
+      document.getElementById("CPUWarning").innerHTML = `<b>Warning</b> Sacred OS might be really slow on your device.`;
+    }
 
     document.getElementById("language").innerHTML =
       "Detected Language: <b>" + navigator.language + "</b>."
