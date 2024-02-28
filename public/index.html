@@ -137,14 +137,14 @@
       document.getElementById("screenResWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support screen resolutions smaller than 720x720`;
     }
 
-    const device = window.matchMedia("(any-pointer: coarse)").matches ? "Touchscreen" : "Mouse";
-    document.getElementById("inputDev").innerHTML = "Detected <b>" + device +"</b>.";
-    if (device !=="Mouse") {
-      document.getElementById("inputDevWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support ${device} devices.`;
+    const message = window.matchMedia("(any-pointer: coarse)").matches ? "devices without a mouse or trackpad." : "mouse or trackpad";
+    document.getElementById("inputDev").innerHTML = "Detected: <b>" + message +"</b>.";
+    if (message !=="mouse or trackpad") {
+      document.getElementById("inputDevWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support ${message}`;
     }
 
     document.getElementById("CPU").innerHTML =
-      "Detected <b>" + navigator.hardwareConcurrency + " logical CPU cores</b>.";
+      "Detected: <b>" + navigator.hardwareConcurrency + " logical CPU cores</b>.";
 
     document.getElementById("language").innerHTML =
       "Detected Language: <b>" + navigator.language + "</b>."
