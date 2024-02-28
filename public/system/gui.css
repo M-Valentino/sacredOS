@@ -112,6 +112,7 @@ textarea:focus {
   width: 100%;
   background-color: var(--primColor);
   border: calc(var(--borderWidth)* 2) ridge var(--primColor);
+  user-select: none;
 }
 
 #menuContent {
