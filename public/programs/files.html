@@ -44,6 +44,24 @@
       font-weight: bolder;
       margin-right: 5px;
     }
+
+    #fileNameDialog {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background-color: var(--secColor);
+    }
+
+    .dialogBody {
+      padding: 20px;
+    }
+
+    #fileNameInput {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -58,6 +76,18 @@
   </div>
   <hr>
   <div id="topLevelObjects"></div>
+
+  <!-- hidden dialog div -->
+  <div id="fileNameDialog" class=" windowRidgeBorder">
+    <div class="menuHeader">Create New File</div>
+    <div class="dialogBody">
+      <label for="fileNameInput">Enter filename:</label>
+      <input type="text" id="fileNameInput" placeholder="Filename">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkButtonClick()"> OK </button>
+      <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelButtonClick()">Cancel</button>
+    </div>
+  </div>
 
   <script>
     var diskBackup = {};
@@ -125,7 +155,36 @@
     }
 
     function makeNewFile() {
-      window.top.postMessage(`MK:F[${document.getElementById("fileDir").value.substring(3)}newFile.txt]`, '*');
+      // Display the dialog
+      let fileNameDialog = document.getElementById("fileNameDialog");
+      fileNameDialog.style.display = "initial";
+    }
+
+    function handleOkButtonClick() {
+      // Handle OK button click
+      let fileNameInput = document.getElementById("fileNameInput");
+      let fileNameDialog = document.getElementById("fileNameDialog");
+
+      // Get the entered filename
+      let fileName = fileNameInput.value.trim();
+
+      if (!fileName.includes(".")) {
+        fileName = fileName.concat(".txt");
+      }
+
+      if (fileName !== "") {
+        // Only proceed if the filename is not empty
+        window.top.postMessage(`MK:F[${document.getElementById("fileDir").value.substring(3)}${fileName}]`, '*');
+      }
+
+      // Hide the dialog
+      fileNameDialog.style.display = "none";
+      fileNameInput.value = "";
+    }
+
+    function handleCancelButtonClick() {
+      fileNameDialog.style.display = "none";
+      fileNameInput.value = "";
     }
 
     function displayTopLevelObjects(backupObject) {
