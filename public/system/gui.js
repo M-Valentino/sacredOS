@@ -35,6 +35,14 @@ function createWindow(currentWindowID) {
   return window;
 }
 
+function createHeader(currentWindowID, programName) {
+  let header = document.createElement("div");
+  header.id = `hed${currentWindowID}`;
+  header.classList = "menuHeader";
+  header.textContent = programName;
+  return header;
+}
+
 function createOverlay() {
   let overlay = document.createElement("div");
   overlay.style.position = "fixed";
@@ -101,10 +109,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   const currentWindowID = windowCount;
   let window = createWindow(currentWindowID);
 
-  let header = document.createElement("div");
-  header.id = `hed${currentWindowID}`;
-  header.classList = "menuHeader";
-  header.textContent = programName;
+  let header = createHeader(currentWindowID, programName);
   window.appendChild(header);
 
   const closeButton = createCloseButton(currentWindowID);
