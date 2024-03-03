@@ -99,6 +99,18 @@ function createMaximizeButton(currentWindowID, width, height) {
   return maximizeButton;
 }
 
+function createMenuBarButton(currentWindowID, programName) {
+  let menuBarButton = document.createElement("button");
+  menuBarButton.id = `men${currentWindowID}`;
+  menuBarButton.classList = "osElemBase oSButton h-100";
+  menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
+  menuBarButton.textContent = programName;
+  menuBarButton.addEventListener("mousedown", function (e) {
+    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+  });
+  document.getElementById("programBar").appendChild(menuBarButton);
+}
+
 var windowCount = -1;
 
 function openProgram(programName, data, dontToggleMenu, withFile) {
@@ -178,15 +190,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   iframe.allowFullscreen = true;
   window.appendChild(iframe);
 
-  let menuBarButton = document.createElement("button");
-  menuBarButton.id = `men${currentWindowID}`;
-  menuBarButton.classList = "osElemBase oSButton h-100";
-  menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
-  menuBarButton.textContent = programName;
-  menuBarButton.addEventListener("mousedown", function (e) {
-    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
-  });
-  document.getElementById("programBar").appendChild(menuBarButton);
+  createMenuBarButton(currentWindowID, programName);
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
 }
