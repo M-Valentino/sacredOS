@@ -106,7 +106,14 @@ function createMenuBarButton(currentWindowID, programName) {
   menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
   menuBarButton.textContent = programName;
   menuBarButton.addEventListener("mousedown", function (e) {
-    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+    if (
+      menuBarButton.style.border ===
+      "var(--borderWidth) inset var(--secColorDark)"
+    ) {
+      minimizeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
+    } else {
+      bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+    }
   });
   document.getElementById("programBar").appendChild(menuBarButton);
 }
