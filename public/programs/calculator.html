@@ -164,19 +164,15 @@
     calcButtonsContainer.addEventListener('click', addElementsToScreen);
 
     function addElementsToScreen(e) {
-      console.log(e.target);//shows button pressed;
       let screenText = document.getElementById('screenCalculator').querySelector('p').innerText;
       let buttonText = e.target.innerText;
-      console.log(screenText, buttonText);
       screenText += buttonText;
       if (buttonText == 'Clear') {
         screenText = '';
       }
       if (buttonText == 'Delete') {
         screenText = document.getElementById('screenCalculator').querySelector('p').innerText;
-        console.log('before remobing=', screenText)
         screenText = screenText.slice(0, -1);
-        console.log('after removing last element=', screenText);
       }
       if (buttonText == '=') {
         screenText = getCalculatedResult(screenText);
@@ -189,7 +185,6 @@
       let result;
       let arrFromStr = str.split(/[^0-9|.]/);
       let operand = str.split(/[0-9]/);
-      console.log('running getResult(', str, ')');
       operand = operand.filter((element) => {
         if (element && element != '=' && element != '.') {
           return element;
@@ -211,8 +206,6 @@
       } else if (operand == '%') {
         result = (+arrFromStr[0]) * (+arrFromStr[1] / 100);
       }
-      console.log('str=', str, 'arr =', arrFromStr, 'operand =', operand)
-      console.log('result = ', result);
       return result;
     }
 
