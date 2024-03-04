@@ -195,6 +195,11 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   iframe.frameBorder = "0";
   iframe.style.border = "0";
   iframe.allowFullscreen = true;
+  iframe.onload = function () {
+    iframe.contentDocument.body.addEventListener("click", function () {
+      bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+    });
+  };
   window.appendChild(iframe);
 
   createMenuBarButton(currentWindowID, programName);
