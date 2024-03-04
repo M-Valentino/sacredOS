@@ -129,6 +129,7 @@ textarea:focus {
 
 .program {
   padding: 4px;
+  height: 100vh;
 }
 
 #screen {
