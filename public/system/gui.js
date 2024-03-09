@@ -247,7 +247,7 @@ function toggleMaximizeProgram(
     document.getElementById(maximizeButtonID).textContent = "[]";
   } else {
     document.getElementById(windowID).style.width = "fit-content";
-    document.getElementById(windowID).style.height = "fit-content";
+    document.getElementById(windowID).style.height = `${parseInt(height) + 42}px`;;
     document.getElementById(programID).style.width = width + "px";
     document.getElementById(programID).style.height = height + "px";
     document.getElementById(maximizeButtonID).textContent = "[ ]";
