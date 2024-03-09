@@ -26,10 +26,11 @@ function toggleOpenmenu() {
   }
 }
 
-function createWindow(currentWindowID) {
+function createWindow(currentWindowID, height) {
   let window = document.createElement("div");
   window.id = `win${currentWindowID}`;
   window.style.zIndex = "5";
+  window.style.height = `${parseInt(height) + 42}px`;
   window.classList = "window windowRidgeBorder";
   document.body.appendChild(window);
   return window;
@@ -124,9 +125,14 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   if (dontToggleMenu) {
     toggleOpenmenu();
   }
+
+  const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)".*-->/);
+  const width = sizeMatch ? sizeMatch[1] : "600";
+  const height = sizeMatch ? sizeMatch[2] : "400";
+
   windowCount++;
   const currentWindowID = windowCount;
-  let window = createWindow(currentWindowID);
+  let window = createWindow(currentWindowID, height);
 
   let header = createHeader(currentWindowID, programName);
   window.appendChild(header);
@@ -137,9 +143,6 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   if (withFile) {
     data = data.replace("<html>", `<html><!--path="${withFile}"-->`);
   }
-  const sizeMatch = data.match(/<!--width="(\d+)" height="(\d+)".*-->/);
-  const width = sizeMatch ? sizeMatch[1] : "600";
-  const height = sizeMatch ? sizeMatch[2] : "400";
 
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
   let maximizeButton;
@@ -201,6 +204,19 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     });
   };
   window.appendChild(iframe);
+
+  let rightEdge = document.createElement("div");
+  rightEdge.id = `redge${currentWindowID}`;
+  rightEdge.style.position = "absolute";
+  // width comes from the width of the program  + border width
+  rightEdge.style.left = `${parseInt(width) + 4}px`;
+  rightEdge.style.top = 4 + "px";
+  rightEdge.style.width = "4px";
+  // height comes from the height of the program + header height
+  rightEdge.style.height = `${parseInt(height) + 34}px`;
+  rightEdge.style.backgroundColor = "#00f";
+  rightEdge.style.zIndex = "6";
+  document.body.appendChild(rightEdge);
 
   createMenuBarButton(currentWindowID, programName);
 
