@@ -127,6 +127,9 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   windowCount++;
   const currentWindowID = windowCount;
   let window = createWindow(currentWindowID);
+  window.addEventListener("click", () =>
+    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`)
+  );
 
   let header = createHeader(currentWindowID, programName);
   window.appendChild(header);
@@ -261,17 +264,32 @@ function registryResizingForProgram({
 
   if (noResizeMatch) return;
 
+  const isTopProgramWindow = () => programWindow.style.zIndex === "5";
+
   let currentCursorStatus;
 
-  const onMousemove = (e) => {
-    const rect = programWindow.getBoundingClientRect();
-    currentCursorStatus = checkCursorPosition(e, rect, borderWidth);
+  const setCursor = (e) => {
+    console.log(programWindow.style.zIndex, !isTopProgramWindow());
+    if (!isTopProgramWindow()) return;
+
+    if (!e) {
+      currentCursorStatus = undefined;
+    } else {
+      const rect = programWindow.getBoundingClientRect();
+      currentCursorStatus = checkCursorPosition(e, rect, borderWidth);
+    }
+
+    console.log("setCursor", { currentCursorStatus });
+
     programWindow.style.cursor = cursorStatusMap[currentCursorStatus];
   };
 
-  programWindow.addEventListener("mousemove", onMousemove);
+  programWindow.addEventListener("mousemove", setCursor);
 
   programWindow.addEventListener("mousedown", (e) => {
+    if (!isTopProgramWindow()) return;
+
+    setCursor(e);
     const isMaximized = programMaximizeButton.textContent !== "[ ]";
 
     if (e.target !== programWindow || isMaximized) {
@@ -279,7 +297,7 @@ function registryResizingForProgram({
       return;
     }
 
-    programWindow.removeEventListener("mousemove", onMousemove);
+    programWindow.removeEventListener("mousemove", setCursor);
 
     programOverlay.style.display = "block"; // Show the overlay
 
@@ -341,11 +359,12 @@ function registryResizingForProgram({
       // nwse-resize for bottom/right corner
     };
 
-    const onResizingCompleted = () => {
+    const onResizingCompleted = (e) => {
       programOverlay.style.display = "none"; // Hide the overlay
-      programWindow.addEventListener("mousemove", onMousemove);
+      programWindow.addEventListener("mousemove", setCursor);
       document.removeEventListener("mousemove", onResizing);
       document.removeEventListener("mouseup", onResizingCompleted);
+      setCursor();
       console.log("onResizingCompleted and removed all linsteners");
     };
 
