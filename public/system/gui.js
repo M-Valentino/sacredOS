@@ -308,8 +308,14 @@ function registryResizingForProgram({
       return { clientX: constrainedX, clientY: constrainedY };
     }
 
+    const programWindowMinSize = {
+      width: 210,
+      height: headerRectHeight + borderWidth * 2,
+    };
+
     const rect = programWindow.getBoundingClientRect();
     const { clientX: oldClientX, clientY: oldClientY } = e;
+
     const onResizing = (e) => {
       let { clientX, clientY } = constrainMouseEventPosition(e);
 
@@ -317,53 +323,83 @@ function registryResizingForProgram({
       const deltaY = clientY - oldClientY;
       switch (currentCursorStatus) {
         case "topBorder":
-          programWindow.style.height = rect.height - deltaY + "px";
-          programWindow.style.top = rect.top + deltaY + "px";
+          const newHeight = Math.max(
+            programWindowMinSize.height,
+            rect.height - deltaY
+          );
+
+          programWindow.style.height = newHeight + "px";
+          programWindow.style.top = rect.top + (rect.height - newHeight) + "px";
           break;
         case "bottomBorder":
-          programWindow.style.height = rect.height + deltaY + "px";
+          programWindow.style.height =
+            Math.max(programWindowMinSize.height, rect.height + deltaY) + "px";
           break;
         case "leftBorder":
-          programWindow.style.width = rect.width - deltaX + "px";
-          programWindow.style.left = rect.left + deltaX + "px";
+          const newWidth = Math.max(
+            programWindowMinSize.width,
+            rect.width - deltaX
+          );
+          programWindow.style.width = newWidth + "px";
+          programWindow.style.left = rect.left + (rect.width - newWidth) + "px";
           break;
         case "rightBorder":
-          programWindow.style.width = rect.width + deltaX + "px";
+          programWindow.style.width =
+            Math.max(programWindowMinSize.width, rect.width + deltaX) + "px";
           break;
         case "topLeftCorner":
-          programWindow.style.height = rect.height - deltaY + "px";
-          programWindow.style.top = rect.top + deltaY + "px";
-
-          programWindow.style.width = rect.width - deltaX + "px";
-          programWindow.style.left = rect.left + deltaX + "px";
+          const newTopHeight = Math.max(
+            programWindowMinSize.height,
+            rect.height - deltaY
+          );
+          const newLeftWidth = Math.max(
+            programWindowMinSize.width,
+            rect.width - deltaX
+          );
+          programWindow.style.height = newTopHeight + "px";
+          programWindow.style.top =
+            rect.top + (rect.height - newTopHeight) + "px";
+          programWindow.style.width = newLeftWidth + "px";
+          programWindow.style.left =
+            rect.left + (rect.width - newLeftWidth) + "px";
           break;
         case "bottomRightCorner":
-          programWindow.style.height = rect.height + deltaY + "px";
-          programWindow.style.width = rect.width + deltaX + "px";
+          programWindow.style.height =
+            Math.max(programWindowMinSize.height, rect.height + deltaY) + "px";
+          programWindow.style.width =
+            Math.max(programWindowMinSize.width, rect.width + deltaX) + "px";
           break;
         case "topRightCorner":
-          programWindow.style.height = rect.height - deltaY + "px";
-          programWindow.style.top = rect.top + deltaY + "px";
-
-          programWindow.style.width = rect.width + deltaX + "px";
+          const newRightWidth = Math.max(
+            programWindowMinSize.width,
+            rect.width + deltaX
+          );
+          const newTopHeightTR = Math.max(
+            programWindowMinSize.height,
+            rect.height - deltaY
+          );
+          programWindow.style.height = newTopHeightTR + "px";
+          programWindow.style.top =
+            rect.top + (rect.height - newTopHeightTR) + "px";
+          programWindow.style.width = newRightWidth + "px";
           break;
         case "bottomLeftCorner":
-          programWindow.style.width = rect.width - deltaX + "px";
-          programWindow.style.left = rect.left + deltaX + "px";
-
-          programWindow.style.height = rect.height + deltaY + "px";
+          const newBottomHeight = Math.max(
+            programWindowMinSize.height,
+            rect.height + deltaY
+          );
+          const newLeftWidthBL = Math.max(
+            programWindowMinSize.width,
+            rect.width - deltaX
+          );
+          programWindow.style.height = newBottomHeight + "px";
+          programWindow.style.width = newLeftWidthBL + "px";
+          programWindow.style.left =
+            rect.left + (rect.width - newLeftWidthBL) + "px";
           break;
         default:
         // ...
       }
-      // ew-resize for left border
-      // ew-resize for right border
-      // ns-resize for top border
-      // ns-resize for bottom border
-      // nesw-resize for top/right corner
-      // nesw-resize for bottom/left corner
-      // nwse-resize for top/left corner
-      // nwse-resize for bottom/right corner
     };
 
     const onResizingCompleted = (e) => {
