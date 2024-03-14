@@ -269,7 +269,6 @@ function registryResizingForProgram({
   let currentCursorStatus;
 
   const setCursor = (e) => {
-    console.log(programWindow.style.zIndex, !isTopProgramWindow());
     if (!isTopProgramWindow()) return;
 
     if (!e) {
@@ -278,8 +277,6 @@ function registryResizingForProgram({
       const rect = programWindow.getBoundingClientRect();
       currentCursorStatus = checkCursorPosition(e, rect, borderWidth);
     }
-
-    console.log("setCursor", { currentCursorStatus });
 
     programWindow.style.cursor = cursorStatusMap[currentCursorStatus];
   };
@@ -315,14 +312,6 @@ function registryResizingForProgram({
     const { clientX: oldClientX, clientY: oldClientY } = e;
     const onResizing = (e) => {
       let { clientX, clientY } = constrainMouseEventPosition(e);
-
-      console.log({
-        clientX,
-        clientY,
-        innerWidth,
-        innerHeight,
-        currentCursorStatus,
-      });
 
       const deltaX = clientX - oldClientX;
       const deltaY = clientY - oldClientY;
@@ -383,7 +372,6 @@ function registryResizingForProgram({
       document.removeEventListener("mousemove", onResizing);
       document.removeEventListener("mouseup", onResizingCompleted);
       setCursor();
-      console.log("onResizingCompleted and removed all linsteners");
     };
 
     document.addEventListener("mousemove", onResizing);
