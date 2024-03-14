@@ -189,8 +189,8 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   let iframe = document.createElement("iframe");
   iframe.id = `prog${currentWindowID}`;
   iframe.srcdoc = data;
-  iframe.width = width;
-  iframe.height = height;
+  // iframe.width = width;
+  // iframe.height = height;
   iframe.style.overflow = "hidden";
   iframe.frameBorder = "0";
   iframe.style.border = "0";
@@ -205,6 +205,220 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   createMenuBarButton(currentWindowID, programName);
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+
+  registryResizingForProgram({
+    noResizeMatch,
+    iframeInitSize: {
+      width: parseInt(width, 10),
+      height: parseInt(height, 10),
+    },
+    elements: {
+      programWindow: window,
+      programHeader: header,
+      programIframe: iframe,
+      programMaximizeButton: maximizeButton,
+      programOverlay: overlay,
+    },
+  });
+}
+
+const cursorStatusMap = {
+  topBorder: "ns-resize",
+  bottomBorder: "ns-resize",
+  leftBorder: "ew-resize",
+  rightBorder: "ew-resize",
+  topLeftCorner: "nwse-resize",
+  bottomRightCorner: "nwse-resize",
+  topRightCorner: "nesw-resize",
+  bottomLeftCorner: "nesw-resize",
+  [undefined]: "default",
+};
+
+function registryResizingForProgram({
+  noResizeMatch,
+  iframeInitSize,
+  elements,
+}) {
+  const {
+    programWindow,
+    programHeader,
+    programIframe,
+    programMaximizeButton,
+    programOverlay,
+  } = elements;
+
+  let { borderWidth } = window.getComputedStyle(programWindow);
+  borderWidth = parseInt(borderWidth, 10);
+
+  const headerRectHeight = programHeader.getBoundingClientRect().height;
+
+  programIframe.style.height = `calc(100% - ${headerRectHeight}px)`;
+  programIframe.style.width = "100%";
+
+  programWindow.style.width = iframeInitSize.width + borderWidth * 2 + "px";
+  programWindow.style.height =
+    iframeInitSize.width + borderWidth * 2 + headerRectHeight + "px";
+
+  if (noResizeMatch) return;
+
+  let currentCursorStatus;
+
+  const onMousemove = (e) => {
+    const rect = programWindow.getBoundingClientRect();
+    currentCursorStatus = checkCursorPosition(e, rect, borderWidth);
+    programWindow.style.cursor = cursorStatusMap[currentCursorStatus];
+  };
+
+  programWindow.addEventListener("mousemove", onMousemove);
+
+  programWindow.addEventListener("mousedown", (e) => {
+    const isMaximized = programMaximizeButton.textContent !== "[ ]";
+
+    if (e.target !== programWindow || isMaximized) {
+      e.preventDefault();
+      return;
+    }
+
+    programWindow.removeEventListener("mousemove", onMousemove);
+
+    programOverlay.style.display = "block"; // Show the overlay
+
+    const rect = programWindow.getBoundingClientRect();
+    const { clientX: startX, clientY: startY } = e;
+    const onResizing = (e) => {
+      console.log(e.clientX, e.clientY, currentCursorStatus);
+
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      switch (currentCursorStatus) {
+        case "topBorder":
+          programWindow.style.height = rect.height - deltaY + "px";
+          programWindow.style.top = rect.top + deltaY + "px";
+          break;
+        case "bottomBorder":
+          programWindow.style.height = rect.height + deltaY + "px";
+          break;
+        case "leftBorder":
+          programWindow.style.width = rect.width - deltaX + "px";
+          programWindow.style.left = rect.left + deltaX + "px";
+          break;
+        case "rightBorder":
+          programWindow.style.width = rect.width + deltaX + "px";
+          break;
+        case "topLeftCorner":
+          programWindow.style.height = rect.height - deltaY + "px";
+          programWindow.style.top = rect.top + deltaY + "px";
+
+          programWindow.style.width = rect.width - deltaX + "px";
+          programWindow.style.left = rect.left + deltaX + "px";
+          break;
+        case "bottomRightCorner":
+          programWindow.style.height = rect.height + deltaY + "px";
+          programWindow.style.width = rect.width + deltaX + "px";
+          break;
+        case "topRightCorner":
+          programWindow.style.height = rect.height - deltaY + "px";
+          programWindow.style.top = rect.top + deltaY + "px";
+
+          programWindow.style.width = rect.width + deltaX + "px";
+          break;
+        case "bottomLeftCorner":
+          programWindow.style.width = rect.width - deltaX + "px";
+          programWindow.style.left = rect.left + deltaX + "px";
+
+          programWindow.style.height = rect.height + deltaY + "px";
+          break;
+        default:
+        // ...
+      }
+      // ew-resize for left border
+      // ew-resize for right border
+      // ns-resize for top border
+      // ns-resize for bottom border
+      // nesw-resize for top/right corner
+      // nesw-resize for bottom/left corner
+      // nwse-resize for top/left corner
+      // nwse-resize for bottom/right corner
+    };
+
+    const onResizingCompleted = () => {
+      programOverlay.style.display = "none"; // Hide the overlay
+      programWindow.addEventListener("mousemove", onMousemove);
+      document.removeEventListener("mousemove", onResizing);
+      document.removeEventListener("mouseup", onResizingCompleted);
+      console.log("onResizingCompleted and removed all linsteners");
+    };
+
+    document.addEventListener("mousemove", onResizing);
+    document.addEventListener("mouseup", onResizingCompleted);
+  });
+}
+
+function checkCursorPosition(e, rect, borderWidth) {
+  const { clientX, clientY } = e;
+  const { x, y, width, height } = rect;
+
+  const resizableRects = {
+    topLeftCorner: { x, y, width: borderWidth, height: borderWidth },
+    topRightCorner: {
+      x: x + width - borderWidth,
+      y,
+      width: borderWidth,
+      height: borderWidth,
+    },
+    bottomLeftCorner: {
+      x,
+      y: y + height - borderWidth,
+      width: borderWidth,
+      height: borderWidth,
+    },
+    bottomRightCorner: {
+      x: x + width - borderWidth,
+      y: y + height - borderWidth,
+      width: borderWidth,
+      height: borderWidth,
+    },
+    topBorder: {
+      x: x + borderWidth,
+      y,
+      width: width - borderWidth * 2,
+      height: borderWidth,
+    },
+    bottomBorder: {
+      x: x + borderWidth,
+      y: y + height - borderWidth,
+      width: width - borderWidth * 2,
+      height: borderWidth,
+    },
+    leftBorder: {
+      x,
+      y: y + borderWidth,
+      width: borderWidth,
+      height: height - borderWidth * 2,
+    },
+    rightBorder: {
+      x: x + width - borderWidth,
+      y: y + borderWidth,
+      width: borderWidth,
+      height: height - borderWidth * 2,
+    },
+  };
+
+  const keys = Object.keys(resizableRects);
+  const [currentCursorPosition] = keys.filter((key) => {
+    return isContain({ x: clientX, y: clientY }, resizableRects[key]);
+  });
+
+  return currentCursorPosition;
+}
+
+function isContain(point, rect) {
+  return (
+    point.x > rect.x &&
+    point.x < rect.x + rect.width &&
+    point.y > rect.y &&
+    point.y < rect.y + rect.height
+  );
 }
 
 function closeProgram(windowID, menuBarButtonID) {
