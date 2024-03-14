@@ -301,13 +301,31 @@ function registryResizingForProgram({
 
     programOverlay.style.display = "block"; // Show the overlay
 
-    const rect = programWindow.getBoundingClientRect();
-    const { clientX: startX, clientY: startY } = e;
-    const onResizing = (e) => {
-      console.log(e.clientX, e.clientY, currentCursorStatus);
+    function constrainMouseEventPosition(ev) {
+      const { clientX, clientY } = ev;
+      const { innerWidth, innerHeight } = window;
 
-      const deltaX = e.clientX - startX;
-      const deltaY = e.clientY - startY;
+      const constrainedX = Math.max(0, Math.min(clientX, innerWidth));
+      const constrainedY = Math.max(0, Math.min(clientY, innerHeight));
+
+      return { clientX: constrainedX, clientY: constrainedY };
+    }
+
+    const rect = programWindow.getBoundingClientRect();
+    const { clientX: oldClientX, clientY: oldClientY } = e;
+    const onResizing = (e) => {
+      let { clientX, clientY } = constrainMouseEventPosition(e);
+
+      console.log({
+        clientX,
+        clientY,
+        innerWidth,
+        innerHeight,
+        currentCursorStatus,
+      });
+
+      const deltaX = clientX - oldClientX;
+      const deltaY = clientY - oldClientY;
       switch (currentCursorStatus) {
         case "topBorder":
           programWindow.style.height = rect.height - deltaY + "px";
