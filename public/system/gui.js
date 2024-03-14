@@ -81,20 +81,14 @@ function createMinimizeButton(currentWindowID) {
   return minimizeButton;
 }
 
-function createMaximizeButton(currentWindowID, width, height) {
+function createMaximizeButton(currentWindowID) {
   let maximizeButton = document.createElement("button");
   maximizeButton.id = `max${currentWindowID}`; // Unique ID for the close button
   maximizeButton.classList = "osElemBase oSButton windowControlButton";
   maximizeButton.textContent = "[ ]";
   maximizeButton.style.float = "right";
   maximizeButton.onclick = function () {
-    toggleMaximizeProgram(
-      `win${currentWindowID}`,
-      `prog${currentWindowID}`,
-      `max${currentWindowID}`,
-      width,
-      height
-    );
+    toggleMaximizeProgram(`win${currentWindowID}`, `max${currentWindowID}`);
   };
   return maximizeButton;
 }
@@ -487,29 +481,23 @@ function closeProgram(windowID, menuBarButtonID) {
   document.getElementById(menuBarButtonID).outerHTML = "";
 }
 
-function toggleMaximizeProgram(
-  windowID,
-  programID,
-  maximizeButtonID,
-  width,
-  height
-) {
-  if (document.getElementById(maximizeButtonID).textContent === "[ ]") {
-    document.getElementById(windowID).style.width = "100%";
-    document.getElementById(windowID).style.height =
-      "calc(100vh - var(--programBarHeight))";
-    document.getElementById(windowID).style.left = 0;
-    document.getElementById(windowID).style.top = 0;
-    document.getElementById(programID).style.width = "100%";
-    document.getElementById(programID).style.height =
-      "calc(100vh - var(--programBarHeight) - var(--headerBarHeight))";
-    document.getElementById(maximizeButtonID).textContent = "[]";
+function toggleMaximizeProgram(windowID, maximizeButtonID) {
+  const programWindow = document.getElementById(windowID);
+  const button = document.getElementById(maximizeButtonID);
+
+  if (button.textContent === "[ ]") {
+    programWindow.setAttribute("preStyle", programWindow.getAttribute("style"));
+
+    programWindow.style.width = "100%";
+    programWindow.style.height = "calc(100vh - var(--programBarHeight))";
+    programWindow.style.left = 0;
+    programWindow.style.top = 0;
+    ("calc(100vh - var(--programBarHeight) - var(--headerBarHeight))");
+    button.textContent = "[]";
   } else {
-    document.getElementById(windowID).style.width = "fit-content";
-    document.getElementById(windowID).style.height = "fit-content";
-    document.getElementById(programID).style.width = width + "px";
-    document.getElementById(programID).style.height = height + "px";
-    document.getElementById(maximizeButtonID).textContent = "[ ]";
+    programWindow.style = programWindow.getAttribute("preStyle");
+    programWindow.removeAttribute("preStyle");
+    button.textContent = "[ ]";
   }
 }
 
