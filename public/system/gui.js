@@ -296,8 +296,13 @@ function registryResizingForProgram({
       const { clientX, clientY } = ev;
       const { innerWidth, innerHeight } = window;
 
+      const programBar = document.getElementById("programBar");
+      const barRect = programBar.getBoundingClientRect();
+
+      const maxYDistance = innerHeight - barRect.height;
+
       const constrainedX = Math.max(0, Math.min(clientX, innerWidth));
-      const constrainedY = Math.max(0, Math.min(clientY, innerHeight));
+      const constrainedY = Math.max(0, Math.min(clientY, maxYDistance));
 
       return { clientX: constrainedX, clientY: constrainedY };
     }
