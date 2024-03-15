@@ -521,6 +521,7 @@ function bringWindowToFront(winID, buttID) {
     } else {
       win.style.zIndex = "4";
       win.style.boxShadow = "4px 4px 0 0 rgba(0,0,0,0.25)";
+      win.style.cursor = "default";
     }
   });
   document.getElementById(buttID).style.border =
