@@ -117,7 +117,6 @@ textarea:focus {
 
 .menuHeaderTitle {
   float: left;
-  width: calc(100% - var(--windowControlButtonWidth) * 3);
   padding-left: 4px;
   white-space: nowrap;
   overflow: hidden;

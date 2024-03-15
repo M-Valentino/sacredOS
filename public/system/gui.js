@@ -35,11 +35,12 @@ function createWindow(currentWindowID) {
   return window;
 }
 
-function createHeader(currentWindowID, programName) {
+function createHeader(currentWindowID, programName, buttonCount) {
   let header = document.createElement("div");
   header.id = `hed${currentWindowID}`;
   header.classList = "menuHeader";
-  header.innerHTML = `<div class="menuHeaderTitle">${programName}<div>`;
+  const style = `width: calc(100% - var(--windowControlButtonWidth) * ${buttonCount})`;
+  header.innerHTML = `<div class="menuHeaderTitle" style="${style}">${programName}<div>`;
   return header;
 }
 
@@ -115,6 +116,8 @@ function createMenuBarButton(currentWindowID, programName) {
 var windowCount = -1;
 
 function openProgram(programName, data, dontToggleMenu, withFile) {
+  const noResizeMatch = data.match(/<!--.*noRS.*-->/);
+
   if (dontToggleMenu) {
     toggleOpenmenu();
   }
@@ -125,7 +128,8 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
     bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`)
   );
 
-  let header = createHeader(currentWindowID, programName);
+  const buttonCount = noResizeMatch ? 2 : 3;
+  let header = createHeader(currentWindowID, programName, buttonCount);
   window.appendChild(header);
 
   const closeButton = createCloseButton(currentWindowID);
@@ -138,7 +142,6 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   const width = sizeMatch ? sizeMatch[1] : "600";
   const height = sizeMatch ? sizeMatch[2] : "400";
 
-  const noResizeMatch = data.match(/<!--.*noRS.*-->/);
   let maximizeButton;
   if (!noResizeMatch) {
     maximizeButton = createMaximizeButton(currentWindowID, width, height);
