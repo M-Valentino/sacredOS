@@ -7,6 +7,7 @@
   --borderWidth: 2px;
   --programBarHeight: 48px;
   --headerBarHeight: 34px;
+  --windowControlButtonWidth: 30px;
 }
 
 * {
@@ -71,7 +72,7 @@ textarea:focus {
 }
 
 .windowControlButton {
-  width: 30px;
+  width: var(--windowControlButtonWidth);
   height: 100%;
 }
 
@@ -107,12 +108,20 @@ textarea:focus {
 .menuHeader {
   font-size: 18px;
   font-weight: 600;
-  padding-left: 4px;
   height: var(--headerBarHeight);
   width: 100%;
   background-color: var(--primColor);
   border: calc(var(--borderWidth)* 2) ridge var(--primColor);
   user-select: none;
+}
+
+.menuHeaderTitle {
+  float: left;
+  width: calc(100% - var(--windowControlButtonWidth) * 3);
+  padding-left: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #menuContent {

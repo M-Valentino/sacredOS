@@ -39,7 +39,7 @@ function createHeader(currentWindowID, programName) {
   let header = document.createElement("div");
   header.id = `hed${currentWindowID}`;
   header.classList = "menuHeader";
-  header.textContent = programName;
+  header.innerHTML = `<div class="menuHeaderTitle">${programName}<div>`;
   return header;
 }
 
