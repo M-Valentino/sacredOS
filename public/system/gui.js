@@ -257,7 +257,7 @@ function registryResizingForProgram({
 
   programWindow.style.width = iframeInitSize.width + borderWidth * 2 + "px";
   programWindow.style.height =
-    iframeInitSize.width + borderWidth * 2 + headerRectHeight + "px";
+    iframeInitSize.height + borderWidth * 2 + headerRectHeight + "px";
 
   if (noResizeMatch) return;
 
