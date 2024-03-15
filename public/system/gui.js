@@ -259,11 +259,12 @@ function registryResizingForProgram({
   if (noResizeMatch) return;
 
   const isTopProgramWindow = () => programWindow.style.zIndex === "5";
+  const isMaximized = () => programMaximizeButton.textContent !== "[ ]";
 
   let currentCursorStatus;
 
   const setCursor = (e) => {
-    if (!isTopProgramWindow()) return;
+    if (!isTopProgramWindow() || isMaximized()) return;
 
     if (!e) {
       currentCursorStatus = undefined;
@@ -278,15 +279,12 @@ function registryResizingForProgram({
   programWindow.addEventListener("mousemove", setCursor);
 
   programWindow.addEventListener("mousedown", (e) => {
-    if (!isTopProgramWindow()) return;
-
-    setCursor(e);
-    const isMaximized = programMaximizeButton.textContent !== "[ ]";
-
-    if (e.target !== programWindow || isMaximized) {
+    if (e.target !== programWindow || !isTopProgramWindow() || isMaximized()) {
       e.preventDefault();
       return;
     }
+
+    setCursor(e);
 
     programWindow.removeEventListener("mousemove", setCursor);
 
