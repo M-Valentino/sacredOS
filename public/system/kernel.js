@@ -32,9 +32,10 @@ function findFileContents(directoryPath, fileContents, fileName) {
 function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
-
+  // If file to be created is on root dir
   if (directoryPath === "") {
     fileContents[fileName] = "";
+    return;
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
