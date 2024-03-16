@@ -1,13 +1,17 @@
-# Author: Bret Comnes
+# Author: Bret Comnes - Modified by M-Valentino to trigger on merges.
 # License: MIT
 
 name: Deploy to neocities
 
-# only run on changes to main
+# Trigger on push to main and when any branch is merged into main
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 concurrency: # prevent concurrent deploys doing strange things
   group: deploy-to-neocities
