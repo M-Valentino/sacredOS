@@ -11,7 +11,10 @@ function findFileContents(directoryPath, fileContents, fileName) {
   // If file is in root dir
   if (directoryPath === "") {
     return fileContents[fileName];
-  } else if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+  } else if (
+    currentDirectory &&
+    fileContents.hasOwnProperty(currentDirectory)
+  ) {
     if (directories.length === 0) {
       // Reached the final directory, check for the file
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
@@ -118,7 +121,13 @@ function deleteFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
-  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+  if (directoryPath === "") {
+    delete fileContents[fileName];
+    return;
+  } else if (
+    currentDirectory &&
+    fileContents.hasOwnProperty(currentDirectory)
+  ) {
     if (directories.length === 0) {
       // Reached the final directory, delete the file if it exists
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
