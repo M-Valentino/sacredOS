@@ -33,7 +33,12 @@ function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
-  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+  if (directoryPath === "") {
+    fileContents[fileName] = "";
+  } else if (
+    currentDirectory &&
+    fileContents.hasOwnProperty(currentDirectory)
+  ) {
     if (directories.length === 0) {
       fileContents[currentDirectory][fileName] = "";
       return;
