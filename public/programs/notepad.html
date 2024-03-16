@@ -60,9 +60,9 @@
 
     window.onmessage = function (e) {
       if (e.data.startsWith("SS:")) {
-        var stylesheet = e.data.substring(3);
+        const stylesheet = e.data.substring(3);
         try {
-          var styleElement = document.createElement('style');
+          const styleElement = document.createElement('style');
           styleElement.type = 'text/css';
           styleElement.innerText = stylesheet;
           document.head.appendChild(styleElement);
