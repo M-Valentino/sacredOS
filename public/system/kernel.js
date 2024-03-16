@@ -8,8 +8,10 @@ function sendMessageToAllIframes(message) {
 function findFileContents(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
-
-  if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
+  // If file is in root dir
+  if (directoryPath === "") {
+    return fileContents[fileName];
+  } else if (currentDirectory && fileContents.hasOwnProperty(currentDirectory)) {
     if (directories.length === 0) {
       // Reached the final directory, check for the file
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
@@ -32,7 +34,7 @@ function findFileContents(directoryPath, fileContents, fileName) {
 function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
-  // If file to be created is on root dir
+  // If file to be created is in root dir
   if (directoryPath === "") {
     fileContents[fileName] = "";
     return;
@@ -65,6 +67,11 @@ function saveFileContentsRecursive(
 ) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
+
+  if (directoryPath === "") {
+    fileContents[fileName] = fileContent;
+    return;
+  }
 
   if (!fileContents.hasOwnProperty(currentDirectory)) {
     fileContents[currentDirectory] = {};
