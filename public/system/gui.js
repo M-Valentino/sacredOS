@@ -124,9 +124,6 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   windowCount++;
   const currentWindowID = windowCount;
   let window = createWindow(currentWindowID);
-  window.addEventListener("click", () =>
-    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`)
-  );
 
   const buttonCount = noResizeMatch ? 2 : 3;
   let header = createHeader(currentWindowID, programName, buttonCount);
@@ -153,6 +150,18 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
 
   // Create a transparent overlay to have smooth dragging of windows
   let overlay = createOverlay();
+
+  window.addEventListener("click", (e) => {
+    if (
+      e.target === closeButton ||
+      e.target === maximizeButton ||
+      e.target === minimizeButton
+    ) {
+      return;
+    }
+
+    bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
+  });
 
   header.addEventListener("mousedown", function (e) {
     if (
