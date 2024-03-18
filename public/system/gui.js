@@ -540,7 +540,6 @@ function bringWindowToFront(winID, buttID) {
     "var(--borderWidth) inset var(--secColorDark)";
 }
 
-// https://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock
 function checkTime(i) {
   if (i < 10) {
     i = "0" + i;
@@ -548,13 +547,29 @@ function checkTime(i) {
   return i;
 }
 
+function getClockEndText(is12HourTime, isPM) {
+  if (is12HourTime && !isPM) {
+    return " AM";
+  } else if (is12HourTime && isPM) {
+    return " PM";
+  }
+  return "";
+}
+
 function updateClock() {
+  const is12HourTime =
+    JSON.parse(fileContents["system"]["settings.json"]).timeFormat === "12h";
   const today = new Date();
   let h = today.getHours();
+  const isPM = is12HourTime && h > 12;
+  if (isPM) {
+    h -= 12;
+  }
   let m = today.getMinutes();
   let s = today.getSeconds();
   m = checkTime(m);
   s = checkTime(s);
-  document.getElementById("clock").innerHTML = h + ":" + m + ":" + s;
+  document.getElementById("clock").innerHTML =
+    h + ":" + m + ":" + s + getClockEndText(is12HourTime, isPM);
 }
 setInterval(updateClock, 1000);
