@@ -1,4 +1,4 @@
-<!--width="320" height="150"-->
+<!--width="250" height="230"-->
 <!DOCTYPE html>
 <html>
 
@@ -30,10 +30,15 @@
     .text {
       transform: translateY(5px);
     }
+
+    h1, h3 {
+      margin: 0;
+    }
   </style>
 </head>
 
 <body class="program">
+  <h1>Colors</h1>
   <div class="setting">
     <div class="flexRow">
       <div class="flexRow">
@@ -77,7 +82,13 @@
             onclick="document.getElementById('colorPicker4').click()">Change</button>
         </div>
       </div>
-
+      <br />
+      <h1>System</h1>
+      <h3>Time Format</h3>
+      <input type="radio" id="24h" name="time_format" value="24h">
+      <label for="24h">24 hours</label>
+      <input type="radio" id="12h" name="time_format" value="12h">
+      <label for="12h">12 hours</label>
       <script>
         window.top.postMessage("REQ:SS", "*");
         function changePrimColorSystemWide(color) {
