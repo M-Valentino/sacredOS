@@ -5,6 +5,7 @@
     "gui.js",
     "kernel.js",
     "fileTable.json",
+    "settings.json",
     {
       "icons": [
         "document.json",
