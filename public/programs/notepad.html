@@ -48,7 +48,6 @@
 
     const filePath = extractFilePath(); // Extract the file path from a comment
     window.top.postMessage(`REQ:PH[${filePath}]`, "*");
-    console.log(filePath);
 
     function save() {
       if (filePath !== null)  {
