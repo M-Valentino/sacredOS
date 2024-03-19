@@ -51,6 +51,10 @@ textarea:focus {
   outline: none;
 }
 
+input[type='radio'] {
+  accent-color: #000;
+}
+
 #programBar {
   z-index: 999;
   position: fixed;
