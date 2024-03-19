@@ -31,7 +31,7 @@
       transform: translateY(5px);
     }
 
-  h3 {
+    h3 {
       margin: 0;
     }
   </style>
@@ -90,6 +90,8 @@
       <label for="12h">12 hours</label>
       <script>
         window.top.postMessage("REQ:SS", "*");
+        const settingsFilePath = "system/settings.json";
+        window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
         function changePrimColorSystemWide(color) {
           return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
         }
@@ -139,6 +141,14 @@
               console.error("Error requesting stylesheet:", error);
             }
             return;
+          } else if (e.data.startsWith("PH:")) {
+            const expectedPattern = `PH:[${settingsFilePath}]`;
+            if (e.data.startsWith(expectedPattern)) {
+              // Extract file content by removing the initial part of the message
+              const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
+              document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
+              document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
+            }
           }
         };
 
