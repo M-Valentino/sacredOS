@@ -276,6 +276,16 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    } else if (e.data.startsWith("U:TF")) {
+      if (e.data.substring(4) === "24h") {
+        fileContents["system"]["settings.json"] = fileContents["system"][
+          "settings.json"
+        ].replace(`"timeFormat": "12h"`, `"timeFormat": "24h"`);
+      } else {
+        fileContents["system"]["settings.json"] = fileContents["system"][
+          "settings.json"
+        ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
+      }
     }
   }
   try {

@@ -84,9 +84,9 @@
       </div>
       <br />
       <h3>Time Format</h3>
-      <input type="radio" id="24h" name="time_format" value="24h">
+      <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF24h`)">
       <label for="24h">24 hours</label>
-      <input type="radio" id="12h" name="time_format" value="12h">
+      <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF12h`)">
       <label for="12h">12 hours</label>
       <script>
         window.top.postMessage("REQ:SS", "*");
