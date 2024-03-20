@@ -45,7 +45,7 @@
       margin-right: 5px;
     }
 
-    #fileNameDialog {
+    #nameDialog {
       display: none;
       position: absolute;
       top: 50%;
@@ -59,7 +59,7 @@
       padding: 20px;
     }
 
-    #fileNameInput {
+    #nameInput {
       margin-bottom: 10px;
     }
   </style>
@@ -70,6 +70,7 @@
   <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span
       class="redX">X</span>Delete</button>
   <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+  <button class="oSButton osElemBase" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -78,11 +79,11 @@
   <div id="topLevelObjects"></div>
 
   <!-- hidden dialog div -->
-  <div id="fileNameDialog" class=" windowRidgeBorder">
+  <div id="nameDialog" class=" windowRidgeBorder">
     <div class="menuHeader">Create New File</div>
     <div class="dialogBody">
-      <label for="fileNameInput">Enter filename:</label>
-      <input type="text" id="fileNameInput" placeholder="Filename">
+      <label for="nameInput">Enter filename:</label>
+      <input type="text" id="nameInput" placeholder="Filename">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkButtonClick()"> OK </button>
       <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelButtonClick()">Cancel</button>
@@ -156,17 +157,23 @@
 
     function makeNewFile() {
       // Display the dialog
-      let fileNameDialog = document.getElementById("fileNameDialog");
-      fileNameDialog.style.display = "initial";
+      const nameDialog = document.getElementById("nameDialog");
+      nameDialog.style.display = "initial";
+    }
+
+    function makeNewFolder() {
+      // Display the dialog
+      const folderNameDialog = document.getElementById("nameDialog");
+      nameDialog.style.display = "initial";
     }
 
     function handleOkButtonClick() {
       // Handle OK button click
-      let fileNameInput = document.getElementById("fileNameInput");
-      let fileNameDialog = document.getElementById("fileNameDialog");
+      let nameInput = document.getElementById("nameInput");
+      let nameDialog = document.getElementById("nameDialog");
 
       // Get the entered filename
-      let fileName = fileNameInput.value.trim();
+      let fileName = nameInput.value.trim();
 
       if (!fileName.includes(".")) {
         fileName = fileName.concat(".txt");
@@ -178,13 +185,13 @@
       }
 
       // Hide the dialog
-      fileNameDialog.style.display = "none";
-      fileNameInput.value = "";
+      nameDialog.style.display = "none";
+      nameInput.value = "";
     }
 
     function handleCancelButtonClick() {
-      fileNameDialog.style.display = "none";
-      fileNameInput.value = "";
+      nameDialog.style.display = "none";
+      nameInput.value = "";
     }
 
     function displayTopLevelObjects(backupObject) {
