@@ -74,7 +74,10 @@
           const expectedPattern = `PH:[${filePath}]`;
           if (e.data.startsWith(expectedPattern)) {
             // Extract file content by removing the initial part of the message
-            const fileContent = e.data.substring(expectedPattern.length);
+            let fileContent = e.data.substring(expectedPattern.length);
+            if (fileContent === "undefined") {
+              fileContent = "Creating new files in notepad coming soon.";
+            }
             // Set the content to the textarea
             document.getElementById('mainTextarea').value = fileContent;
           }
