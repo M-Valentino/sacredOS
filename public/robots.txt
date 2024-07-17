@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /programs/*
 Disallow: /documents/*
 Disallow: /system/*
-Sitemap: /sitemap.xml
+Sitemap: https://sacred.neocities.org/sitemap.xml
