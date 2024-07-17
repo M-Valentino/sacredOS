@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html lang="en">
 <html>
 
 <head>
@@ -139,14 +139,14 @@
     }
 
     const message = window.matchMedia("(any-pointer: coarse)").matches ? "device without a mouse or trackpad" : "mouse or trackpad";
-    document.getElementById("inputDev").innerHTML = "Detected: <b>" + message +"</b>.";
-    if (message !=="mouse or trackpad") {
+    document.getElementById("inputDev").innerHTML = "Detected: <b>" + message + "</b>.";
+    if (message !== "mouse or trackpad") {
       document.getElementById("inputDevWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support your ${message}.`;
     }
 
     document.getElementById("CPU").innerHTML =
       "Detected: <b>" + navigator.hardwareConcurrency + " logical CPU cores</b>.";
-      if (navigator.hardwareConcurrency === 1) {
+    if (navigator.hardwareConcurrency === 1) {
       document.getElementById("CPUWarning").innerHTML = `<b>Warning</b> Sacred OS might be really slow on your device.`;
     }
 
