@@ -146,7 +146,6 @@ input[type='radio'] {
 
 ::-webkit-scrollbar {
   width: 20px;
-  content: "^";
 }
 
 ::-webkit-scrollbar:horizontal {
