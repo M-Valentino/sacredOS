@@ -34,27 +34,27 @@ function findFileContents(directoryPath, fileContents, fileName) {
   return null; // File not found
 }
 
+function checkFileExistsAndCreate(directory, fileName) {
+  if (directory.hasOwnProperty(fileName)) {
+    alert("A file with that name already exists!");
+  } else {
+    directory[fileName] = "";
+  }
+}
+
 function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
   // If file to be created is in root dir
   if (directoryPath === "") {
-    if (fileContents.hasOwnProperty(fileName)) {
-      alert("A file with that name already exists!");
-    } else {
-      fileContents[fileName] = "";
-    }
+    checkFileExistsAndCreate(fileContents, fileName);
     return;
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
   ) {
     if (directories.length === 0) {
-      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
-        alert("A file with that name already exists!");
-      } else {
-        fileContents[currentDirectory][fileName] = "";
-      }
+      checkFileExistsAndCreate(fileContents[currentDirectory], fileName);
       return;
     } else {
       // Continue recursively for nested directories
