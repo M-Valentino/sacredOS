@@ -39,14 +39,22 @@ function makeFile(directoryPath, fileContents, fileName) {
   const currentDirectory = directories.shift();
   // If file to be created is in root dir
   if (directoryPath === "") {
-    fileContents[fileName] = "";
+    if (fileContents.hasOwnProperty(fileName)) {
+      alert("A file with that name already exists!");
+    } else {
+      fileContents[fileName] = "";
+    }
     return;
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
   ) {
     if (directories.length === 0) {
-      fileContents[currentDirectory][fileName] = "";
+      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
+        alert("A file with that name already exists!");
+      } else {
+        fileContents[currentDirectory][fileName] = "";
+      }
       return;
     } else {
       // Continue recursively for nested directories
