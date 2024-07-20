@@ -115,6 +115,7 @@
     <hr class="biosHrMain mb-20" />
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
     <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
+    <input type="file" id="fileInput" style="display:none;">
     <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
     <span id="sysChecks">
       <hr class="biosHrSub mt-20" />
@@ -127,7 +128,9 @@
       <div id="CPUWarning" class="warning"></div>
       <div id="language" class="biosTextSub"></div>
       <div id="languageWarning" class="warning"></div>
-      <input type="file" id="fileInput" style="display:none;">
+      <div id="userAgent" class="biosTextSub"></div>
+      <div id="userAgentWarning" class="warning"></div>
+
     </span>
     <span id="freshInstallInfo">
       <hr class="biosHrSub mt-20" />
@@ -161,6 +164,15 @@
       "Detected Language: <b>" + navigator.language + "</b>."
     if (navigator.language !== "en-US") {
       document.getElementById("languageWarning").innerHTML = `<b>Warning</b> Sacred OS doesn't support the ${navigator.language} language.`;
+    }
+
+    const userAgent = window.navigator.userAgent;
+    document.getElementById("userAgent").innerHTML =
+      "Detected User Agent: <b>" + window.navigator.userAgent; + "</b>."
+    if (userAgent.includes("Safari")) {
+      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
+    } else if (userAgent.includes("Firefox")) {
+      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
     }
     ////////// End of System Check Code //////////
 
