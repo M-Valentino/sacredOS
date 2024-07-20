@@ -169,7 +169,9 @@
     const userAgent = window.navigator.userAgent;
     document.getElementById("userAgent").innerHTML =
       "Detected User Agent: <b>" + window.navigator.userAgent; + "</b>."
-    if (userAgent.includes("Safari")) {
+    if (userAgent.includes("Edg")) {
+      // Do nothing
+    } else if (userAgent.includes("Safari")) {
       document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
     } else if (userAgent.includes("Firefox")) {
       document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
