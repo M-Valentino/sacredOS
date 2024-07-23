@@ -15,13 +15,13 @@
     }
   ],
   "programs": [
-    "browser.html",
     "files.html",
     "doug.html",
     "notepad.html",
     "calculator.html",
     "tetrJS.html",
     "mBO.html",
+    "browser.html",
     "settings.html",
     "about.html"
   ],
