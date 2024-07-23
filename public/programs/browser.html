@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    h1 {
+      margin-top: 5px;
+    }
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
+    p {
+      margin-top: 5px;
+    }
+
+    body {
+      overflow-y: hidden;
+    }
+
+    input {
+      width: 300px;
+      height: 20px;
+    }
+
+    iframe {
+      width: 100%;
+      height: calc(100vh - 27px);
+      border: none;
+    }
+
+    .navContainer {
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navContainer">
+    <button class="oSButton" onclick="changeSite(true)">🏠</button>
+    <input id="urlInput" type="text" value="" placeholder="https://nyahoo.neocities.org" />
+    <button class="oSButton" onclick="changeSite()">Go</button>
+  </div>
+  <iframe id="siteContent" src="https://nyahoo.neocities.org" width="720" height="600"></iframe>
+
+  <script>
+    function changeSite(goToHome) {
+      const iframe = document.getElementById('siteContent');
+      const urlInput = document.getElementById('urlInput').value;
+      // Remove the old iframe
+      iframe.parentNode.removeChild(iframe);
+
+      const newIframe = document.createElement('iframe');
+      newIframe.id = 'siteContent';
+      if (goToHome) {
+        newIframe.src = "https://nyahoo.neocities.org";
+      } else {
+        newIframe.src = urlInput;
+      }
+      document.body.appendChild(newIframe);
+    }
+
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+    alert("NOTE: This browser will not work on all websites. This browser works by embedding websites on iframes, and major websites like Google and YouTube disable this feature.");
+  </script>
+</body>
+
+</html>
