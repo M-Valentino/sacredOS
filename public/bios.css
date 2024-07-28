@@ -2,6 +2,27 @@
   background-color: #000;
 }
 
+#aboutDialog {
+  display: none;
+  position: absolute;
+  width: 600px;
+  left: calc(50% - 340px);
+  top: 100px;
+  color: #fff;
+  background-color: #00c;
+  border: 6px solid #fff;
+  border-style: double;
+  font-size: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 40px;
+  box-shadow: 20px 20px #000;
+}
+
+#aboutDialog a {
+  text-decoration: none;
+  color: #ff0;
+}
+
 #bootScreen {
   margin: auto;
   max-width: 1024px;
@@ -21,9 +42,9 @@
   padding: 4px;
   cursor: pointer;
   color: #fff;
-  margin-right: 20px;
-  margin-top: 40px;
   letter-spacing: 1px;
+  height: fit-content;
+  min-width: 70px;
 }
 
 .biosTextMain {
@@ -46,12 +67,24 @@
   color: #ff0000;
 }
 
+.m-a {
+  margin: auto;
+}
+
 .mb-20 {
   margin-bottom: 20px;
 }
 
+.mr-20 {
+  margin-right: 20px;
+}
+
 .mt-20 {
   margin-top: 20px;
+}
+
+.mt-40 {
+  margin-top: 40px;
 }
 
 #biosTitle {
@@ -73,6 +106,12 @@
 
 .biosHrSub {
   border: 2px solid #fff;
+}
+
+.flexBetween {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 #freshInstallInfo {

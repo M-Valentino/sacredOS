@@ -24,12 +24,19 @@
 
 <body id="screen">
   <div id="bootScreen">
-    <h1 id="biosTitle">Sacred OS Boot Menu</h1>
+    <div class="flexBetween">
+      <h1 id="biosTitle">Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
+    </div>
+    <div id="aboutDialog">
+      <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
+        file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark Valentino.</a></p>
+      <center><button id="closeAbout" class="biosButton m-a">Ok</button></center>
+    </div>
     <hr class="biosHrMain mb-20" />
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-    <button id="uploadJson" class="biosButton">Yes, boot with uploaded disk</button>
+    <button id="uploadJson" class="biosButton mt-40 mr-20">Yes, boot with uploaded disk</button>
     <input type="file" id="fileInput" style="display:none;">
-    <button id="defaultSettings" class="biosButton">Continue with fresh install</button>
+    <button id="defaultSettings" class="biosButton mt-40">No, Continue with fresh install</button>
     <span id="sysChecks">
       <hr class="biosHrSub mt-20" />
       <div class="biosTextMain mt-20">System Checks</div>
@@ -53,6 +60,14 @@
   </div>
   <!-- <footer id="privPol"><a href="/privacyPolicy.html">Privacy Policy</a></footer> -->
   <script>
+    document.getElementById("about").addEventListener("click", function () {
+      document.getElementById("aboutDialog").style.display = "initial";
+    });
+
+    document.getElementById("closeAbout").addEventListener("click", function () {
+      document.getElementById("aboutDialog").style.display = "none";
+    });
+
     ////////// System Check Code //////////
     document.getElementById("screenRes").innerHTML =
       "Screen Resolution: <b>" +
