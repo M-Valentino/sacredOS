@@ -219,15 +219,17 @@
       contextMenu.classList.add("windowRidgeBorder", "osElemBase");
       document.body.appendChild(contextMenu);
 
-
-      let menuItemEdit = document.createElement("button");
-      menuItemEdit.textContent = "Edit";
-      menuItemEdit.classList.add("oSButton", "osElemBase");
-      menuItemEdit.onclick = function () {
-        openInNotepad(key);
-        removeOldContextMenus();
-      };
-      contextMenu.appendChild(menuItemEdit);
+      // Folders don't have periods and shouldn't be edited.
+      if (key.includes(".")) {
+        let menuItemEdit = document.createElement("button");
+        menuItemEdit.textContent = "Edit";
+        menuItemEdit.classList.add("oSButton", "osElemBase");
+        menuItemEdit.onclick = function () {
+          openInNotepad(key);
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(menuItemEdit);
+      }
 
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
