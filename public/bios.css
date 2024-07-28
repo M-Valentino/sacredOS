@@ -6,7 +6,7 @@
   display: none;
   position: absolute;
   width: 600px;
-  left: calc(50% - 340px);
+  left: calc(50% - 345px);
   top: 100px;
   color: #fff;
   background-color: #00c;
@@ -16,6 +16,20 @@
   font-family: 'Courier New', Courier, monospace;
   padding: 40px;
   box-shadow: 20px 20px #000;
+}
+
+@media only screen and (min-width:680px) {
+  #aboutDialog {
+    width: 600px;
+    left: calc(50% - 345px);
+  }
+}
+
+@media only screen and (max-width:679px) {
+  #aboutDialog {
+    width: unset;
+    left: 0;
+  }
 }
 
 #aboutDialog a {
