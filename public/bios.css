@@ -73,15 +73,16 @@
   color: #c2c2c2;
 }
 
+#closeAbout {
+  display: block;
+  margin: auto;
+}
+
 .warning {
   font-size: 22px;
   margin-top: 10px;
   font-family: 'Courier New', Courier, monospace;
   color: #ff0000;
-}
-
-.m-a {
-  margin: auto;
 }
 
 .mb-20 {
