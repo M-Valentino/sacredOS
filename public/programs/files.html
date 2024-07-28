@@ -205,6 +205,18 @@
             handleDelete(key);
           }
         };
+        button.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+          let contextMenu = document.createElement("div");
+          contextMenu.style.position = "absolute";
+          contextMenu.style.left = e.clientX + "px";
+          contextMenu.style.top = e.clientY + "px";
+          contextMenu.style.width = "100px";
+          contextMenu.style.height = "100px";
+          contextMenu.classList.add("windowRidgeBorder", "osElemBase");
+          document.body.appendChild(contextMenu);
+          
+        }, false);
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
 
