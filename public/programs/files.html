@@ -189,9 +189,21 @@
 
     function handleContextMenu(e, key) {
       e.preventDefault();
+      // Prevents duplicate context menus from being made
       if (document.getElementById(`cntxtMn-${key}`)) {
         return;
       }
+
+      const oldMenu = document.getElementsByTagName('div'),
+        forEach = Array.prototype.forEach,
+        regex = /^cntxtMn-.*$/;
+
+      forEach.call(oldMenu, function (d) {
+        if (d.id !== undefined && regex.test(d.id)) {
+          d.parentNode.removeChild(d);
+        }
+      });
+
       let contextMenu = document.createElement("div");
       contextMenu.id = `cntxtMn-${key}`;
       contextMenu.style.position = "absolute";
