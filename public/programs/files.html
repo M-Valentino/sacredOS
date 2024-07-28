@@ -103,6 +103,14 @@
 
     document.getElementById("fileDir").value = "://";
 
+    function openInNotepad(key) {
+      const message = {
+        action: "openProgram",
+        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+    }
+
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       if (keyToCheck.split('.').pop() === "html") {
@@ -113,11 +121,7 @@
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
       } else if (key.match(/\..*/)) {
-        const message = {
-          action: "openProgram",
-          params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
-        };
-        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        openInNotepad(key);
         return;
       }
       displayTopLevelObjects(backupObject[key]);
@@ -187,13 +191,7 @@
       fileNameInput.value = "";
     }
 
-    function handleContextMenu(e, key) {
-      e.preventDefault();
-      // Prevents duplicate context menus from being made
-      if (document.getElementById(`cntxtMn-${key}`)) {
-        return;
-      }
-
+    function removeOldContextMenus() {
       const oldMenu = document.getElementsByTagName('div'),
         forEach = Array.prototype.forEach,
         regex = /^cntxtMn-.*$/;
@@ -203,21 +201,33 @@
           d.parentNode.removeChild(d);
         }
       });
+    }
 
+    function handleContextMenu(e, key) {
+      e.preventDefault();
+      // Prevents duplicate context menus from being made
+      if (document.getElementById(`cntxtMn-${key}`)) {
+        return;
+      }
+      removeOldContextMenus();
       let contextMenu = document.createElement("div");
       contextMenu.id = `cntxtMn-${key}`;
       contextMenu.style.position = "absolute";
       contextMenu.style.left = e.clientX + "px";
       contextMenu.style.top = e.clientY + "px";
       contextMenu.style.width = "100px";
-      contextMenu.style.height = "100px";
       contextMenu.classList.add("windowRidgeBorder", "osElemBase");
       document.body.appendChild(contextMenu);
 
-      // Display the key in the context menu for demonstration purposes
-      let menuItem = document.createElement("button");
-      menuItem.textContent = "Edit";
-      contextMenu.appendChild(menuItem);
+
+      let menuItemEdit = document.createElement("button");
+      menuItemEdit.textContent = "Edit";
+      menuItemEdit.classList.add("oSButton", "osElemBase");
+      menuItemEdit.onclick = function () {
+        openInNotepad(key);
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(menuItemEdit);
 
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
