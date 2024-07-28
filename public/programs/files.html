@@ -187,9 +187,13 @@
       fileNameInput.value = "";
     }
 
-    function handleContextMenu(e) {
+    function handleContextMenu(e, key) {
       e.preventDefault();
+      if (document.getElementById(`cntxtMn-${key}`)) {
+        return;
+      }
       let contextMenu = document.createElement("div");
+      contextMenu.id = `cntxtMn-${key}`;
       contextMenu.style.position = "absolute";
       contextMenu.style.left = e.clientX + "px";
       contextMenu.style.top = e.clientY + "px";
@@ -197,6 +201,11 @@
       contextMenu.style.height = "100px";
       contextMenu.classList.add("windowRidgeBorder", "osElemBase");
       document.body.appendChild(contextMenu);
+
+      // Display the key in the context menu for demonstration purposes
+      let menuItem = document.createElement("button");
+      menuItem.textContent = "Edit";
+      contextMenu.appendChild(menuItem);
 
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
@@ -225,7 +234,9 @@
             handleDelete(key);
           }
         };
-        button.addEventListener('contextmenu', handleContextMenu, false);
+        button.addEventListener('contextmenu', function (e) {
+          handleContextMenu(e, key);
+        }, false);
 
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
@@ -241,7 +252,6 @@
         displayArea.appendChild(button);
       });
     }
-
 
     function removeLastSlashSection(str) {
       const lastIndex = str.lastIndexOf('/');
