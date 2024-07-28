@@ -187,6 +187,26 @@
       fileNameInput.value = "";
     }
 
+    function handleContextMenu(e) {
+      e.preventDefault();
+      let contextMenu = document.createElement("div");
+      contextMenu.style.position = "absolute";
+      contextMenu.style.left = e.clientX + "px";
+      contextMenu.style.top = e.clientY + "px";
+      contextMenu.style.width = "100px";
+      contextMenu.style.height = "100px";
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase");
+      document.body.appendChild(contextMenu);
+
+      // Event listener to remove the context menu on next left click outside of it
+      document.addEventListener('click', function handleClick(event) {
+        if (!contextMenu.contains(event.target)) {
+          contextMenu.remove();
+          document.removeEventListener('click', handleClick);
+        }
+      });
+    }
+
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
@@ -205,34 +225,14 @@
             handleDelete(key);
           }
         };
-        button.addEventListener('contextmenu', function (e) {
-          e.preventDefault();
-          let contextMenu = document.createElement("div");
-          contextMenu.style.position = "absolute";
-          contextMenu.style.left = e.clientX + "px";
-          contextMenu.style.top = e.clientY + "px";
-          contextMenu.style.width = "100px";
-          contextMenu.style.height = "100px";
-          contextMenu.classList.add("windowRidgeBorder", "osElemBase");
-          document.body.appendChild(contextMenu);
-          // Event listener to remove the context menu on next left click outside of it
-          document.addEventListener('click', function handleClick(event) {
-            if (!contextMenu.contains(event.target)) {
-              contextMenu.remove();
-              document.removeEventListener('click', handleClick);
-            }
-          });
+        button.addEventListener('contextmenu', handleContextMenu, false);
 
-        }, false);
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
 
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
-        }
-        else
-        // if (key.split('.').pop() === "json") 
-        {
+        } else {
           icon.src = documentImage;
           button.classList.add("document");
         }
@@ -241,6 +241,7 @@
         displayArea.appendChild(button);
       });
     }
+
 
     function removeLastSlashSection(str) {
       const lastIndex = str.lastIndexOf('/');
