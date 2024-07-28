@@ -5,8 +5,6 @@
 #aboutDialog {
   display: none;
   position: absolute;
-  width: 600px;
-  left: calc(50% - 345px);
   top: 100px;
   color: #fff;
   background-color: #00c;
@@ -14,12 +12,12 @@
   border-style: double;
   font-size: 20px;
   font-family: 'Courier New', Courier, monospace;
-  padding: 40px;
   box-shadow: 20px 20px #000;
 }
 
 @media only screen and (min-width:680px) {
   #aboutDialog {
+    padding: 40px;
     width: 600px;
     left: calc(50% - 345px);
   }
@@ -27,6 +25,7 @@
 
 @media only screen and (max-width:679px) {
   #aboutDialog {
+    padding: 20px;
     width: unset;
     left: 0;
   }
