@@ -215,7 +215,14 @@
           contextMenu.style.height = "100px";
           contextMenu.classList.add("windowRidgeBorder", "osElemBase");
           document.body.appendChild(contextMenu);
-          
+          // Event listener to remove the context menu on next left click outside of it
+          document.addEventListener('click', function handleClick(event) {
+            if (!contextMenu.contains(event.target)) {
+              contextMenu.remove();
+              document.removeEventListener('click', handleClick);
+            }
+          });
+
         }, false);
         button.appendChild(document.createElement('br'));
         var icon = document.createElement('img');
