@@ -1,6 +1,7 @@
 [
   {
-    "programName": "test",
-    "dir": "/apps/test"
+    "name": "test",
+    "dir": "/apps/test",
+    "description": "test app"
   }
 ]
