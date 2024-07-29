@@ -6,7 +6,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    .appSection {
+      border: 1px solid #000;
+      padding: 8px;
+    }
 
+    .ml-16 {
+      margin-left: 16px;
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
   </style>
 </head>
 
@@ -30,21 +46,53 @@
       }
     };
 
-     function populateAppStore(content) {
+    function populateAppStore(content) {
       console.log(JSON.parse(content));
       const appData = JSON.parse(content);
 
       appData.map((app) => {
+        let appSection = document.createElement('div');
+        appSection.classList.add("appSection");
+        document.body.appendChild(appSection);
+
+        let appTitle = document.createElement('h2');
+        appTitle.textContent = app.name;
+        appSection.appendChild(appTitle);
+
+        let container = document.createElement('div');
+        container.classList.add("flexRow");
+        appSection.appendChild(container);
+
+        let appImage = document.createElement('img');
+        appImage.src = `/appStore${app.dir}/${app.icon}`;
+        appImage.width = 64;
+        appImage.height = 64;
+        container.appendChild(appImage);
+
+        let appDesc = document.createElement('p');
+        appDesc.textContent = app.description;
+        appDesc.classList.add("ml-16");
+        container.appendChild(appDesc);
+
+        let container2 = document.createElement('div');
+        container2.classList.add("flexRow");
+        appSection.appendChild(container2);
+
+        let appAuthor = document.createElement('div');
+        appAuthor.innerHTML = `<b>Author</b>: ${app.author}`;
+
+        container2.appendChild(appAuthor);
+
         let button = document.createElement('button');
-        button.textContent = app.name;
-        button.classList = "oSButton osElemBase fileOrDir";
+        button.textContent = "Install";
+        button.classList.add("oSButton", "osElemBase", "ml-16");
         button.onclick = function () {
           runInstallScript(`/appStore/${app.dir}/install.js`);
-          
+
         };
-        document.body.appendChild(button);
+        container2.appendChild(button);
       })
-      
+
     }
 
     async function runInstallScript(fileURL) {

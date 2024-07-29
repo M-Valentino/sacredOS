@@ -2,6 +2,8 @@
   {
     "name": "Peter Alert",
     "dir": "/apps/peterAlert",
-    "description": "test app"
+    "icon": "icon.png",
+    "description": "Looks like Peter Griffin has infected your computer! Quickly close out the alerts in this fun game.",
+    "author": "Eric Houdini"
   }
 ]
