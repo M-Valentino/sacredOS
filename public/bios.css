@@ -102,7 +102,7 @@
 }
 
 #biosTitle {
-  margin-top: 0;
+  margin-top: -8px;
   margin-bottom: 0;
   letter-spacing: 4px;
   font-size: 48px;

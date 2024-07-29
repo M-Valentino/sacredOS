@@ -80,8 +80,22 @@ input[type='radio'] {
   height: 100%;
 }
 
-.h-100 {
+.menuButtonInside {
+  line-height: 32px;
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-right: 2px;
+}
+
+.menuIcon {
+  margin-right: 2px;
+  font-size: 24px;
+  font-weight: 800;
+  transform: translateY(4px);
+  color: var(--primColor);
+  filter: brightness(0.8);
 }
 
 #menuButton {
