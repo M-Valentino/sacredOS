@@ -6,12 +6,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-   
+
   </style>
 </head>
 
 <body class="program">
-<iframe src="/appStorePage.html" width="600"/>
+
 
   <script>
     window.top.postMessage("REQ:SS", "*");
@@ -30,6 +30,31 @@
       }
     };
 
+    function populateAppStore(content) {
+      console.log(JSON.parse(content));
+
+    }
+
+    async function getAppStoreData(fileURL) {
+      try {
+        const response = await fetch(fileURL);
+        if (response.ok) {
+          const content = await response.text();
+          populateAppStore(content);
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+
+    getAppStoreData("/appStore/appStoreData.json");
+
+
+    window.top.postMessage(`MK:F[programs/test.html]`, '*');
+    window.top.postMessage(`SF:[programs/test.html]<html>alert("t");</html>`, "*");
 
   </script>
 </body>
