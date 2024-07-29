@@ -97,7 +97,7 @@ function createMaximizeButton(currentWindowID) {
 function createMenuBarButton(currentWindowID, programName) {
   let menuBarButton = document.createElement("button");
   menuBarButton.id = `men${currentWindowID}`;
-  menuBarButton.classList = "osElemBase oSButton h-100";
+  menuBarButton.classList = "osElemBase oSButton prgrmBarPrgrmBtn";
   menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
   menuBarButton.textContent = programName;
   menuBarButton.addEventListener("mousedown", function (e) {
