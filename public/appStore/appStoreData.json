@@ -1,7 +1,7 @@
 [
   {
-    "name": "test",
-    "dir": "/apps/test",
+    "name": "Peter Alert",
+    "dir": "/apps/peterAlert",
     "description": "test app"
   }
 ]

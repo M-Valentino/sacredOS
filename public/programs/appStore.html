@@ -30,7 +30,7 @@
       }
     };
 
-    function populateAppStore(content) {
+     function populateAppStore(content) {
       console.log(JSON.parse(content));
       const appData = JSON.parse(content);
 
@@ -39,11 +39,26 @@
         button.textContent = app.name;
         button.classList = "oSButton osElemBase fileOrDir";
         button.onclick = function () {
+          runInstallScript(`/appStore/${app.dir}/install.js`);
           
         };
         document.body.appendChild(button);
       })
       
+    }
+
+    async function runInstallScript(fileURL) {
+      try {
+        const response = await fetch(fileURL);
+        if (response.ok) {
+          const content = await response.text();
+          eval(content);
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
     }
 
     async function getAppStoreData(fileURL) {
