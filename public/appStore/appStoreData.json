@@ -4,6 +4,15 @@
     "dir": "/apps/peterAlert",
     "icon": "icon.png",
     "description": "Looks like Peter Griffin has infected your computer! Quickly close out the alerts in this fun game.",
-    "author": "Eric Houdini"
+    "author": "Eric Houdini",
+    "link": "https://erikhoudini.com"
+  },
+  {
+    "name": "Canvas Bird",
+    "dir": "/apps/canvasBird",
+    "icon": "icon.png",
+    "description": "Canvas Bird is a quick flappy bird like game written with JavaScript canvas.",
+    "author": "Yiotis Kaltsikis",
+    "link": "https://github.com/giotiskl"
   }
 ]

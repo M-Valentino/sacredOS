@@ -7,8 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     .appSection {
-      border: 1px solid #000;
+      border: 1px solid #aaa;
+      background-color: #fff;
       padding: 8px;
+      margin-bottom: 8px;
     }
 
     .ml-16 {
@@ -79,7 +81,7 @@
         appSection.appendChild(container2);
 
         let appAuthor = document.createElement('div');
-        appAuthor.innerHTML = `<b>Author</b>: ${app.author}`;
+        appAuthor.innerHTML = `<b>Author</b>: <a href="${app.link}" target="_blank" rel="noopener noreferrer">${app.author}</a>`;
 
         container2.appendChild(appAuthor);
 
