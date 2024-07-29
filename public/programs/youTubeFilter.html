@@ -35,11 +35,9 @@
       0% {
         filter: hue-rotate(0deg) saturate(2) brightness(1.2) contrast(1.5);
       }
-
       50% {
         filter: hue-rotate(180deg) saturate(3) brightness(1.5) contrast(1.8);
       }
-
       100% {
         filter: hue-rotate(360deg) saturate(2) brightness(1.2) contrast(1.5);
       }
@@ -54,15 +52,14 @@
 <body class="program">
   <h1>YouTube Video Filter</h1>
   <p>Watch YouTube videos with fun filters. They work full screen too.</p>
-  <input type="text" id="youtube-url" placeholder="Enter YouTube URL"
-    value="https://www.youtube.com/watch?v=LWVGhcOq-L4">
+  <input type="text" id="youtube-url" placeholder="Enter YouTube URL" value="https://www.youtube.com/watch?v=LWVGhcOq-L4">
   <select id="filter-select" class="oSButton">
     <option value="60s Film" selected>60's Color Film</option>
     <option value="40s B&W Film">40's B&W Film</option>
     <option value="Inverted">Inverted</option>
-    <option value="Psychedelic">Psychedelic (animated)</option>
-    <option value="Sepia">Sepia</option>
     <option value="Strictly Black & White">Strictly Black & White</option>
+    <option value="Psychedelic">Psychedelic</option>
+    <option value="High Contrast">High Contrast</option>
     <option value="None">None</option>
   </select>
   <button onclick="loadVideo()" class="oSButton">Load Video</button>
@@ -72,6 +69,7 @@
   </div>
 
   <script>
+    // Function to apply the selected filter
     function applyFilter() {
       const filterSelect = document.getElementById('filter-select').value;
       const videoFrame = document.getElementById('video-frame');
@@ -89,14 +87,14 @@
         case 'Inverted':
           videoFrame.style.filter = 'invert(1)';
           break;
-        case 'Sepia':
-          videoFrame.style.filter = 'sepia(1)';
-          break;
         case 'Strictly Black & White':
           videoFrame.style.filter = 'grayscale(1)';
           break;
         case 'Psychedelic':
           videoFrame.classList.add('psychedelic');
+          break;
+        case 'High Contrast':
+          videoFrame.style.filter = 'contrast(10)';
           break;
         default:
           videoFrame.style.filter = 'none'; // No filter if the option is not recognized
@@ -111,7 +109,7 @@
       if (videoId) {
         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
         document.getElementById('video-frame').src = embedUrl;
-        applyFilter();
+        applyFilter(); // Apply the filter after loading the video
       } else {
         alert('Invalid YouTube URL');
       }
@@ -123,6 +121,7 @@
       return match ? match[1] : null;
     }
 
+    // Add event listener to apply filter on dropdown change
     document.getElementById('filter-select').addEventListener('change', applyFilter);
 
     window.top.postMessage("REQ:SS", "*");
