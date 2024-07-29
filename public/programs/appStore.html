@@ -1,0 +1,37 @@
+<!--width="700" height="600"-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+   
+  </style>
+</head>
+
+<body class="program">
+<iframe src="/appStorePage.html" width="600"/>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+
+
+  </script>
+</body>
+
+</html>
