@@ -294,6 +294,8 @@ window.onmessage = function (e) {
           "settings.json"
         ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
       }
+    } else if (e.data === "POPULATE-MENU") {
+      populateMenu();
     }
   }
   try {

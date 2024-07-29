@@ -84,7 +84,7 @@
         container2.appendChild(appAuthor);
 
         let button = document.createElement('button');
-        button.textContent = "Install";
+        button.textContent = "Install Program";
         button.classList.add("oSButton", "osElemBase", "ml-16");
         button.onclick = function () {
           runInstallScript(`/appStore/${app.dir}/install.js`);

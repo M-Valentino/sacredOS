@@ -16,3 +16,4 @@ async function copyData() {
 }
 
 copyData();
+window.top.postMessage("POPULATE-MENU");

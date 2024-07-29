@@ -1,4 +1,6 @@
 function populateMenu() {
+  let menu = document.getElementById("menuContent");
+  menu.innerHTML = "";
   for (let i = 0; i < fileTable.programs.length; i++) {
     var menuItem = document.createElement("div");
     menuItem.innerHTML = fileTable.programs[i];
@@ -8,7 +10,7 @@ function populateMenu() {
         openProgram(programName, fileContents.programs[programName], true);
       };
     })(fileTable.programs[i]);
-    document.getElementById("menuContent").appendChild(menuItem);
+    menu.appendChild(menuItem);
   }
 }
 
