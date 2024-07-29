@@ -1,15 +1,17 @@
 function populateMenu() {
   let menu = document.getElementById("menuContent");
   menu.innerHTML = "";
-  for (let i = 0; i < fileTable.programs.length; i++) {
+  const programList = JSON.parse(fileContents["system"]["fileTable.json"])["programs"];
+
+  for (let i = 0; i < programList.length; i++) {
     var menuItem = document.createElement("div");
-    menuItem.innerHTML = fileTable.programs[i];
+    menuItem.innerHTML = programList[i];
     menuItem.classList = "oSButton osElemBase";
     menuItem.onclick = menuItem.onclick = (function (programName) {
       return function () {
         openProgram(programName, fileContents.programs[programName], true);
       };
-    })(fileTable.programs[i]);
+    })(programList[i]);
     menu.appendChild(menuItem);
   }
 }
