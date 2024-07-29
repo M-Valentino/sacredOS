@@ -1,6 +1,6 @@
 async function copyData() {
   try {
-    const response = await fetch("/appStore/apps/PeterAlert/peterAlert.html");
+    const response = await fetch("/appStore/apps/peterAlert/peterAlert.html");
     if (response.ok) {
       const content = await response.text();
       window.top.postMessage(`SF:[programs/peterAlert.html]${content}`, "*");
