@@ -148,7 +148,7 @@ input[type='radio'] {
 #menuContent {
   border-left: calc(var(--borderWidth)* 2) ridge var(--secColorDark);
   border-right: calc(var(--borderWidth)* 2) ridge var(--secColorDark);
-  min-height: 340px;
+  min-height: 360px;
 }
 
 .window {
@@ -161,7 +161,6 @@ input[type='radio'] {
   padding: 4px;
   height: 100vh;
 }
-
 
 ::-webkit-scrollbar {
   width: 20px;

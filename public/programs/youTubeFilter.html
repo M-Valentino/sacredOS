@@ -1,0 +1,146 @@
+<!--width="720" height="640"-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    h1 {
+      font-size: 18px;
+    }
+
+    #youtube-url {
+      width: 300px;
+    }
+
+    #video-container {
+      margin-top: 16px;
+      width: 640px;
+      height: 480px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #video-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      transition: filter 0.3s ease;
+      /* default filter for 60s film */
+      filter: contrast(1.1) brightness(1.1) sepia(0.2) saturate(1.1) grayscale(0.1) hue-rotate(5deg) blur(0.5px);
+    }
+
+    @keyframes psychedelic {
+      0% {
+        filter: hue-rotate(0deg) saturate(2) brightness(1.2) contrast(1.5);
+      }
+
+      50% {
+        filter: hue-rotate(180deg) saturate(3) brightness(1.5) contrast(1.8);
+      }
+
+      100% {
+        filter: hue-rotate(360deg) saturate(2) brightness(1.2) contrast(1.5);
+      }
+    }
+
+    .psychedelic {
+      animation: psychedelic 5s infinite;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <h1>YouTube Video Filter</h1>
+  <p>Watch YouTube videos with fun filters. They work full screen too.</p>
+  <input type="text" id="youtube-url" placeholder="Enter YouTube URL"
+    value="https://www.youtube.com/watch?v=LWVGhcOq-L4">
+  <select id="filter-select" class="oSButton">
+    <option value="60s Film" selected>60's Color Film</option>
+    <option value="40s B&W Film">40's B&W Film</option>
+    <option value="Inverted">Inverted</option>
+    <option value="Psychedelic">Psychedelic (animated)</option>
+    <option value="Sepia">Sepia</option>
+    <option value="Strictly Black & White">Strictly Black & White</option>
+    <option value="None">None</option>
+  </select>
+  <button onclick="loadVideo()" class="oSButton">Load Video</button>
+
+  <div id="video-container">
+    <iframe id="video-frame" allowfullscreen src="https://www.youtube.com/embed/LWVGhcOq-L4"></iframe>
+  </div>
+
+  <script>
+    function applyFilter() {
+      const filterSelect = document.getElementById('filter-select').value;
+      const videoFrame = document.getElementById('video-frame');
+
+      // Remove any previous filter classes
+      videoFrame.classList.remove('psychedelic');
+
+      switch (filterSelect) {
+        case '60s Film':
+          videoFrame.style.filter = 'contrast(1.1) brightness(1.1) sepia(0.2) saturate(1.1) grayscale(0.1) hue-rotate(5deg) blur(0.5px)';
+          break;
+        case '40s B&W Film':
+          videoFrame.style.filter = 'contrast(1.2) brightness(1.1) grayscale(1) sepia(0.05) blur(0.5px)';
+          break;
+        case 'Inverted':
+          videoFrame.style.filter = 'invert(1)';
+          break;
+        case 'Sepia':
+          videoFrame.style.filter = 'sepia(1)';
+          break;
+        case 'Strictly Black & White':
+          videoFrame.style.filter = 'grayscale(1)';
+          break;
+        case 'Psychedelic':
+          videoFrame.classList.add('psychedelic');
+          break;
+        default:
+          videoFrame.style.filter = 'none'; // No filter if the option is not recognized
+          break;
+      }
+    }
+
+    function loadVideo() {
+      const urlInput = document.getElementById('youtube-url').value;
+      const videoId = extractVideoID(urlInput);
+
+      if (videoId) {
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        document.getElementById('video-frame').src = embedUrl;
+        applyFilter();
+      } else {
+        alert('Invalid YouTube URL');
+      }
+    }
+
+    function extractVideoID(url) {
+      const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
+
+    document.getElementById('filter-select').addEventListener('change', applyFilter);
+
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+  </script>
+</body>
+
+</html>
