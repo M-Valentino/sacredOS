@@ -1,6 +1,7 @@
 <!-- Author: Eric Houdini. Code has been slightly modified from it's source -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,9 @@
       overflow-y: hidden;
     }
 
-    .peter-alert img, .quagmire-alert img, .lois-alert img {
+    .peter-alert img,
+    .quagmire-alert img,
+    .lois-alert img {
       width: 50px;
       height: auto;
     }
@@ -58,220 +61,225 @@
   </style>
   <title>Peter Alert</title>
 </head>
+
 <body class="">
 
-<div id="game-container" class="w-full h-full p-4 flex flex-col items-center justify-center min-h-screen">
-  <button id="start-game-btn" onclick="startGame()" class="windows98-button">Start Game</button>
-  <span class="ml-4 mt-2" id="game-over-message" style="display:none;"></span>
-</div>
-<div id="timer-container" class="absolute top-2 right-2 text-white text-lg">0.000</div>
-<br>
-<div id="score-container" class="absolute top-6 right-14 text-white text-lg">Score: 0</div>
-<div id="instruction-icon" class="absolute top-2 left-2 text-white text-lg cursor-pointer">?</div>
-<div id="instruction-container" class="absolute top-2 left-14 bg-gray-200 text-black p-2 rounded" style="display:none;">
+  <div id="game-container" class="w-full h-full p-4 flex flex-col items-center justify-center min-h-screen">
+    <button id="start-game-btn" onclick="startGame()" class="windows98-button">Start Game</button>
+    <span class="ml-4 mt-2" id="game-over-message" style="display:none;"></span>
+  </div>
+  <div id="timer-container" class="absolute top-2 right-2 text-white text-lg">0.000</div>
+  <br>
+  <div id="score-container" class="absolute top-6 right-14 text-white text-lg">Score: 0</div>
+  <div id="instruction-icon" class="absolute top-2 left-2 text-white text-lg cursor-pointer">?</div>
+  <div id="instruction-container" class="absolute top-2 left-14 bg-gray-200 text-black p-2 rounded"
+    style="display:none;">
     <p>5 Peter Alerts is Game Over!</p>
-    <p>Alerts cleared by Louis are worth double!<p>
+    <p>Alerts cleared by Louis are worth double!
+    <p>
     <p>Watch out for Quagmire!</p>
-  <p>Peter alerts: 50 points</p>
-  <p>Quagmire alerts: 25 points</p>
-  <p>Lois alerts: 100 points</p>
-</div>
+    <p>Peter alerts: 50 points</p>
+    <p>Quagmire alerts: 25 points</p>
+    <p>Lois alerts: 100 points</p>
+  </div>
 
-<script>
-  let gameActive = false;
-  let popups = 0;
-  let interval;
-  let timer;
-  let startTime;
-  let clearCount = 0;
-  let quagmireInterval;
-  let loisInterval;
-  let quagmireAdditionalInterval;
-  let score = 0;
+  <script>
+    let gameActive = false;
+    let popups = 0;
+    let interval;
+    let timer;
+    let startTime;
+    let clearCount = 0;
+    let quagmireInterval;
+    let loisInterval;
+    let quagmireAdditionalInterval;
+    let score = 0;
 
-  function getRandomPosition() {
-    const x = Math.floor(Math.random() * (window.innerWidth - 200));
-    const y = Math.floor(Math.random() * (window.innerHeight - 200));
-    return { x, y };
-  }
-
-  function updateScore(amount) {
-    score += amount;
-    document.getElementById("score-container").innerHTML = "Score: " + score;
-  }
-
-  function createPopup(type) {
-    if (type === 'peter') {
-      popups++;
+    function getRandomPosition() {
+      const x = Math.floor(Math.random() * (window.innerWidth - 200));
+      const y = Math.floor(Math.random() * (window.innerHeight - 200));
+      return { x, y };
     }
 
-    if (popups > 5 && type === 'peter') {
-      let elapsedTime = (Date.now() - startTime) / 1000;
-      gameOver(elapsedTime);
-      return;
+    function updateScore(amount) {
+      score += amount;
+      document.getElementById("score-container").innerHTML = "Score: " + score;
     }
 
-    const { x, y } = getRandomPosition();
-    const popupWrapper = document.createElement("div");
-    popupWrapper.className = (type === 'peter' ? "peter-alert" : type === 'quagmire'? "quagmire-alert" : "lois-alert") + " bg-gray-200 border border-black rounded p-4 absolute";
-    popupWrapper.style.left = x + "px";
-    popupWrapper.style.top = y + "px";
+    function createPopup(type) {
+      if (type === 'peter') {
+        popups++;
+      }
 
-    const topBar = document.createElement("div");
-    topBar.className = "top-bar p-1";
-    const titleText = document.createElement("span");
-    titleText.className = "title-text";
-    titleText.innerHTML = type === 'peter' ? "Peter Alert" : type === 'quagmire' ? "Quagmire Alert" : "Lois Alert";
-    topBar.appendChild(titleText);
-    const closeWindow = document.createElement("span");
-    closeWindow.className = "close-window";
-    closeWindow.innerHTML = "X";
-    closeWindow.onclick = () => {
-      if (type === 'lois') {
-        removeAllPopups();
-      } else {
-        popupWrapper.remove();
-        if (type === "peter") {
+      if (popups > 5 && type === 'peter') {
+        let elapsedTime = (Date.now() - startTime) / 1000;
+        gameOver(elapsedTime);
+        return;
+      }
+
+      const { x, y } = getRandomPosition();
+      const popupWrapper = document.createElement("div");
+      popupWrapper.className = (type === 'peter' ? "peter-alert" : type === 'quagmire' ? "quagmire-alert" : "lois-alert") + " bg-gray-200 border border-black rounded p-4 absolute";
+      popupWrapper.style.left = x + "px";
+      popupWrapper.style.top = y + "px";
+
+      const topBar = document.createElement("div");
+      topBar.className = "top-bar p-1";
+      const titleText = document.createElement("span");
+      titleText.className = "title-text";
+      titleText.innerHTML = type === 'peter' ? "Peter Alert" : type === 'quagmire' ? "Quagmire Alert" : "Lois Alert";
+      topBar.appendChild(titleText);
+      const closeWindow = document.createElement("span");
+      closeWindow.className = "close-window";
+      closeWindow.innerHTML = "X";
+      closeWindow.onclick = () => {
+        if (type === 'lois') {
+          removeAllPopups();
+        } else {
+          popupWrapper.remove();
+          if (type === "peter") {
+            popups--;
+          }
+        }
+        handlePopupClick(type);
+      };
+      topBar.appendChild(closeWindow);
+      popupWrapper.appendChild(topBar);
+
+      const img = document.createElement("img");
+      img.src = type === 'peter' ? "https://erikhoudini.com/Peter-Griffin-icon.png" : type === 'quagmire' ? "https://erikhoudini.com/Quagmire.gif" : "https://erikhoudini.com/louis.png";
+      popupWrapper.appendChild(img);
+
+      const button = document.createElement("button");
+      button.innerText = "Okay";
+      button.className = "windows98-button mt-2";
+      button.onclick = closeWindow.onclick;
+      popupWrapper.appendChild(button);
+      document.getElementById("game-container").appendChild(popupWrapper);
+    }
+
+    function handlePopupClick(type) {
+      if (type === 'peter') {
+        clearCount++;
+        updateScore(50);
+      } else if (type === 'quagmire') {
+        updateScore(25);
+      } else if (type === 'lois') {
+        updateScore(100);
+      }
+      if (!timer) {
+        startTime = Date.now();
+        timer = setInterval(function () {
+          let elapsedTime = (Date.now() - startTime) / 1000;
+          document.getElementById("timer-container").innerHTML = elapsedTime.toFixed(3);
+        }, 100);
+      }
+      checkQuagmireAlerts();
+    }
+
+    function removeAllPopups() {
+      const popupsToRemove = document.querySelectorAll('.peter-alert, .quagmire-alert, .lois-alert');
+      for (let popup of popupsToRemove) {
+        if (popup.classList.contains('peter-alert')) {
           popups--;
         }
+        popup.remove();
       }
-      handlePopupClick(type);
-    };
-    topBar.appendChild(closeWindow);
-    popupWrapper.appendChild(topBar);
-
-    const img = document.createElement("img");
-    img.src = type === 'peter' ? "https://erikhoudini.com/Peter-Griffin-icon.png" : type === 'quagmire' ? "https://erikhoudini.com/Quagmire.gif" : "https://erikhoudini.com/louis.png";
-    popupWrapper.appendChild(img);
-
-    const button = document.createElement("button");
-    button.innerText = "Okay";
-    button.className = "windows98-button mt-2";
-    button.onclick = closeWindow.onclick;
-    popupWrapper.appendChild(button);
-    document.getElementById("game-container").appendChild(popupWrapper);
-  }
-
-  function handlePopupClick(type) {
-    if (type === 'peter') {
-      clearCount++;
-      updateScore(50);
-    } else if (type === 'quagmire') {
-      updateScore(25);
-    } else if (type === 'lois') {
-      updateScore(100);
     }
-    if (!timer) {
-      startTime = Date.now();
-      timer = setInterval(function () {
-        let elapsedTime = (Date.now() - startTime) / 1000;
-        document.getElementById("timer-container").innerHTML = elapsedTime.toFixed(3);
-      }, 100);
-    }
-    checkQuagmireAlerts();
-  }
 
-  function removeAllPopups() {
-    const popupsToRemove = document.querySelectorAll('.peter-alert, .quagmire-alert, .lois-alert');
-    for (let popup of popupsToRemove) {
-      if(popup.classList.contains('peter-alert')){
-        popups--;
-      }
-      popup.remove();
-    }
-  }
-
-  function checkQuagmireAlerts() {
-    if (clearCount >= 15) {
-      const quagmireCount = getRandomInt(4, 7);
-      for (let i = 0; i < quagmireCount; i++) {
-        createPopup('quagmire');
-      }
-      clearCount = 0;
-    }
-  }
-
-  function startGame() {
-    score = 0;
-    updateScore(0);
-    popups = 0;
-    clearCount = 0;
-    gameActive = true;
-    startTime = Date.now();
-    document.getElementById("start-game-btn").disabled = true;
-    document.getElementById("start-game-btn").classList.add("opacity-50");
-    document.getElementById("start-game-btn").classList.remove("windows98-button");
-    clearInterval(timer);
-    timer = null;
-    document.getElementById("game-over-message").style.display = "none";
-
-    interval = setInterval(() => {
-      if (!gameActive) return;
-      createPopup('peter');
-    }, getRandomInt(1000, 3000));
-
-    quagmireInterval = setInterval(() => {
-      if (!gameActive) return;
-      if (Math.random() <= 0.0169) {
-        createPopup('quagmire');
-      }
-    }, 1000);
-
-    loisInterval = setInterval(() => {
-      if (!gameActive) return;
-      if (Math.random() <= 0.045) {
-        createPopup('lois');
-      }
-    }, 1000);
-
-    quagmireAdditionalInterval = setInterval(() => {
-      if (!gameActive) return;
-      if (Math.random() <= 0.06) {
-        const quagmireCount = getRandomInt(1, 2);
+    function checkQuagmireAlerts() {
+      if (clearCount >= 15) {
+        const quagmireCount = getRandomInt(4, 7);
         for (let i = 0; i < quagmireCount; i++) {
           createPopup('quagmire');
         }
+        clearCount = 0;
       }
-    }, 5000);
-  }
-
-  function gameOver(elapsedTime) {
-    gameActive = false;
-    document.getElementById("start-game-btn").disabled = false;
-    document.getElementById("start-game-btn").classList.remove("opacity-50");
-    document.getElementById("start-game-btn").classList.add("windows98-button");
-    clearInterval(interval);
-    clearInterval(timer);
-    clearInterval(quagmireInterval);
-    clearInterval(loisInterval);
-    clearInterval(quagmireAdditionalInterval);
-    removeAllPopups();
-    document.getElementById("game-over-message").innerHTML = "Game over! You've 🅱️eter'd For " + elapsedTime.toFixed(1) + " seconds and scored " + score + ". Can you 🅱️eter better? <button class='windows98-button' onClick=\"location.reload()\">Play again here</button> <button id='copyToClipboard' class='windows98-button ml-2'>Copy Score</button>";
-    document.getElementById("game-over-message").style.display = "inline";
-    document.getElementById("copyToClipboard").addEventListener("click", function() {
-      const el = document.createElement('textarea');
-      el.value = "I 🅱️eter'd for " + elapsedTime.toFixed(1) + " seconds and scored " + score + " on Peter Alert! Can you 🅱️eter better? Play the game at https://erikhoudini.com/tools/peteralert";
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      alert('Your score has been copied to the clipboard!');
-    });
-  }
-
-  function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
-  document.getElementById("instruction-icon").addEventListener('click', () => {
-    const instructionContainer = document.getElementById("instruction-container");
-    if (instructionContainer.style.display === "none") {
-      instructionContainer.style.display = "block";
-    } else {
-      instructionContainer.style.display = "none";
     }
-  });
-</script>
+
+    function startGame() {
+      score = 0;
+      updateScore(0);
+      popups = 0;
+      clearCount = 0;
+      gameActive = true;
+      startTime = Date.now();
+      document.getElementById("start-game-btn").disabled = true;
+      document.getElementById("start-game-btn").classList.add("opacity-50");
+      document.getElementById("start-game-btn").classList.remove("windows98-button");
+      clearInterval(timer);
+      timer = null;
+      document.getElementById("game-over-message").style.display = "none";
+
+      interval = setInterval(() => {
+        if (!gameActive) return;
+        createPopup('peter');
+      }, getRandomInt(1000, 3000));
+
+      quagmireInterval = setInterval(() => {
+        if (!gameActive) return;
+        if (Math.random() <= 0.0169) {
+          createPopup('quagmire');
+        }
+      }, 1000);
+
+      loisInterval = setInterval(() => {
+        if (!gameActive) return;
+        if (Math.random() <= 0.045) {
+          createPopup('lois');
+        }
+      }, 1000);
+
+      quagmireAdditionalInterval = setInterval(() => {
+        if (!gameActive) return;
+        if (Math.random() <= 0.06) {
+          const quagmireCount = getRandomInt(1, 2);
+          for (let i = 0; i < quagmireCount; i++) {
+            createPopup('quagmire');
+          }
+        }
+      }, 5000);
+    }
+
+    function gameOver(elapsedTime) {
+      gameActive = false;
+      const buttonElement = document.getElementById('start-game-btn');
+      if (buttonElement && buttonElement.parentNode) {
+        buttonElement.parentNode.removeChild(buttonElement);
+      }
+      clearInterval(interval);
+      clearInterval(timer);
+      clearInterval(quagmireInterval);
+      clearInterval(loisInterval);
+      clearInterval(quagmireAdditionalInterval);
+      removeAllPopups();
+      document.getElementById("game-over-message").innerHTML = "Game over! You've 🅱️eter'd For " + elapsedTime.toFixed(1) + " seconds and scored " + score + ". Can you 🅱️eter better? <button class='windows98-button' onClick=\"location.reload()\"> Play Again Here</button> <button id='copyToClipboard' class='windows98-button ml-2'>Copy Score</button>";
+      document.getElementById("game-over-message").style.display = "inline";
+      document.getElementById("copyToClipboard").addEventListener("click", function () {
+        const el = document.createElement('textarea');
+        el.value = "I 🅱️eter'd for " + elapsedTime.toFixed(1) + " seconds and scored " + score + " on Peter Alert! Can you 🅱️eter better? Play the game at https://erikhoudini.com/tools/peteralert";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert('Your score has been copied to the clipboard!');
+      });
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    document.getElementById("instruction-icon").addEventListener('click', () => {
+      const instructionContainer = document.getElementById("instruction-container");
+      if (instructionContainer.style.display === "none") {
+        instructionContainer.style.display = "block";
+      } else {
+        instructionContainer.style.display = "none";
+      }
+    });
+  </script>
 
 </body>
+
 </html>
