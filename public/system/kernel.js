@@ -156,6 +156,7 @@ function deleteFile(directoryPath, fileContents, fileName) {
               if (deleteFileFromTable(parsedFileTable, fileName)) {
                 fileContents.system["fileTable.json"] =
                   JSON.stringify(parsedFileTable);
+                  populateMenu();
               } else {
                 console.error("File not found in fileTable.json:", fileName);
               }
