@@ -253,7 +253,7 @@
       clearInterval(loisInterval);
       clearInterval(quagmireAdditionalInterval);
       removeAllPopups();
-      document.getElementById("game-over-message").innerHTML = "Game over! You've 🅱️eter'd For " + elapsedTime.toFixed(1) + " seconds and scored " + score + ". Can you 🅱️eter better? <button class='windows98-button' onClick=\"location.reload()\"> Play Again Here</button> <button id='copyToClipboard' class='windows98-button ml-2'>Copy Score</button>";
+      document.getElementById("game-over-message").innerHTML = "Game over! You've 🅱️eter'd For " + elapsedTime.toFixed(1) + " seconds and scored " + score + ". Can you 🅱️eter better? <button class='windows98-button ml-2' onClick=\"location.reload()\"> Play Again Here</button> <button id='copyToClipboard' class='windows98-button ml-2'>Copy Score</button>";
       document.getElementById("game-over-message").style.display = "inline";
       document.getElementById("copyToClipboard").addEventListener("click", function () {
         const el = document.createElement('textarea');
