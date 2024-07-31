@@ -18,7 +18,7 @@ window.top.postMessage(`MK:F[programs/peterAlert.html]`, "*");
 if (copyData()) {
   window.top.postMessage("POPULATE-MENU");
   alert(
-    'Peter Alert installed! Go to your programs folder. I\'m working on making installed programs show up in the "start" menu.'
+    'Peter Alert installed!'
   );
 } else {
   alert("Could Not install Peter Alert.");

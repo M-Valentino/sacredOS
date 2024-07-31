@@ -18,7 +18,7 @@ window.top.postMessage(`MK:F[programs/canvasBird.html]`, "*");
 if (copyData()) {
   window.top.postMessage("POPULATE-MENU");
   alert(
-    'Canvas Bird installed! Go to your programs folder. I\'m working on making installed programs show up in the "start" menu.'
+    'Canvas Bird installed!'
   );
 } else {
   alert("Could Not install Canvas Bird.");

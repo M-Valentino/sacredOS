@@ -42,32 +42,96 @@ function checkFileExistsAndCreate(directory, fileName) {
   }
 }
 
+function updateFileTable(directoryPath, fileTable, fileName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  if (directoryPath === "") {
+    // Root directory
+    if (!fileTable.system.includes(fileName)) {
+      fileTable.system.push(fileName);
+    }
+    return;
+  }
+
+  if (currentDirectory) {
+    let found = false;
+    for (const key in fileTable) {
+      if (Array.isArray(fileTable[key]) && key === currentDirectory) {
+        if (!fileTable[key].includes(fileName)) {
+          fileTable[key].push(fileName);
+        }
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      for (const key in fileTable) {
+        if (Array.isArray(fileTable[key])) {
+          for (let i = 0; i < fileTable[key].length; i++) {
+            if (
+              typeof fileTable[key][i] === "object" &&
+              fileTable[key][i].hasOwnProperty(currentDirectory)
+            ) {
+              updateFileTable(
+                directories.join("/"),
+                fileTable[key][i],
+                fileName
+              );
+              found = true;
+              break;
+            }
+          }
+        }
+        if (found) break;
+      }
+    }
+  }
+}
+
 function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
+
   // If file to be created is in root dir
   if (directoryPath === "") {
     checkFileExistsAndCreate(fileContents, fileName);
-    return;
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
   ) {
     if (directories.length === 0) {
       checkFileExistsAndCreate(fileContents[currentDirectory], fileName);
-      return;
     } else {
       // Continue recursively for nested directories
       const nestedDirectoryPath = directories.join("/");
-      return findFileContents(
-        nestedDirectoryPath,
-        fileContents[currentDirectory],
-        fileName
-      );
+      makeFile(nestedDirectoryPath, fileContents[currentDirectory], fileName);
     }
+  } else {
+    alert("Could not create new file here.");
+    return;
   }
 
-  alert("Could not create new file here.");
+  // Update fileTable.json
+  if (
+    fileContents.system &&
+    fileContents.system["fileTable.json"] &&
+    typeof fileContents.system["fileTable.json"] === "string"
+  ) {
+    try {
+      const parsedFileTable = JSON.parse(fileContents.system["fileTable.json"]);
+      if (parsedFileTable && typeof parsedFileTable === "object") {
+        updateFileTable(directoryPath, parsedFileTable, fileName);
+        fileContents.system["fileTable.json"] = JSON.stringify(parsedFileTable);
+        populateMenu();
+      } else {
+        console.error("Invalid fileTable.json structure.");
+      }
+    } catch (error) {
+      console.error("Error parsing or updating fileTable.json:", error);
+    }
+  }
 }
 
 function saveFileContentsRecursive(
@@ -156,7 +220,7 @@ function deleteFile(directoryPath, fileContents, fileName) {
               if (deleteFileFromTable(parsedFileTable, fileName)) {
                 fileContents.system["fileTable.json"] =
                   JSON.stringify(parsedFileTable);
-                  populateMenu();
+                populateMenu();
               } else {
                 console.error("File not found in fileTable.json:", fileName);
               }
