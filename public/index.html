@@ -172,7 +172,9 @@
 
     async function fetchContent(fileURL) {
       try {
-        const response = await fetch(fileURL);
+        let time = new Date().getTime();
+        // Hack to disable loading from cached files
+        const response = await fetch(`${fileURL}?t=${time}`);
         if (response.ok) {
           const content = await response.text();
           return content;
