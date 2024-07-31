@@ -28,6 +28,13 @@ After cloning the repo, go into your terminal and change the current directory t
 ## Developing in Sacred OS
 Right now Sacred OS isn't stable and is in it's early phase of development, so things like syntax for messages
 to the kernel may change.
+
+### Publishing an app in the app store
+If you have a good single page web app or game that can be contained in an HTML file, I'm accepting pull requests
+to add it into my OS's app store. You will need to add your app inside the appStore/apps directory and update 
+`appStoreData.json`. I do ask that assets from external URLs should only be used for fonts and coding libraries from
+well known organizations like Tailwind CSS and Google Fonts for example.
+
 ### Sacred OS HTML Program Headers
 If you want to assign a specific default window size to a program or disable resizing, you must put a comment
 at the top of the HTML file that follows this structure:
