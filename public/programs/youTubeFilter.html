@@ -6,6 +6,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --videoLocationX: 0px;
+      --videoLocationY: 60px;
+      --videoWidth: 100%;
+      --videoHeight: calc(100vh - var(--videoLocationY));
+    }
+
     h1 {
       font-size: 18px;
     }
@@ -15,14 +22,16 @@
     }
 
     #video-container {
-      margin-top: 16px;
-      width: 640px;
-      height: 480px;
+      position: absolute;
+      left: var(--videoLocationX);
+      top: var(--videoLocationY);
+      width: var(--videoWidth);
+      height: var(--videoHeight);
       overflow: hidden;
-      position: relative;
     }
 
     #video-frame {
+      z-index: 2;
       width: 100%;
       height: 100%;
       border: 0;
@@ -35,9 +44,11 @@
       0% {
         filter: hue-rotate(0deg) saturate(2) brightness(1.2) contrast(1.5);
       }
+
       50% {
         filter: hue-rotate(180deg) saturate(3) brightness(1.5) contrast(1.8);
       }
+
       100% {
         filter: hue-rotate(360deg) saturate(2) brightness(1.2) contrast(1.5);
       }
@@ -46,13 +57,32 @@
     .psychedelic {
       animation: psychedelic 5s infinite;
     }
+
+    #scanLines {
+      z-index: 1;
+      position: absolute;
+      left: var(--videoLocationX);
+      top: var(--videoLocationY);
+      width: var(--videoWidth);
+      height: var(--videoHeight);
+      background-image: linear-gradient(0deg, transparent 25%, #00000080 25%, #00000080 50%, transparent 50%, transparent 75%, #00000080 75%, #00000080 100%);
+      background-size: 4px 4px;
+      pointer-events: none;
+      display: initial;
+    }
+
+    .mr-8 {
+      margin-right: 8px;
+      display: inline;
+    }
   </style>
 </head>
 
 <body class="program">
-  <h1>YouTube Video Filter</h1>
-  <p>Watch YouTube videos with fun filters. They work full screen too.</p>
-  <input type="text" id="youtube-url" placeholder="Enter YouTube URL" value="https://www.youtube.com/watch?v=LWVGhcOq-L4">
+  <div>Watch YouTube videos with fun filters. Most of them work in full screen.</div>
+  <input type="text" id="youtube-url" placeholder="Enter YouTube URL"
+    value="https://www.youtube.com/watch?v=LWVGhcOq-L4">
+  <button onclick="loadVideo()" class="oSButton">Load Video</button>
   <select id="filter-select" class="oSButton">
     <option value="60s Film" selected>60's Color Film</option>
     <option value="40s B&W Film">40's B&W Film</option>
@@ -62,11 +92,15 @@
     <option value="High Contrast">High Contrast</option>
     <option value="None">None</option>
   </select>
-  <button onclick="loadVideo()" class="oSButton">Load Video</button>
+  <div class="mr-8">
+    <input id="toggleScanLines" name="toggleScanLines" type="checkbox" checked/>
+    <label for="toggleScanLines">Scan Lines</label>
+  </div>
 
   <div id="video-container">
     <iframe id="video-frame" allowfullscreen src="https://www.youtube.com/embed/LWVGhcOq-L4"></iframe>
   </div>
+  <div id="scanLines" />
 
   <script>
     // Function to apply the selected filter
@@ -123,6 +157,15 @@
 
     // Add event listener to apply filter on dropdown change
     document.getElementById('filter-select').addEventListener('change', applyFilter);
+
+    let checkbox = document.querySelector("input[name=toggleScanLines]");
+    checkbox.addEventListener('change', function () {
+      if (this.checked) {
+        document.getElementById("scanLines").style.display = "initial";
+      } else {
+        document.getElementById("scanLines").style.display = "none";
+      }
+    });
 
     window.top.postMessage("REQ:SS", "*");
     window.onmessage = function (e) {

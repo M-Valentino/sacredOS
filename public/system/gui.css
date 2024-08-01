@@ -51,8 +51,9 @@ textarea:focus {
   outline: none;
 }
 
-input[type='radio'] {
+input[type='radio'], input[type='checkbox'] {
   accent-color: #000;
+  cursor: pointer;
 }
 
 #programBar {
