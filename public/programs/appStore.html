@@ -86,7 +86,7 @@
         container2.appendChild(appAuthor);
 
         let button = document.createElement('button');
-        button.textContent = "Install Program";
+        button.textContent = `${app.mode} ${app.name}`;
         button.classList.add("oSButton", "osElemBase", "ml-16");
         button.onclick = function () {
           runInstallScript(`/appStore/${app.dir}/install.js`);
@@ -99,7 +99,9 @@
 
     async function runInstallScript(fileURL) {
       try {
-        const response = await fetch(fileURL);
+        let time = new Date().getTime();
+        // Hack to disable loading from cached files
+        const response = await fetch(`${fileURL}?t=${time}`);
         if (response.ok) {
           const content = await response.text();
           eval(content);
@@ -113,7 +115,9 @@
 
     async function getAppStoreData(fileURL) {
       try {
-        const response = await fetch(fileURL);
+        let time = new Date().getTime();
+        // Hack to disable loading from cached files
+        const response = await fetch(`${fileURL}?t=${time}`);
         if (response.ok) {
           const content = await response.text();
           populateAppStore(content);

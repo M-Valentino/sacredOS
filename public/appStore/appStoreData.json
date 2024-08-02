@@ -1,11 +1,21 @@
 [
   {
+    "name": "Blue Future",
+    "dir": "/apps/blueFuture",
+    "icon": "icon.png",
+    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included.",
+    "author": "Mark Valentino",
+    "link": "https://github.com/M-Valentino",
+    "mode": "Download"
+  },
+  {
     "name": "Peter Alert",
     "dir": "/apps/peterAlert",
     "icon": "icon.png",
     "description": "Looks like Peter Griffin has infected your computer! Quickly close out the alerts in this fun game.",
     "author": "Erik Houdini",
-    "link": "https://erikhoudini.com"
+    "link": "https://erikhoudini.com",
+    "mode": "Install"
   },
   {
     "name": "Canvas Bird",
@@ -13,6 +23,7 @@
     "icon": "icon.png",
     "description": "Canvas Bird is a quick flappy bird like game written with JavaScript canvas.",
     "author": "Yiotis Kaltsikis",
-    "link": "https://github.com/giotiskl"
+    "link": "https://github.com/giotiskl",
+    "mode": "Install"
   }
 ]
