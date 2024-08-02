@@ -76,6 +76,7 @@
       </div>
     </div>
   </main>
+  <div id="scanLines"/>
   <!-- <footer id="privPol"><a href="/privacyPolicy.html">Privacy Policy</a></footer> -->
   <script>
     document.getElementById("about").addEventListener("click", function () {
@@ -252,6 +253,7 @@
           document.body.appendChild(guiHTML);
           // Hide user prompt and show main menu
           document.getElementById("crtAndBootContainer").style.display = "none";
+          document.getElementById("scanLines").style.display = "none";
         }
         if (fileContents.system['gui.css']) {
           let styleElement = document.createElement('style');
