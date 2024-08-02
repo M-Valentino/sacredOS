@@ -197,6 +197,9 @@
       }
     }
 
+    let lineCount = 0; // Initialize lineCount outside the function
+    const compileElement = document.getElementById("compile"); // Reference to the compile element
+
     async function loadfileContents(fileTable, basePath = '') {
       document.getElementById("sysChecks").style.display = "none";
       document.getElementById("freshInstallInfo").style.display = "initial";
@@ -210,7 +213,16 @@
             if (typeof item === 'string') {
               let fileURL = `${basePath}${key}/${item}`;
               tempFileContent[key][item] = await fetchContent(fileURL);
-              document.getElementById("compile").innerHTML += `Loaded: ${fileURL}<br/>`;
+
+              // Append line and increment line count
+              compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
+              lineCount++;
+
+              // Remove lines if more than 18 are present
+              while (lineCount > 18) {
+                compileElement.removeChild(compileElement.firstChild);
+                lineCount--;
+              }
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
                 tempObjectConent = tempFileContent;
