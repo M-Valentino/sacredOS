@@ -28,7 +28,7 @@
 }
 
 .crtStand {
-  height: 100px;
+  height: 80px;
   width: 600px;
   margin: auto;
   border-bottom-left-radius: 100%;
@@ -38,10 +38,16 @@
 }
 
 .crtStandContainer {
-  background: linear-gradient(0deg, #787466 0%, #999481 15%, #787466 15%, #555349 42%, #000000 100%);
+  background: linear-gradient(0deg, #b3ae97 0%, #b3ae97 14.2%, #e9e4ca 15%, #a39e8a 15.8%, #555349 62%, #000000 100%);
   margin: auto;
   width: 750px;
-  height: 135px;
+  height: 115px;
+}
+
+.standShadow {
+  height: 97px;
+  width: 100%;
+  background: radial-gradient( rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%, rgba(0,0,0,0) 100%);
 }
 
 #screen {
