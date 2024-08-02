@@ -1,12 +1,20 @@
+.crtborderHighlight {
+  background: linear-gradient(45deg, #b9b39c 0%, #ded8bd 20%, #fffae2 50%, #fffef8 100%);
+  border-radius: 8px;
+  padding: 4px;
+  width: fit-content;
+  margin: auto;
+}
+
 .crtBorder {
   padding-left: 60px;
   padding-right: 60px;
   padding-top: 60px;
   padding-bottom: 100px;
-  background-color: beige;
+  background: rgb(255, 250, 226);
+  background: linear-gradient(45deg, #ded8bd 0%, #fffae2 100%);
   border-radius: 8px;
   width: calc((70vh + 120px * 1.25));
-  margin: auto;
 }
 
 @media only screen and (max-width:1023px) {
@@ -15,6 +23,14 @@
     background-color: #000;
     border-radius: 0;
     width: unset;
+  }
+
+  .crtborderHighlight {
+    background: #000;
+    border-radius: unset;
+    padding: unset;
+    width: unset;
+    margin: auto;
   }
 }
 
@@ -61,10 +77,11 @@
   max-width: 1024px;
   height: 70vh;
   background-color: #00c;
-  padding: 20px;
+  padding: 16px;
   user-select: none;
   overflow: hidden;
-  border: 4px solid #fff;
+  border: 4px solid #000;
+  box-shadow: inset 3px -5px 20px 0px rgba(0,0,0,0.2), inset 0px 0px 3px 0px rgba(0,0,0,0.96);
 }
 
 .biosButton {

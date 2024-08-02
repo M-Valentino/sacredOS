@@ -26,42 +26,45 @@
 </head>
 
 <body id="screen">
-  <div class="crtBorder">
-  <div id="bootScreen">
-    <header class="flexBetween">
-      <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
-    </header>
-    <div id="aboutDialog">
-      <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
-        file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark Valentino.</a></p>
-      <button id="closeAbout" class="biosButton">Ok</button>
-    </div>
-    <hr class="biosHrMain mb-20" />
-    <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-    <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
-    <input type="file" id="fileInput" style="display:none;">
-    <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
-    <span id="sysChecks">
-      <hr class="biosHrSub mt-20" />
-      <div class="biosTextMain mt-20">System Checks</div>
-      <div id="screenRes" class="biosTextSub"></div>
-      <div id="screenResWarning" class="warning"></div>
-      <div id="inputDev" class="biosTextSub"></div>
-      <div id="inputDevWarning" class="warning"></div>
-      <div id="CPU" class="biosTextSub"></div>
-      <div id="CPUWarning" class="warning"></div>
-      <div id="language" class="biosTextSub"></div>
-      <div id="languageWarning" class="warning"></div>
-      <div id="userAgent" class="biosTextSub"></div>
-      <div id="userAgentWarning" class="warning"></div>
+  <div class="crtborderHighlight">
+    <div class="crtBorder">
+      <div id="bootScreen">
+        <header class="flexBetween">
+          <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
+        </header>
+        <div id="aboutDialog">
+          <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
+            file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark Valentino.</a>
+          </p>
+          <button id="closeAbout" class="biosButton">Ok</button>
+        </div>
+        <hr class="biosHrMain mb-20" />
+        <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
+        <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
+        <input type="file" id="fileInput" style="display:none;">
+        <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
+        <span id="sysChecks">
+          <hr class="biosHrSub mt-20" />
+          <div class="biosTextMain mt-20">System Checks</div>
+          <div id="screenRes" class="biosTextSub"></div>
+          <div id="screenResWarning" class="warning"></div>
+          <div id="inputDev" class="biosTextSub"></div>
+          <div id="inputDevWarning" class="warning"></div>
+          <div id="CPU" class="biosTextSub"></div>
+          <div id="CPUWarning" class="warning"></div>
+          <div id="language" class="biosTextSub"></div>
+          <div id="languageWarning" class="warning"></div>
+          <div id="userAgent" class="biosTextSub"></div>
+          <div id="userAgentWarning" class="warning"></div>
 
-    </span>
-    <span id="freshInstallInfo">
-      <hr class="biosHrSub mt-20" />
-      <div class="biosTextMain mt-20">Compiling OS From Source</div>
-      <div id="compile" class="biosTextSub"></div>
-    </span>
-  </div>
+        </span>
+        <span id="freshInstallInfo">
+          <hr class="biosHrSub mt-20" />
+          <div class="biosTextMain mt-20">Compiling OS From Source</div>
+          <div id="compile" class="biosTextSub"></div>
+        </span>
+      </div>
+    </div>
   </div>
   <!-- <footer id="privPol"><a href="/privacyPolicy.html">Privacy Policy</a></footer> -->
   <script>
