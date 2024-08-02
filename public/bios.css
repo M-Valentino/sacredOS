@@ -33,8 +33,15 @@
   margin: auto;
   border-bottom-left-radius: 100%;
   border-bottom-right-radius: 100%;
-  border: 1px solid;
-  background: #e1ecf4;
+  background: linear-gradient(90deg, #787466 0%, #999481 4%, #b9b39c 40%, #cbc6af 50%, #b9b39c 60%, #999481 96%, #787466 100%);
+  box-shadow: inset 0px 10px 11px 2px #00000047, inset 0px 5px 11px 1px #00000020;
+}
+
+.crtStandContainer {
+  background: linear-gradient(0deg, #787466 0%, #999481 15%, #787466 15%, #555349 42%, #000000 100%);
+  margin: auto;
+  width: 750px;
+  height: 135px;
 }
 
 #screen {
@@ -77,7 +84,7 @@
 
 #bootScreen {
   margin: auto;
-  max-width: 1024px;
+  /* max-width: 1024px; */
   height: 70vh;
   background-color: #00c;
   padding: 16px;
@@ -190,6 +197,10 @@ screen and (max-height: 780px) {
 
   .innerCrtBorder {
     border: unset;
+  }
+
+  .crtStand {
+    display: none;
   }
 
   #bootScreen {
