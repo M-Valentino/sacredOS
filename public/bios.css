@@ -60,7 +60,7 @@
 #aboutDialog {
   display: none;
   position: absolute;
-  top: 100px;
+  top: 150px;
   color: #fff;
   background-color: #00c;
   border: 6px solid #fff;
@@ -72,7 +72,7 @@
 
 @media only screen and (min-width:680px) {
   #aboutDialog {
-    padding: 40px;
+    padding: 20px;
     width: 600px;
     left: calc(50% - 345px);
   }
@@ -80,7 +80,7 @@
 
 @media only screen and (max-width:679px) {
   #aboutDialog {
-    padding: 20px;
+    padding: 16px;
     width: unset;
     left: 0;
   }
