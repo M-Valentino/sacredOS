@@ -1,9 +1,13 @@
+#crtAndBootContainer {
+  margin: auto;
+  width: fit-content;
+}
+
 .crtborderHighlight {
   background: linear-gradient(35deg, #b9b39c 10%, #fffef8 70%, #fffffe 100%);
   border-radius: 10px;
   padding: 3px;
   width: fit-content;
-  margin: auto;
 }
 
 .crtBorder {

@@ -26,50 +26,51 @@
 </head>
 
 <body id="screen">
-  <div class="crtborderHighlight">
-    <div class="crtBorder">
-      <div class="innerCrtBorder">
-        <div id="bootScreen">
-          <header class="flexBetween">
-            <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
-          </header>
-          <div id="aboutDialog">
-            <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
-              file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark
-                Valentino.</a>
-            </p>
-            <button id="closeAbout" class="biosButton">Ok</button>
+  <main id="crtAndBootContainer">
+    <div class="crtborderHighlight">
+      <div class="crtBorder">
+        <div class="innerCrtBorder">
+          <div id="bootScreen">
+            <header class="flexBetween">
+              <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
+            </header>
+            <div id="aboutDialog">
+              <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
+                file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark
+                  Valentino.</a>
+              </p>
+              <button id="closeAbout" class="biosButton">Ok</button>
+            </div>
+            <hr class="biosHrMain mb-20" />
+            <section id="bootOptions">
+              <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
+              <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
+              <input type="file" id="fileInput" style="display:none;">
+              <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
+              <hr class="biosHrSub mt-20" />
+            </section>
+            <section id="sysChecks">
+              <div class="biosTextMain mt-20">System Checks</div>
+              <div id="screenRes" class="biosTextSub"></div>
+              <div id="screenResWarning" class="warning"></div>
+              <div id="inputDev" class="biosTextSub"></div>
+              <div id="inputDevWarning" class="warning"></div>
+              <div id="CPU" class="biosTextSub"></div>
+              <div id="CPUWarning" class="warning"></div>
+              <div id="language" class="biosTextSub"></div>
+              <div id="languageWarning" class="warning"></div>
+              <div id="userAgent" class="biosTextSub"></div>
+              <div id="userAgentWarning" class="warning"></div>
+            </section>
+            <section id="freshInstallInfo">
+              <div class="biosTextMain mt-20">Compiling OS From Source</div>
+              <div id="compile" class="biosTextSub"></div>
+            </section>
           </div>
-          <hr class="biosHrMain mb-20" />
-          <section id="bootOptions">
-            <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-            <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
-            <input type="file" id="fileInput" style="display:none;">
-            <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
-            <hr class="biosHrSub mt-20" />
-          </section>
-          <span id="sysChecks">
-            <div class="biosTextMain mt-20">System Checks</div>
-            <div id="screenRes" class="biosTextSub"></div>
-            <div id="screenResWarning" class="warning"></div>
-            <div id="inputDev" class="biosTextSub"></div>
-            <div id="inputDevWarning" class="warning"></div>
-            <div id="CPU" class="biosTextSub"></div>
-            <div id="CPUWarning" class="warning"></div>
-            <div id="language" class="biosTextSub"></div>
-            <div id="languageWarning" class="warning"></div>
-            <div id="userAgent" class="biosTextSub"></div>
-            <div id="userAgentWarning" class="warning"></div>
-
-          </span>
-          <section id="freshInstallInfo">
-            <div class="biosTextMain mt-20">Compiling OS From Source</div>
-            <div id="compile" class="biosTextSub"></div>
-          </section>
         </div>
       </div>
     </div>
-  </div>
+  </main>
   <!-- <footer id="privPol"><a href="/privacyPolicy.html">Privacy Policy</a></footer> -->
   <script>
     document.getElementById("about").addEventListener("click", function () {
@@ -197,8 +198,8 @@
       }
     }
 
-    let lineCount = 0; // Initialize lineCount outside the function
-    const compileElement = document.getElementById("compile"); // Reference to the compile element
+    let lineCount = 0;
+    const compileElement = document.getElementById("compile");
 
     async function loadfileContents(fileTable, basePath = '') {
       document.getElementById("sysChecks").style.display = "none";
@@ -245,7 +246,7 @@
           guiHTML.innerHTML = fileContents.system['gui.frag.html'];
           document.body.appendChild(guiHTML);
           // Hide user prompt and show main menu
-          document.getElementById("bootScreen").style.display = "none";
+          document.getElementById("crtAndBootContainer").style.display = "none";
         }
         if (fileContents.system['gui.css']) {
           let styleElement = document.createElement('style');
