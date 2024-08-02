@@ -42,12 +42,15 @@
   margin: auto;
   width: 750px;
   height: 115px;
+  box-shadow: inset 0px 0px 2px 0px #000000a6;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 
 .standShadow {
   height: 97px;
   width: 100%;
-  background: radial-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0) 100%);
+  background: radial-gradient(#00000066 0%, #00000000 60%, #00000000 100%);
 }
 
 #screen {
