@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /appStore/*
 Disallow: /programs/*
 Disallow: /documents/*
 Disallow: /system/*
