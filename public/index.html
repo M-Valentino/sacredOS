@@ -41,12 +41,14 @@
             <button id="closeAbout" class="biosButton">Ok</button>
           </div>
           <hr class="biosHrMain mb-20" />
-          <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-          <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
-          <input type="file" id="fileInput" style="display:none;">
-          <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
-          <span id="sysChecks">
+          <section id="bootOptions">
+            <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
+            <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
+            <input type="file" id="fileInput" style="display:none;">
+            <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
             <hr class="biosHrSub mt-20" />
+          </section>
+          <span id="sysChecks">
             <div class="biosTextMain mt-20">System Checks</div>
             <div id="screenRes" class="biosTextSub"></div>
             <div id="screenResWarning" class="warning"></div>
@@ -60,11 +62,10 @@
             <div id="userAgentWarning" class="warning"></div>
 
           </span>
-          <span id="freshInstallInfo">
-            <hr class="biosHrSub mt-20" />
+          <section id="freshInstallInfo">
             <div class="biosTextMain mt-20">Compiling OS From Source</div>
             <div id="compile" class="biosTextSub"></div>
-          </span>
+          </section>
         </div>
       </div>
     </div>
@@ -173,6 +174,8 @@
     });
 
     document.getElementById("defaultSettings").addEventListener("click", async function () {
+      const bootOptions = document.getElementById("bootOptions");
+      bootOptions.remove()
       defaultFileContents = await loadfileContents(fileTable);
       fileContents = defaultFileContents;
       afterFileContentLoaded();
