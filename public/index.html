@@ -26,6 +26,7 @@
 </head>
 
 <body id="screen">
+  <div class="crtBorder">
   <div id="bootScreen">
     <header class="flexBetween">
       <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
@@ -37,9 +38,9 @@
     </div>
     <hr class="biosHrMain mb-20" />
     <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-    <button id="uploadJson" class="biosButton mt-40 mr-20">Yes, boot with uploaded disk</button>
+    <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
     <input type="file" id="fileInput" style="display:none;">
-    <button id="defaultSettings" class="biosButton mt-40">No, Continue with fresh install</button>
+    <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
     <span id="sysChecks">
       <hr class="biosHrSub mt-20" />
       <div class="biosTextMain mt-20">System Checks</div>
@@ -60,6 +61,7 @@
       <div class="biosTextMain mt-20">Compiling OS From Source</div>
       <div id="compile" class="biosTextSub"></div>
     </span>
+  </div>
   </div>
   <!-- <footer id="privPol"><a href="/privacyPolicy.html">Privacy Policy</a></footer> -->
   <script>
