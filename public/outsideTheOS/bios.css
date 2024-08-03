@@ -236,3 +236,20 @@ screen and (max-height: 780px) {
     box-shadow: unset;
   }
 }
+
+footer {
+  margin-top: 30px;
+  padding-bottom: 10px;
+  color: #e7e7e7;
+  text-align: center;
+}
+
+footer a {
+  color: #fff;
+}
+
+.eighty8x31Row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-evenly;
+}
