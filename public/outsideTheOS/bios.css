@@ -15,7 +15,7 @@
   padding-left: 60px;
   padding-right: 60px;
   padding-top: 60px;
-  padding-bottom: 100px;
+  padding-bottom: 45px;
   background: linear-gradient(45deg, #ded8bd 0%, #fffae2 100%);
   border-radius: 8px;
   box-shadow: -0.5px 0.5px 0px 1px #ded8bd60;
@@ -67,6 +67,44 @@
   height: 97px;
   width: 100%;
   background: radial-gradient(#00000066 0%, #00000000 60%, #00000000 100%);
+}
+
+#powerButtonContainer {
+  position: relative;
+  width: fit-content;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#powerButton {
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, #444 0%, #222 40%, #000 100%);
+  border: 2px solid #000;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+#powerButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #fff 0%, #ddd 40%, #aaa 100%);
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px #999, inset -1px -1px 2px #fff;
+}
+
+.powerButtonOn {
+  box-shadow: inset 2px 2px 5px #000, inset -2px -2px 5px #000, 0 0 2px #000;
+}
+
+.powerButtonOff {
+  box-shadow: inset 2px 2px 5px #000, inset -2px -2px 5px #666, 0 0 4px #000;
 }
 
 #screen {

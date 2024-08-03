@@ -68,6 +68,9 @@
             </section>
           </div>
         </div>
+        <div id="powerButtonContainer">
+          <div id="powerButton" class="powerButtonOn"></div>
+        </div>
       </div>
     </div>
     <div class="crtStandContainer">
@@ -99,6 +102,27 @@
 
     document.getElementById("closeAbout").addEventListener("click", function () {
       document.getElementById("aboutDialog").style.display = "none";
+    });
+
+    let powerOn = true;
+    document.getElementById("powerButton").addEventListener("click", function () {
+      if (powerOn) {
+        let powerButton = document.querySelector(".powerButtonOn");
+        powerButton.classList.remove("powerButtonOn");
+        powerButton.classList.add("powerButtonOff");
+        // Makes boot screen black
+        document.getElementById("bootScreen").style.filter = "brightness(0) saturate(100%)";
+        // Disables bios buttons
+        document.getElementById("scanLines").style.pointerEvents = "auto";
+        powerOn = false
+      } else {
+        let powerButton = document.querySelector(".powerButtonOff");
+        powerButton.classList.remove("powerButtonOff");
+        powerButton.classList.add("powerButtonOn");
+        document.getElementById("bootScreen").style.filter = "none";
+        document.getElementById("scanLines").style.pointerEvents = "none";
+        powerOn = true;
+      }
     });
 
     ////////// System Check Code //////////
