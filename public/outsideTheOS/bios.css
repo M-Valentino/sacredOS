@@ -6,6 +6,7 @@
 .crtborderHighlight {
   background: linear-gradient(35deg, #b9b39c 10%, #fffef8 70%, #fffffe 100%);
   border-radius: 10px;
+  box-shadow: inset 0px 0px 1px 1.5px #ded8bd40;
   padding: 3px;
   width: fit-content;
 }
@@ -15,9 +16,9 @@
   padding-right: 60px;
   padding-top: 60px;
   padding-bottom: 100px;
-  background: rgb(255, 250, 226);
   background: linear-gradient(45deg, #ded8bd 0%, #fffae2 100%);
   border-radius: 8px;
+  box-shadow: -0.5px 0.5px 0px 1px #ded8bd60;
   width: calc((70vh + 120px * 1.25));
 }
 
