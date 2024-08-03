@@ -250,6 +250,7 @@ screen and (max-height: 780px) {
     padding: 0;
     background-color: #000;
     width: unset;
+    box-shadow: unset;
   }
 
   .crtborderHighlight {
@@ -262,6 +263,8 @@ screen and (max-height: 780px) {
     border: unset;
   }
 
+  #powerButtonContainer
+  #powerButton,
   .crtStand,
   .crtStandContainer,
   .standShadow,
