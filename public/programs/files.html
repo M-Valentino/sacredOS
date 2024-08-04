@@ -136,7 +136,7 @@
         var documentFiles = document.querySelectorAll(".document,.folder");
 
         documentFiles.forEach(file => {
-          var delIcon = document.createElement('img');
+          let delIcon = document.createElement('img');
           delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).small;
           delIcon.classList = "delIcon";
           file.appendChild(delIcon); // Append delIcon to each element with the 'document' class
@@ -146,7 +146,7 @@
         document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
         mode = MODES.OPEN;
         // Remove the delIcon elements when switching back to OPEN mode
-        var delIcons = document.querySelectorAll('.delIcon');
+        let delIcons = document.querySelectorAll('.delIcon');
         delIcons.forEach(icon => {
           icon.parentNode.removeChild(icon);
         });
@@ -272,7 +272,7 @@
         }, false);
 
         button.appendChild(document.createElement('br'));
-        var icon = document.createElement('img');
+        let icon = document.createElement('img');
 
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
@@ -333,7 +333,7 @@
       // Ensure diskBackup is a string that contains valid JSON before initiating download
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
       const d = new Date();
-      var element = document.createElement('a');
+      let element = document.createElement('a');
       element.setAttribute('href', dataStr);
       element.setAttribute('download', `SacredOSBackup-${d.toISOString()}.json`);
       element.style.display = 'none';
@@ -360,7 +360,7 @@
 
     window.addEventListener("message", function (e) {
       if (e.data.startsWith("AF:")) {
-        var jsonString = e.data.substring(3);
+        const jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
           if (firstLoad) {
