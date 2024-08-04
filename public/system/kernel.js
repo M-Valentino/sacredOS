@@ -256,13 +256,52 @@ function deleteFile(directoryPath, fileContents, fileName) {
   }
 }
 
-
 function updateColorVariable(variableName, newColor) {
   const regex = new RegExp(`(${variableName}: ).*?;`);
   fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
     regex,
     `$1 ${newColor};`
   );
+}
+
+function changeBGMode(mode) {
+  if (mode === "stretch") {
+    let regex = new RegExp(`(--bgRepeat: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 no-repeat;`
+    );
+
+    regex = new RegExp(`(--bgAttachment: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 fixed;`
+    );
+
+    regex = new RegExp(`(--bgSize: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 100% 100%;`
+    );
+  } else if (mode === "tile") {
+    let regex = new RegExp(`(--bgRepeat: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 initial;`
+    );
+
+    regex = new RegExp(`(--bgAttachment: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 initial;`
+    );
+
+    regex = new RegExp(`(--bgSize: ).*?;`);
+    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+      regex,
+      `$1 initial;`
+    );
+  }
 }
 
 window.onmessage = function (e) {
@@ -317,6 +356,9 @@ window.onmessage = function (e) {
       var jsonString = e.data.substring(6);
       updateColorVariable("--secColor", jsonString);
       return;
+    } else if (e.data.startsWith("U:BGM-")) {
+      var jsonString = e.data.substring(6);
+      changeBGMode(jsonString);
     } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system["gui.css"]) {
         e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");

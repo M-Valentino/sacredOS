@@ -1,4 +1,4 @@
-<!--width="270" height="265"-->
+<!--width="270" height="325"-->
 <!DOCTYPE html>
 <html>
 
@@ -40,6 +40,10 @@
 
     .mb-10 {
       margin-bottom: 10px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
     }
 
     h3 {
@@ -103,12 +107,18 @@
         onclick="document.getElementById('colorPicker4').click()">Change</button>
     </div>
   </div>
-  <br />
-  <h3>Time Format</h3>
+  <h3 class="mt-20">Background</h3>
+  <label for="backgroundMode">Background Mode: </label>
+  <select id="backgroundMode" class="oSButton osElemBase" onchange="changeBackgroundMode(this.value)">
+    <option value="stretch">Stretch</option>
+    <option value="tile">Tile</option>
+  </select>
+  <h3 class="mt-20">Time Format</h3>
   <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF24h`)">
   <label for="24h">24 hours</label>
   <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF12h`)">
   <label for="12h">12 hours</label>
+
   <script>
     window.top.postMessage("REQ:SS", "*");
     const settingsFilePath = "system/settings.json";
@@ -125,6 +135,24 @@
     }
     function changeSecColorDSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
+    }
+
+    function changeBGModeStretchSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'no-repeat');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'fixed');
+        document.querySelector(':root').style.setProperty('--bgSize', '100% 100%');
+      `);
+    }
+
+    function changeBGModeTileSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'initial');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'initial');
+        document.querySelector(':root').style.setProperty('--bgSize', 'initial');
+      `);
     }
 
     function changePrimColor(color) {
@@ -188,6 +216,16 @@
       changeSecColor(secColor);
       changeSecColorLight(secColorLight);
       changeSecColorDark(secColorDark);
+    }
+
+    function changeBackgroundMode(mode) {
+      if (mode === "stretch") {
+        window.top.postMessage(`U:BGM-stretch`, "*");
+        window.top.postMessage(changeBGModeStretchSysWide());
+      } else {
+        window.top.postMessage(`U:BGM-tile`, "*");
+        window.top.postMessage(changeBGModeTileSysWide());
+      }
     }
 
     window.onmessage = function (e) {
