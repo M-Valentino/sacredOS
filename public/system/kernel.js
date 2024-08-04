@@ -189,6 +189,18 @@ function deleteFileFromTable(fileTable, fileName) {
   return false; // File not found
 }
 
+function deleteFolderContents(folderContents) {
+  for (const key in folderContents) {
+    if (folderContents.hasOwnProperty(key)) {
+      if (typeof folderContents[key] === "object") {
+        // Recursively delete contents if it's a folder
+        deleteFolderContents(folderContents[key]);
+      }
+      delete folderContents[key];
+    }
+  }
+}
+
 function deleteFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
@@ -201,8 +213,12 @@ function deleteFile(directoryPath, fileContents, fileName) {
     fileContents.hasOwnProperty(currentDirectory)
   ) {
     if (directories.length === 0) {
-      // Reached the final directory, delete the file if it exists
+      // Reached the final directory, delete the file or folder if it exists
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
+        if (typeof fileContents[currentDirectory][fileName] === "object") {
+          // If it's a folder, recursively delete all contents
+          deleteFolderContents(fileContents[currentDirectory][fileName]);
+        }
         delete fileContents[currentDirectory][fileName];
 
         // Remove the filename from fileTable.json
@@ -239,6 +255,7 @@ function deleteFile(directoryPath, fileContents, fileName) {
     }
   }
 }
+
 
 function updateColorVariable(variableName, newColor) {
   const regex = new RegExp(`(${variableName}: ).*?;`);
