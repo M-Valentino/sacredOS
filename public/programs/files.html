@@ -133,7 +133,7 @@
         document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
         mode = MODES.DELETE;
 
-        var documentFiles = document.querySelectorAll(".document");
+        var documentFiles = document.querySelectorAll(".document,.folder");
 
         documentFiles.forEach(file => {
           var delIcon = document.createElement('img');
@@ -276,6 +276,7 @@
 
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
+          button.classList.add("folder");
         } else {
           icon.src = documentImage;
           button.classList.add("document");
