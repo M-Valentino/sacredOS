@@ -1,10 +1,17 @@
-<!--width="250" height="230"-->
+<!--width="270" height="265"-->
 <!DOCTYPE html>
 <html>
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --primColor: #ea9318;
+      --secColor: #ccc;
+      --secColorLight: #e7e7e7;
+      --secColorDark: #aaa;
+    }
+
     .setting {
       margin-top: 5px;
       height: 24px;
@@ -31,6 +38,10 @@
       transform: translateY(5px);
     }
 
+    .mb-10 {
+      margin-bottom: 10px;
+    }
+
     h3 {
       margin: 0;
     }
@@ -39,13 +50,20 @@
 
 <body class="program">
   <h3>Colors</h3>
+  <div class="setting mb-10">
+    <label for="themeSelector">Select Theme: </label>
+    <select id="themeSelector" class="oSButton osElemBase" onchange="applyTheme(this.value)">
+      <option value="default">Default Theme</option>
+      <option value="rastafarian">Rastafarian</option>
+      <option value="blackWhite">Black and White</option>
+    </select>
+  </div>
   <div class="setting">
     <div class="flexRow">
       <div class="flexRow">
         <div class="text">Accent Color</div>
-        <div class="colorBox" style="background-color: var(--primColor);"></div>
+        <div class="colorBox" id="primColorBox" style="background-color: var(--primColor);"></div>
       </div>
-      <!-- Hidden color picker input -->
       <input type="color" id="colorPicker" style="display:none" onchange="changePrimColor(this.value)" />
       <button class="oSButton osElemBase change"
         onclick="document.getElementById('colorPicker').click()">Change</button>
@@ -55,105 +73,138 @@
     <div class="flexRow">
       <div class="flexRow">
         <div class="text">Main Color</div>
-        <div class="colorBox" style="background-color: var(--secColor);"></div>
+        <div class="colorBox" id="secColorBox" style="background-color: var(--secColor);"></div>
       </div>
       <input type="color" id="colorPicker2" style="display:none" onchange="changeSecColor(this.value)" />
       <button class="oSButton osElemBase change"
         onclick="document.getElementById('colorPicker2').click()">Change</button>
     </div>
-    <div class="setting">
+  </div>
+  <div class="setting">
+    <div class="flexRow">
       <div class="flexRow">
-        <div class="flexRow">
-          <div class="text">Highlight Color</div>
-          <div class="colorBox" style="background-color: var(--secColorLight);"></div>
-        </div>
-        <input type="color" id="colorPicker3" style="display:none" onchange="changeSecColorLight(this.value)" />
-        <button class="oSButton osElemBase change"
-          onclick="document.getElementById('colorPicker3').click()">Change</button>
+        <div class="text">Highlight Color</div>
+        <div class="colorBox" id="secColorLightBox" style="background-color: var(--secColorLight);"></div>
       </div>
-      <div class="setting">
-        <div class="flexRow">
-          <div class="flexRow">
-            <div class="text">Border Color</div>
-            <div class="colorBox" style="background-color: var(--secColorDark);"></div>
-          </div>
-          <input type="color" id="colorPicker4" style="display:none" onchange="changeSecColorDark(this.value)" />
-          <button class="oSButton osElemBase change"
-            onclick="document.getElementById('colorPicker4').click()">Change</button>
-        </div>
+      <input type="color" id="colorPicker3" style="display:none" onchange="changeSecColorLight(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker3').click()">Change</button>
+    </div>
+  </div>
+  <div class="setting">
+    <div class="flexRow">
+      <div class="flexRow">
+        <div class="text">Border Color</div>
+        <div class="colorBox" id="secColorDarkBox" style="background-color: var(--secColorDark);"></div>
       </div>
-      <br />
-      <h3>Time Format</h3>
-      <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF24h`)">
-      <label for="24h">24 hours</label>
-      <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF12h`)">
-      <label for="12h">12 hours</label>
-      <script>
-        window.top.postMessage("REQ:SS", "*");
-        const settingsFilePath = "system/settings.json";
-        window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
-        function changePrimColorSystemWide(color) {
-          return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
-        }
-        function changeSecColorSystemWide(color) {
-          return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
-        }
-        function changeSecColorLSystemWide(color) {
-          return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
-        }
-        function changeSecColorDSystemWide(color) {
-          return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
-        }
+      <input type="color" id="colorPicker4" style="display:none" onchange="changeSecColorDark(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker4').click()">Change</button>
+    </div>
+  </div>
+  <br />
+  <h3>Time Format</h3>
+  <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF24h`)">
+  <label for="24h">24 hours</label>
+  <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF12h`)">
+  <label for="12h">12 hours</label>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    const settingsFilePath = "system/settings.json";
+    window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
 
-        function changePrimColor(color) {
-          document.querySelector(':root').style.setProperty('--primColor', color);
-          window.top.postMessage(`U:PRIMC${color}`, "*");
-          window.top.postMessage(changePrimColorSystemWide(color), "*");
+    function changePrimColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
+    }
+    function changeSecColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
+    }
+    function changeSecColorLSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
+    }
+    function changeSecColorDSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
+    }
+
+    function changePrimColor(color) {
+      document.querySelector(':root').style.setProperty('--primColor', color);
+      document.getElementById('primColorBox').style.backgroundColor = color;
+      window.top.postMessage(`U:PRIMC${color}`, "*");
+      window.top.postMessage(changePrimColorSystemWide(color), "*");
+    }
+
+    function changeSecColor(color) {
+      document.querySelector(':root').style.setProperty('--secColor', color);
+      document.getElementById('secColorBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECC${color}`, "*");
+      window.top.postMessage(changeSecColorSystemWide(color), "*");
+    }
+
+    function changeSecColorLight(color) {
+      document.querySelector(':root').style.setProperty('--secColorLight', color);
+      document.getElementById('secColorLightBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECCL${color}`, "*");
+      window.top.postMessage(changeSecColorLSystemWide(color), "*");
+    }
+
+    function changeSecColorDark(color) {
+      document.querySelector(':root').style.setProperty('--secColorDark', color);
+      document.getElementById('secColorDarkBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECCD${color}`, "*");
+      window.top.postMessage(changeSecColorDSystemWide(color), "*");
+    }
+
+    function applyTheme(theme) {
+      let primColor, secColor, secColorLight, secColorDark;
+      switch (theme) {
+        case 'default':
+          primColor = '#ea9318';
+          secColor = '#ccc';
+          secColorLight = '#e7e7e7';
+          secColorDark = '#aaa';
+          break;
+        case 'rastafarian':
+          primColor = '#28a745';
+          secColor = '#ffc107';
+          secColorLight = '#ffe630';
+          secColorDark = '#a24300';
+          break;
+        case 'blackWhite':
+          primColor = '#bbb';
+          secColor = '#dddddd';
+          secColorLight = '#fff';
+          secColorDark = '#888';
+          break;
+      }
+
+      changePrimColor(primColor);
+      changeSecColor(secColor);
+      changeSecColorLight(secColorLight);
+      changeSecColorDark(secColorDark);
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
         }
-
-        function changeSecColor(color) {
-          document.querySelector(':root').style.setProperty('--secColor', color);
-          window.top.postMessage(`U:SECC${color}`, "*");
-          window.top.postMessage(changeSecColorSystemWide(color), "*");
+        return;
+      } else if (e.data.startsWith("PH:")) {
+        const expectedPattern = `PH:[${settingsFilePath}]`;
+        if (e.data.startsWith(expectedPattern)) {
+          const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
+          document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
+          document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
         }
-
-        function changeSecColorLight(color) {
-          document.querySelector(':root').style.setProperty('--secColorLight', color);
-          window.top.postMessage(`U:SECCL${color}`, "*");
-          window.top.postMessage(changeSecColorLSystemWide(color), "*");
-        }
-
-        function changeSecColorDark(color) {
-          document.querySelector(':root').style.setProperty('--secColorDark', color);
-          window.top.postMessage(`U:SECCD${color}`, "*");
-          window.top.postMessage(changeSecColorDSystemWide(color), "*");
-        }
-
-        window.onmessage = function (e) {
-          if (e.data.startsWith("SS:")) {
-            const stylesheet = e.data.substring(3);
-            try {
-              const styleElement = document.createElement('style');
-              styleElement.type = 'text/css';
-              styleElement.innerText = stylesheet;
-              document.head.appendChild(styleElement);
-            } catch (error) {
-              console.error("Error requesting stylesheet:", error);
-            }
-            return;
-          } else if (e.data.startsWith("PH:")) {
-            const expectedPattern = `PH:[${settingsFilePath}]`;
-            if (e.data.startsWith(expectedPattern)) {
-              // Extract file content by removing the initial part of the message
-              const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
-              document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
-              document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
-            }
-          }
-        };
-
-      </script>
-
+      }
+    };
+  </script>
 </body>
 
 </html>
