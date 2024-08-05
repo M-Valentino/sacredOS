@@ -420,6 +420,9 @@ window.onmessage = function (e) {
       }
     } else if (e.data === "POPULATE-MENU") {
       populateMenu();
+    } else if (e.data.startsWith("ALERT:[")) {
+      var jsonString = e.data.substring(7);
+      createAlert(jsonString);
     }
   }
   try {

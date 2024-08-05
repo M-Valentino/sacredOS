@@ -79,7 +79,7 @@
         return;
       }
     };
-    alert("NOTE: This browser will not work on all websites. This browser works by embedding websites on iframes, and major websites like Google and YouTube disable this feature.");
+    window.top.postMessage("ALERT:[NOTE: This browser will not work on all websites. This browser works by embedding websites on iframes, and major websites like Google and YouTube disable this feature.");
   </script>
 </body>
 

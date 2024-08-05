@@ -169,6 +169,11 @@ input[type='radio'], input[type='checkbox'] {
   height: 100vh;
 }
 
+.alertText {
+  width: 300px;
+  margin: 10px;
+}
+
 ::-webkit-scrollbar {
   width: 20px;
 }

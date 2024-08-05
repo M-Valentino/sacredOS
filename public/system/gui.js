@@ -1,7 +1,9 @@
 function populateMenu() {
   let menu = document.getElementById("menuContent");
   menu.innerHTML = "";
-  const programList = JSON.parse(fileContents["system"]["fileTable.json"])["programs"];
+  const programList = JSON.parse(fileContents["system"]["fileTable.json"])[
+    "programs"
+  ];
 
   for (let i = 0; i < programList.length; i++) {
     var menuItem = document.createElement("div");
@@ -30,11 +32,13 @@ function toggleOpenmenu() {
   }
 }
 
-function createWindow(currentWindowID) {
+function createWindow(currentWindowID, xPos, yPos, isAlert) {
   let window = document.createElement("div");
   window.id = `win${currentWindowID}`;
-  window.style.zIndex = "5";
+  window.style.zIndex = isAlert ? "999999" : "5";
   window.classList = "window windowRidgeBorder";
+  window.style.left = `${xPos}px`;
+  window.style.top = `${yPos}px`;
   document.body.appendChild(window);
   return window;
 }
@@ -118,6 +122,51 @@ function createMenuBarButton(currentWindowID, programName) {
 }
 
 var windowCount = -1;
+let alertCount = -1;
+
+function createAlert(text) {
+  windowCount++;
+  alertCount++;
+
+  const currentWindowID = `${windowCount}`;
+
+  let underlay = document.createElement("div");
+  underlay.id = `underlay${currentWindowID}`;
+  underlay.style.position = "fixed";
+  underlay.style.top = 0;
+  underlay.style.left = 0;
+  underlay.style.width = "100%";
+  underlay.style.height = "100%";
+  underlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  underlay.style.zIndex = 9998; // One less than the alert window
+  document.body.appendChild(underlay);
+
+  let window = createWindow(
+    currentWindowID,
+    document.body.clientWidth / 2 - 150,
+    200, true
+  );
+
+  let header = createHeader(currentWindowID, "Alert", 1);
+  window.appendChild(header);
+
+  let message = document.createElement("p");
+  message.classList.add("alertText");
+  message.textContent = text;
+  window.appendChild(message);
+
+  let okButton = document.createElement("button");
+  okButton.id = `close${currentWindowID}`; // Unique ID for the close button
+  okButton.classList = "osElemBase oSButton windowControlButton";
+  okButton.textContent = " OK ";
+  okButton.style.margin = "0 auto 10px";
+  okButton.style.display = "block";
+  okButton.onclick = function () {
+    closeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
+    document.body.removeChild(underlay); // Remove the underlay when the alert is closed
+  };
+  window.appendChild(okButton);
+}
 
 function openProgram(programName, data, dontToggleMenu, withFile) {
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
@@ -127,7 +176,7 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   }
   windowCount++;
   const currentWindowID = windowCount;
-  let window = createWindow(currentWindowID);
+  let window = createWindow(currentWindowID, 0, 0);
 
   const buttonCount = noResizeMatch ? 2 : 3;
   let header = createHeader(currentWindowID, programName, buttonCount);
@@ -497,7 +546,11 @@ function isContain(point, rect) {
 
 function closeProgram(windowID, menuBarButtonID) {
   document.getElementById(windowID).outerHTML = "";
-  document.getElementById(menuBarButtonID).outerHTML = "";
+  let menuBarButton = document.getElementById(menuBarButtonID);
+  // Alerts don't have a menu bar button
+  if (menuBarButton !== null) {
+    menuBarButton.outerHTML = "";
+  }
 }
 
 function toggleMaximizeProgram(windowID, maximizeButtonID) {
