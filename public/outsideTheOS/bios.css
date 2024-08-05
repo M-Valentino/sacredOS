@@ -171,7 +171,7 @@
 }
 
 .biosTextMain {
-  font-size: 20px;
+  font-size: 18px;
   font-family: 'Courier New', Courier, monospace;
   color: #fff;
 }
@@ -181,6 +181,14 @@
   margin-top: 10px;
   font-family: 'Courier New', Courier, monospace;
   color: #e7e7e7;
+}
+
+h2 {
+  font-weight: 500;
+  font-size: 22px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
+  margin-bottom: 16px;
 }
 
 #closeAbout {

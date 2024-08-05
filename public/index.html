@@ -57,7 +57,7 @@
               <hr class="biosHrSub mt-20" />
             </section>
             <section id="sysChecks">
-              <div class="biosTextMain mt-20">System Checks</div>
+              <h2 class="mt-20">System Checks:</h2>
               <div id="screenRes" class="biosTextSub"></div>
               <div id="screenResWarning" class="warning"></div>
               <div id="inputDev" class="biosTextSub"></div>
@@ -70,7 +70,7 @@
               <div id="userAgentWarning" class="warning"></div>
             </section>
             <section id="freshInstallInfo">
-              <div class="biosTextMain mt-20">Compiling OS From Source</div>
+              <h2 class="mt-20">Compiling OS From Source:</h2>
               <div id="compile" class="biosTextSub"></div>
             </section>
           </div>
@@ -271,7 +271,7 @@
               tempFileContent[key][item] = await fetchContent(fileURL);
               compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
               lineCount++;
-             
+
               while (lineCount > 20) {
                 compileElement.removeChild(compileElement.firstChild);
                 lineCount--;
