@@ -14,13 +14,19 @@ async function copyData(url, targetFilePath) {
   return false;
 }
 
-if (copyData("/appStore/apps/blueFuture/blueFuture.css", "documents/blueFuture.css")
-&& copyData("/appStore/apps/blueFuture/installationInstructions.txt", "documents/installationInstructions.txt")
-
+if (
+  copyData(
+    "/appStore/apps/blueFuture/blueFuture.css",
+    "documents/blueFuture.css"
+  ) &&
+  copyData(
+    "/appStore/apps/blueFuture/installationInstructions.txt",
+    "documents/installationInstructions.txt"
+  )
 ) {
-  alert(
-    'Blue Future downloaded! Open your documents folder to read instructions on completing the installation.'
+  window.top.postMessage(
+    "ALERT:[Blue Future downloaded! Open your documents folder to read instructions on completing the installation."
   );
 } else {
-  alert("Could Not download Blue Future.");
+  window.top.postMessage("ALERT:[Could Not download Blue Future.");
 }

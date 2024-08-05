@@ -244,7 +244,7 @@
         document.getElementById('video-frame').src = embedUrl;
         applyFilter(); // Apply the filter after loading the video
       } else {
-        alert('Invalid YouTube URL');
+        window.top.postMessage("ALERT:[Invalid YouTube URL");
       }
     }
 

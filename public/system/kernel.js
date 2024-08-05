@@ -36,7 +36,7 @@ function findFileContents(directoryPath, fileContents, fileName) {
 
 function checkFileExistsAndCreate(directory, fileName) {
   if (directory.hasOwnProperty(fileName)) {
-    alert("A file with that name already exists!");
+    window.top.postMessage("ALERT:[A file with that name already exists!");
   } else {
     directory[fileName] = "";
   }
@@ -109,7 +109,7 @@ function makeFile(directoryPath, fileContents, fileName) {
       makeFile(nestedDirectoryPath, fileContents[currentDirectory], fileName);
     }
   } else {
-    alert("Could not create new file here.");
+    window.top.postMessage("ALERT:[Could not create new file here.");
     return;
   }
 

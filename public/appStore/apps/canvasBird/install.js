@@ -17,9 +17,7 @@ async function copyData() {
 window.top.postMessage(`MK:F[programs/canvasBird.html]`, "*");
 if (copyData()) {
   window.top.postMessage("POPULATE-MENU");
-  alert(
-    'Canvas Bird installed!'
-  );
+  window.top.postMessage("ALERT:[Canvas Bird installed!");
 } else {
-  alert("Could Not install Canvas Bird.");
+  window.top.postMessage("ALERT:[Could Not install Canvas Bird.");
 }

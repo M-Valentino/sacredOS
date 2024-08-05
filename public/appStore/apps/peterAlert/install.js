@@ -17,9 +17,7 @@ async function copyData() {
 window.top.postMessage(`MK:F[programs/peterAlert.html]`, "*");
 if (copyData()) {
   window.top.postMessage("POPULATE-MENU");
-  alert(
-    'Peter Alert installed!'
-  );
+  window.top.postMessage("ALERT:[Peter Alert installed!");
 } else {
-  alert("Could Not install Peter Alert.");
+  window.top.postMessage("ALERT:[Could Not install Peter Alert.");
 }
