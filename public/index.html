@@ -269,13 +269,10 @@
             if (typeof item === 'string') {
               let fileURL = `${basePath}${key}/${item}`;
               tempFileContent[key][item] = await fetchContent(fileURL);
-
-              // Append line and increment line count
               compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
               lineCount++;
-
-              // Remove lines if more than 18 are present
-              while (lineCount > 18) {
+             
+              while (lineCount > 20) {
                 compileElement.removeChild(compileElement.firstChild);
                 lineCount--;
               }
