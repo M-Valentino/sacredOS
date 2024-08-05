@@ -15,20 +15,23 @@
     }
   ],
   "programs": [
-    "files.html",
-    "doug.html",
-    "youTubeFilter.html",
-    "notepad.html",
-    "calculator.html",
-    "tetrJS.html",
-    "mBO.html",
-    "appStore.html",
-    "browser.html",
-    "settings.html",
-    "about.html"
+    {
+      "default": [
+        "files.html",
+        "doug.html",
+        "youTubeFilter.html",
+        "notepad.html",
+        "calculator.html",
+        "tetrJS.html",
+        "mBO.html",
+        "appStore.html",
+        "browser.html",
+        "settings.html",
+        "about.html"
+      ]
+    }
   ],
   "documents": [
     "message.txt"
-    
   ]
 }

@@ -106,7 +106,7 @@
     function openInNotepad(key) {
       const message = {
         action: "openProgram",
-        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["default"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
       };
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
     }
