@@ -5,16 +5,36 @@ function populateMenu() {
     "programs"
   ];
 
-  for (let i = 0; i < programList.length; i++) {
+  function appendToMenu(program, nested, dir) {
     var menuItem = document.createElement("div");
-    menuItem.innerHTML = programList[i];
+    menuItem.innerHTML = program;
     menuItem.classList = "oSButton osElemBase";
     menuItem.onclick = menuItem.onclick = (function (programName) {
       return function () {
-        openProgram(programName, fileContents.programs[programName], true);
+        if (nested) {
+          openProgram(
+            programName,
+            fileContents.programs[dir][programName],
+            true
+          );
+        } else {
+          openProgram(programName, fileContents.programs[programName], true);
+        }
       };
-    })(programList[i]);
+    })(program);
     menu.appendChild(menuItem);
+  }
+
+  for (let i = 0; i < programList.length; i++) {
+    if (typeof programList[i] === "object") {
+      const nestedFolder = Object.keys(programList[i])[0];
+      console.log(nestedFolder);
+      for (let j = 0; j < programList[i][nestedFolder].length; j++) {
+        appendToMenu(programList[i][nestedFolder][j], true, nestedFolder);
+      }
+    } else if (typeof programList[i] === "string") {
+      appendToMenu(programList[i], false);
+    }
   }
 }
 
@@ -138,7 +158,8 @@ function createAlert(text) {
   let window = createWindow(
     currentWindowID,
     document.body.clientWidth / 2 - 150,
-    200, true
+    200,
+    true
   );
 
   let header = createHeader(currentWindowID, "Alert", 1);
