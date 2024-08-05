@@ -132,13 +132,7 @@ function createAlert(text) {
 
   let underlay = document.createElement("div");
   underlay.id = `underlay${currentWindowID}`;
-  underlay.style.position = "fixed";
-  underlay.style.top = 0;
-  underlay.style.left = 0;
-  underlay.style.width = "100%";
-  underlay.style.height = "100%";
-  underlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-  underlay.style.zIndex = 9998; // One less than the alert window
+  underlay.classList.add("underlay");
   document.body.appendChild(underlay);
 
   let window = createWindow(
