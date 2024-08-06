@@ -5,7 +5,7 @@
 
 .stickyNoteContainer {
   position: relative;
-  transform: translate(20px, -220px);
+  transform: translateY(-220px);
   filter: drop-shadow(-1px 0px 0.375px #00000020);
   height: 0;
 }
@@ -319,6 +319,10 @@ footer {
   padding-bottom: 10px;
   color: #e7e7e7;
   text-align: center;
+  word-wrap: break-word;
+  width: 90%;
+  max-width: 700px;
+  margin: auto;
 }
 
 footer a {
