@@ -27,7 +27,7 @@
 .stickyNoteText {
   font-family: cursive;
   color: #101010a0;
-  transform: rotate(-14deg) translate(-8px,-10px);
+  transform: rotate(-14deg) translate(-8px, -10px);
   font-size: 20px;
 }
 
@@ -299,7 +299,9 @@ screen and (max-height: 780px) {
     border: unset;
   }
 
-  #powerButtonContainer #powerButton,
+  .stickyNoteContainer,
+  #powerButtonContainer,
+  #powerButton,
   .crtStand,
   .crtStandContainer,
   .standShadow,
