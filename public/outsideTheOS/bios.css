@@ -6,7 +6,7 @@
 .stickyNoteContainer {
   position: relative;
   transform: translateY(-190px);
-  filter: drop-shadow(-1px -0.25px 0.5px #00000020);
+  filter: drop-shadow(-1px 0px 0.375px #00000020);
 }
 
 .stickyNoteCurve {
