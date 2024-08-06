@@ -16,61 +16,67 @@
     p {
       margin-top: 5px;
     }
+
+    main {
+      width: 800px;
+      margin: auto;
+    }
   </style>
 </head>
 
 <body class="program">
-  <h1>
-    About Sacred OS
-  </h1>
-  <h2>
-    Intro
-  </h2>
-  <p>
-    Sacred OS is an operating system that runs in your web browser and is written in vanilla JavaScript, which
-    might actually be the first of it's kind. Sacred OS uses a bootloader so you can use the OS with your saved
-    settings, programs, files, etc. Sacred OS is inspired by operating systems from the Windows 9x era. It is
-    open source, and <a target="_blank" rel="noopener noreferrer" href="https://github.com/M-Valentino/sacredOS">
-      the code can be found here</a>.
-  </p>
-  <h2>
-    How it works
-  </h2>
-  <p>
-    Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernel, programs,
-    and more are all stored here. The bootloader writes to this object either by uploading a disk backup or by
-    fetching all the necessary files and storing them (what happens when you boot from a fresh install). Sacred
-    OS and the bootloader uses a file table so that they can properly index files (like NTFS or ext4).
-  </p>
-  <p>
-    In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
-    contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
-    the system's main style sheet or writing to the disk.
-  </p>
-  <h2>
-    Current State
-  </h2>
-  <p>
-    File manipulation is limited at the moment in Sacred OS. Currently you can't create new folders, and rename files,
-    but I'm working on it. I'm also working on a way to let users update their saved JSON disk backups to the latest OS
-    version.
-  </p>
-  <h2>Credits</h2>
-  <ul>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/Diegogagan2587/Calculator">Diegogagan2587
-        - Calculator<sup>*</sup></a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://erikhoudini.com/tools/MagicianBoyOS">Erik Houdini -
-        Magic Boy OS</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://reduxflakes.neocities.org">Redux Flakes - Default
-        Desktop Wallpaper</a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/simonlc/tetr.js">simonlc -
-        Tetr.js<sup>*</sup></a></li>
-    <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/xrainoxu">xrainoxu - Window resize
-        functionality</a></li>
-  </ul>
-  <br />
-  <sup>*</sup>Program that has been significantly modified from it's source code.
-
+  <main>
+    <h1>
+      About Sacred OS
+    </h1>
+    <h2>
+      Intro
+    </h2>
+    <p>
+      Sacred OS is an operating system that runs in your web browser and is written in vanilla JavaScript. Sacred OS uses a bootloader so you can use the OS with your saved
+      settings, programs, files, etc. Sacred OS is inspired by operating systems from the Windows 9x era. It is
+      open source, and <a target="_blank" rel="noopener noreferrer" href="https://github.com/M-Valentino/sacredOS">
+        the code can be found here</a>.
+    </p>
+    <h2>
+      How it works
+    </h2>
+    <p>
+      Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernel, programs,
+      and more are all stored here. The bootloader writes to this object either by uploading a disk backup or by
+      fetching all the necessary files and storing them (what happens when you boot from a fresh install). Sacred
+      OS and the bootloader uses a file table so that they can properly index files (like NTFS or ext4).
+    </p>
+    <p>
+      In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
+      contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
+      the system's main style sheet or writing to the disk.
+    </p>
+    <h2>
+      Current State
+    </h2>
+    <p>
+      File manipulation is limited at the moment in Sacred OS. Currently you can't create new folders, and rename files,
+      but I'm working on it. I'm also working on a way to let users update their saved JSON disk backups to the latest
+      OS
+      version.
+    </p>
+    <h2>Credits</h2>
+    <ul>
+      <li><a target="_blank" rel="noopener noreferrer"
+          href="https://github.com/Diegogagan2587/Calculator">Diegogagan2587
+          - Calculator<sup>*</sup></a></li>
+      <li><a target="_blank" rel="noopener noreferrer" href="https://erikhoudini.com/tools/MagicianBoyOS">Erik Houdini -
+          Magic Boy OS</a></li>
+      <li><a target="_blank" rel="noopener noreferrer" href="https://reduxflakes.neocities.org">Redux Flakes - Default
+          Desktop Wallpaper</a></li>
+      <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/simonlc/tetr.js">simonlc -
+          Tetr.js<sup>*</sup></a></li>
+      <li><a target="_blank" rel="noopener noreferrer" href="https://github.com/xrainoxu">xrainoxu - Window resize
+          functionality</a></li>
+    </ul>
+    <sup>*</sup>Program that has been significantly modified from it's source code.
+  </main>
 </body>
 
 </html>

@@ -139,7 +139,7 @@
   background-color: #000;
 }
 
-#aboutDialog {
+#helpDialog {
   display: none;
   position: absolute;
   top: 150px;
@@ -153,7 +153,7 @@
 }
 
 @media only screen and (min-width:680px) {
-  #aboutDialog {
+  #helpDialog {
     padding: 20px;
     width: 600px;
     left: calc(50% - 345px);
@@ -161,14 +161,14 @@
 }
 
 @media only screen and (max-width:679px) {
-  #aboutDialog {
+  #helpDialog {
     padding: 16px;
     width: unset;
     left: 0;
   }
 }
 
-#aboutDialog a {
+#helpDialog a {
   text-decoration: none;
   color: #ff0;
 }
@@ -219,7 +219,7 @@ h2 {
   margin-bottom: 16px;
 }
 
-#closeAbout {
+#closeHelp {
   display: block;
   margin: auto;
 }

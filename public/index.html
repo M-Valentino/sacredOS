@@ -50,14 +50,13 @@
         <div class="innerCrtBorder">
           <div id="bootScreen">
             <header class="flexBetween">
-              <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="about" class="biosButton">About</button>
+              <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="help" class="biosButton">Help</button>
             </header>
-            <div id="aboutDialog">
-              <p>Sacred OS is a Windows 9x inspired operating system written in Vanilla JS where every HTML
-                file is executable. It was created by <a href="https://github.com/M-Valentino/sacredOS">Mark
-                  Valentino.</a>
+            <div id="helpDialog">
+              <p>JSON disk backups allow you to back up files that you have modified, added, or deleted. You can create
+                these backups in the Files program in Sacred OS. The backups can be saved to your real computer.
               </p>
-              <button id="closeAbout" class="biosButton">Ok</button>
+              <button id="closeHelp" class="biosButton">Ok</button>
             </div>
             <hr class="biosHrMain mb-20" />
             <section id="bootOptions">
@@ -121,12 +120,12 @@
   <div id="scanLines"></div>
 
   <script>
-    document.getElementById("about").addEventListener("click", function () {
-      document.getElementById("aboutDialog").style.display = "initial";
+    document.getElementById("help").addEventListener("click", function () {
+      document.getElementById("helpDialog").style.display = "initial";
     });
 
-    document.getElementById("closeAbout").addEventListener("click", function () {
-      document.getElementById("aboutDialog").style.display = "none";
+    document.getElementById("closeHelp").addEventListener("click", function () {
+      document.getElementById("helpDialog").style.display = "none";
     });
 
     let powerOn = true;
@@ -218,8 +217,7 @@
             "mBO.html",
             "appStore.html",
             "browser.html",
-            "settings.html",
-            "about.html"
+            "settings.html"
           ]
         }
       ],
