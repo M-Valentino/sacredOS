@@ -279,6 +279,27 @@ h2 {
   display: none;
 }
 
+footer {
+  margin-top: 30px;
+  padding-bottom: 10px;
+  color: #e7e7e7;
+  text-align: center;
+  word-wrap: break-word;
+  width: 90%;
+  max-width: 700px;
+  margin: auto;
+}
+
+footer a {
+  color: #fff;
+}
+
+.eighty8x31Row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
 @media only screen and (max-width:1023px),
 screen and (max-height: 780px) {
   .crtBorder {
@@ -317,25 +338,8 @@ screen and (max-height: 780px) {
     min-height: 90vh;
     box-shadow: unset;
   }
-}
 
-footer {
-  margin-top: 30px;
-  padding-bottom: 10px;
-  color: #e7e7e7;
-  text-align: center;
-  word-wrap: break-word;
-  width: 90%;
-  max-width: 700px;
-  margin: auto;
-}
-
-footer a {
-  color: #fff;
-}
-
-.eighty8x31Row {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-evenly;
+  footer {
+    width: 98%;
+  }
 }
