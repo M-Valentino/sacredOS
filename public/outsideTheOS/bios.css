@@ -5,17 +5,19 @@
 
 .stickyNoteContainer {
   position: relative;
-  transform: translateY(-190px);
+  transform: translate(20px, -220px);
   filter: drop-shadow(-1px 0px 0.375px #00000020);
+  height: 0;
 }
 
 .stickyNote {
+  cursor: pointer;
   width: 150px;
   height: 150px;
   background:
     linear-gradient(45deg, #00000048 0%, #00000024 25%, #00000000 100%),
     linear-gradient(120deg, #00000000 0%, #00000015 7%, #00000000 10%, #00000000 64%, #ffffff 86%, #ffffff 100%),
-    #fffb82fe;
+    #fffb82fc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,7 +27,8 @@
 .stickyNoteText {
   font-family: cursive;
   color: #101010a0;
-  transform: rotate(-14deg) translateY(-10px);
+  transform: rotate(-14deg) translate(-8px,-10px);
+  font-size: 20px;
 }
 
 .crtborderHighlight {
