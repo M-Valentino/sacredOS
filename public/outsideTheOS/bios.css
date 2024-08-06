@@ -158,6 +158,7 @@
     width: 600px;
     left: calc(50% - 345px);
   }
+
 }
 
 @media only screen and (max-width:679px) {
@@ -274,10 +275,8 @@ h2 {
   display: none;
 }
 
-#privPol {
-  display: absolute;
-  bottom: 0;
-  left: 0;
+.readMore {
+  display: none;
 }
 
 @media only screen and (max-width:1023px),
@@ -307,6 +306,10 @@ screen and (max-height: 780px) {
   .standShadow,
   #scanLines {
     display: none;
+  }
+
+  .readMore {
+    display: inline;
   }
 
   #bootScreen {
