@@ -294,11 +294,16 @@ footer a {
   color: #fff;
 }
 
+footer img {
+  image-rendering: pixelated;
+}
+
 .eighty8x31Row {
   margin-top: 10px;
   display: flex;
   justify-content: space-evenly;
 }
+
 
 @media only screen and (max-width:1023px),
 screen and (max-height: 780px) {
@@ -341,5 +346,12 @@ screen and (max-height: 780px) {
 
   footer {
     width: 98%;
+  }
+}
+
+@media only screen and (max-width:410px) {
+  footer img {
+    width: 66px;
+    height: 23.25px;
   }
 }
