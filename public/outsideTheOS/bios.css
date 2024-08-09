@@ -349,9 +349,8 @@ screen and (max-height: 780px) {
   }
 }
 
-@media only screen and (max-width:410px) {
-  footer img {
-    width: 66px;
-    height: 23.25px;
+@media only screen and (max-width:584px) {
+  .eighty8x31Row {
+    display: block;
   }
 }
