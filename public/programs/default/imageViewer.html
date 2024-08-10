@@ -66,15 +66,8 @@
 
             let imageContainer = document.getElementById('imageContainer');
             let image = document.createElement("img");
-            const binaryString = atob(fileContent);
-            const dataArray = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-              dataArray[i] = binaryString.charCodeAt(i);
-            }
-            
-            const blob = new Blob([dataArray], { type: "image/png" });
-            const objectUrl = URL.createObjectURL(blob);
-            image.src= objectUrl;
+
+            image.src= `data:image/png;base64, ${fileContent}`;
             imageContainer.appendChild(image);
           }
         }
