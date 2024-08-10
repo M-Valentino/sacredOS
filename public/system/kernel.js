@@ -418,6 +418,13 @@ window.onmessage = function (e) {
           "settings.json"
         ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
       }
+    } else if (e.data.startsWith("U:DSKTP-BG[")) {
+      const imgPath = e.data.substring(11);
+      const regexBG = new RegExp(`("desktopBGPath":\\s*").*?(")`);
+      fileContents.system["settings.json"] = fileContents.system[
+        "settings.json"
+      ].replace(regexBG, `$1${imgPath}$2`);
+      loadDesktopBG();
     } else if (e.data === "POPULATE-MENU") {
       populateMenu();
     } else if (e.data.startsWith("ALERT:[")) {

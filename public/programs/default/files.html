@@ -252,6 +252,16 @@
         contextMenu.appendChild(menuItemEdit);
       }
 
+      if (key.includes(".png")) {
+        let setDesktopBG = document.createElement("button");
+        setDesktopBG.textContent = "Set as Desktop BG";
+        setDesktopBG.classList.add("oSButton", "osElemBase");
+        setDesktopBG.onclick = function () {
+          window.top.postMessage(`U:DSKTP-BG[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
+        };
+        contextMenu.appendChild(setDesktopBG);
+      }
+
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
         if (!contextMenu.contains(event.target)) {
