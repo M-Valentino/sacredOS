@@ -4,7 +4,16 @@ function guiStart() {
 }
 
 function loadDesktopBG() {
-  let base64ImageData = fileContents["system"]["desktopBG.png"];
+  const imagePath = JSON.parse(fileContents["system"]["settings.json"]).desktopBGPath;
+  const directories = imagePath.split("/");
+  const fileName = directories.pop();
+  const directoryPath = directories.join("/");
+  let base64ImageData = findFileContents(
+    directoryPath,
+    fileContents,
+    fileName
+  );
+ 
   const binaryString = atob(base64ImageData);
   const dataArray = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {

@@ -1,3 +1,4 @@
 {
-  "timeFormat": "12h"
+  "timeFormat": "12h",
+  "desktopBGPath": "system/desktopBG.png"
 }
