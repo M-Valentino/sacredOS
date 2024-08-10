@@ -10,9 +10,8 @@ function loadDesktopBG() {
   for (let i = 0; i < binaryString.length; i++) {
     dataArray[i] = binaryString.charCodeAt(i);
   }
-  imageRawData = dataArray;
 
-  const blob = new Blob([imageRawData], { type: "image/png" });
+  const blob = new Blob([dataArray], { type: "image/png" });
   const objectUrl = URL.createObjectURL(blob);
 
   const regex = new RegExp(`(--bgBlobURL: ).*?;`);

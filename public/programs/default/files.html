@@ -111,6 +111,15 @@
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
     }
 
+    function openInImageViewer(key) {
+      const message = {
+        action: "openProgram",
+        params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+
+    }
+
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       if (keyToCheck.split('.').pop() === "html") {
@@ -119,6 +128,9 @@
           params: { fileName: key, fileData: backupObject[key] }
         };
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      } else if (keyToCheck.split('.').pop() === "png") {
+        openInImageViewer(key);
         return;
       } else if (key.match(/\..*/)) {
         openInNotepad(key);

@@ -1,0 +1,88 @@
+<!--width="620" height="450" dontShowOnStartMenu-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #imageContainer {
+      height: calc(100vh - 8px - 26px);
+    }
+
+    .menuButt {
+      height: 26px;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <p id="noValidImage">No valid image opened.</p>
+  <div id="imageContainer">
+  </div>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+
+    // Function to extract file path from comments within the HTML
+    function extractFilePath() {
+      const nodes = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+      let node;
+      while (node = nodes.nextNode()) {
+        const content = node.nodeValue.trim();
+        const match = content.match(/path="([^"]+)"/); // Regular expression to extract path
+        if (match) {
+          return match[1]; // Return the extracted path
+        }
+      }
+      return null; // Return null if no matching comment is found
+    }
+
+    const filePath = extractFilePath(); // Extract the file path from a comment
+    if (filePath !== null) {
+      window.top.postMessage(`REQ:PH[${filePath}]`, "*");
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else
+        if (e.data.startsWith("PH:")) {
+          const expectedPattern = `PH:[${filePath}]`;
+          if (e.data.startsWith(expectedPattern)) {
+            document.getElementById("noValidImage").remove();
+            // Extract file content by removing the initial part of the message
+            let fileContent = e.data.substring(expectedPattern.length);
+            if (fileContent === "undefined") {
+              fileContent = "Creating new files in notepad coming soon.";
+            }
+
+            let imageContainer = document.getElementById('imageContainer');
+            let image = document.createElement("img");
+            const binaryString = atob(fileContent);
+            const dataArray = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              dataArray[i] = binaryString.charCodeAt(i);
+            }
+            
+            const blob = new Blob([dataArray], { type: "image/png" });
+            const objectUrl = URL.createObjectURL(blob);
+            image.src= objectUrl;
+            imageContainer.appendChild(image);
+          }
+        }
+
+    };
+
+  </script>
+
+</body>
+
+</html>
