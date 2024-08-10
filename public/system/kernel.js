@@ -30,7 +30,7 @@ function findFileContents(directoryPath, fileContents, fileName) {
       );
     }
   }
-
+  window.top.postMessage(`ALERT:[ERROR: ${fileName} could not be found!`);
   return null; // File not found
 }
 

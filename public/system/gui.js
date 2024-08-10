@@ -49,7 +49,7 @@ function populateMenu() {
       }
     } 
 
-    var menuItem = document.createElement("div");
+    let menuItem = document.createElement("div");
     menuItem.innerHTML = program;
     menuItem.classList = "oSButton osElemBase";
     menuItem.onclick = menuItem.onclick = (function (programName) {
@@ -80,7 +80,7 @@ function populateMenu() {
   }
 }
 
-var menuOpen = false;
+let menuOpen = false;
 function toggleOpenmenu() {
   menuOpen = !menuOpen;
   if (menuOpen) {
@@ -183,7 +183,7 @@ function createMenuBarButton(currentWindowID, programName) {
   document.getElementById("programBar").appendChild(menuBarButton);
 }
 
-var windowCount = -1;
+let windowCount = -1;
 let alertCount = -1;
 
 function createAlert(text) {
