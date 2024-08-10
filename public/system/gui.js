@@ -33,6 +33,14 @@ function populateMenu() {
   ];
 
   function appendToMenu(program, nested, dir) {
+    if (nested) {
+      const dontAppendMatch =
+        fileContents.programs[dir][program].match(/<!--.*dontShowOnStartMenu.*-->/);
+      if (dontAppendMatch) {
+        return;
+      }
+    } 
+
     var menuItem = document.createElement("div");
     menuItem.innerHTML = program;
     menuItem.classList = "oSButton osElemBase";
@@ -55,7 +63,6 @@ function populateMenu() {
   for (let i = 0; i < programList.length; i++) {
     if (typeof programList[i] === "object") {
       const nestedFolder = Object.keys(programList[i])[0];
-      console.log(nestedFolder);
       for (let j = 0; j < programList[i][nestedFolder].length; j++) {
         appendToMenu(programList[i][nestedFolder][j], true, nestedFolder);
       }
