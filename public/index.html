@@ -208,6 +208,7 @@
         "kernel.js",
         "fileTable.json",
         "settings.json",
+        "desktopBG.png",
         {
           icons: [
             "document.json",
@@ -267,11 +268,24 @@
     async function fetchContent(fileURL) {
       try {
         let time = new Date().getTime();
-        // Hack to disable loading from cached files
         const response = await fetch(`${fileURL}?t=${time}`);
+
         if (response.ok) {
-          const content = await response.text();
-          return content;
+          const contentType = response.headers.get('Content-Type') || '';
+          const extension = fileURL.split('.').pop().toLowerCase();
+
+          // Determine if the file is of a type that we handle as text
+          if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+            return await response.text();
+          } else {
+            const arrayBuffer = await response.arrayBuffer();
+            const binaryContent = new Uint8Array(arrayBuffer);
+            const binaryObject = {};
+            binaryContent.forEach((value, index) => {
+              binaryObject[index] = value;
+            });
+            return binaryObject;
+          }
         } else {
           console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
         }
@@ -287,7 +301,7 @@
       document.getElementById("sysChecks").style.display = "none";
       document.getElementById("freshInstallInfo").style.display = "initial";
       let tempFileContent = {};
-      let tempObjectConent = {};
+      let tempObjectContent = {};
 
       for (let key in fileTable) {
         if (Array.isArray(fileTable[key])) {
@@ -295,19 +309,26 @@
           for (let item of fileTable[key]) {
             if (typeof item === 'string') {
               let fileURL = `${basePath}${key}/${item}`;
-              tempFileContent[key][item] = await fetchContent(fileURL);
-              compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
-              lineCount++;
+              let content = await fetchContent(fileURL);
 
-              while (lineCount > 20) {
-                compileElement.removeChild(compileElement.firstChild);
-                lineCount--;
+              if (typeof content === 'string') {
+                compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
+                lineCount++;
+
+                while (lineCount > 20) {
+                  compileElement.removeChild(compileElement.firstChild);
+                  lineCount--;
+                }
+              } else {
+                compileElement.innerHTML += `<div>Loaded binary file: ${fileURL}</div>`;
               }
+
+              tempFileContent[key][item] = content;
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
-                tempObjectConent = tempFileContent;
-                tempObjectConent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
-                tempFileContent[key][nestedKey] = tempObjectConent[key][nestedKey][nestedKey];
+                tempObjectContent = tempFileContent;
+                tempObjectContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+                tempFileContent[key][nestedKey] = tempObjectContent[key][nestedKey][nestedKey];
               }
             }
           }
@@ -348,7 +369,7 @@
         }
         if (fileContents.system['fileTable.json']) {
           fileTable = JSON.parse(fileContents.system['fileTable.json']);
-          populateMenu();
+          guiStart();
         }
       }
     }

@@ -1,3 +1,26 @@
+function guiStart() {
+  populateMenu();
+  loadDesktopBG();
+}
+
+function loadDesktopBG() {
+  let imageRawData = fileContents["system"]["desktopBG.png"];
+  const dataArray = Object.keys(imageRawData).map((key) => imageRawData[key]);
+  imageRawData = new Uint8Array(dataArray);
+
+  const blob = new Blob([imageRawData], { type: "image/png" });
+  const objectUrl = URL.createObjectURL(blob);
+
+  const regex = new RegExp(`(--bgBlobURL: ).*?;`);
+  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+    regex,
+    `$1 url("${objectUrl}");`
+  );
+  document
+    .querySelector(":root")
+    .style.setProperty("--bgBlobURL", `url("${objectUrl}")`);
+}
+
 function populateMenu() {
   let menu = document.getElementById("menuContent");
   menu.innerHTML = "";

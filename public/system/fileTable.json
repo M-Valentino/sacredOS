@@ -6,6 +6,7 @@
     "kernel.js",
     "fileTable.json",
     "settings.json",
+    "desktopBG.png",
     {
       "icons": [
         "document.json",
