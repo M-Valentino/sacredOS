@@ -280,11 +280,10 @@
           } else {
             const arrayBuffer = await response.arrayBuffer();
             const binaryContent = new Uint8Array(arrayBuffer);
-            const binaryObject = {};
-            binaryContent.forEach((value, index) => {
-              binaryObject[index] = value;
-            });
-            return binaryObject;
+            const base64String = btoa(
+              String.fromCharCode(...binaryContent)
+            );
+            return base64String;
           }
         } else {
           console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);

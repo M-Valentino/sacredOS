@@ -4,9 +4,13 @@ function guiStart() {
 }
 
 function loadDesktopBG() {
-  let imageRawData = fileContents["system"]["desktopBG.png"];
-  const dataArray = Object.keys(imageRawData).map((key) => imageRawData[key]);
-  imageRawData = new Uint8Array(dataArray);
+  let base64ImageData = fileContents["system"]["desktopBG.png"];
+  const binaryString = atob(base64ImageData);
+  const dataArray = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    dataArray[i] = binaryString.charCodeAt(i);
+  }
+  imageRawData = dataArray;
 
   const blob = new Blob([imageRawData], { type: "image/png" });
   const objectUrl = URL.createObjectURL(blob);
