@@ -1,4 +1,5 @@
 {
   "timeFormat": "12h",
-  "desktopBGPath": "system/desktopBG.png"
+  "desktopBGPath": "system/desktopBG.png",
+  "fontOSPath": "system/system12px.woff2"
 }

@@ -1,19 +1,56 @@
 function guiStart() {
   populateMenu();
   loadDesktopBG();
+  loadFont();
+}
+
+function loadFont() {
+  const fontPath = JSON.parse(
+    fileContents["system"]["settings.json"]
+  ).fontOSPath;
+  const directories = fontPath.split("/");
+  const fileName = directories.pop();
+  const directoryPath = directories.join("/");
+  let base64FontData = findFileContents(directoryPath, fileContents, fileName);
+
+  const fontMimeType = "font/woff2";
+  const fontFamily = "Ark Pixel 12px Proportional latin";
+  const fontDataUrl = `url(data:${fontMimeType};base64,${base64FontData})`;
+
+  const regex = new RegExp(
+    `(@font-face\\s*{[^}]*font-family:\\s*"${fontFamily}";[^}]*src:\\s*).*?;`,
+    "i"
+  );
+  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+    regex,
+    `$1${fontDataUrl};`
+  );
+
+  const styleSheet = document.styleSheets[0]; // Assuming you want to update the first stylesheet
+  const ruleIndex = [...styleSheet.cssRules].findIndex((rule) =>
+    rule.cssText.includes(`font-family: "${fontFamily}"`)
+  );
+  const newFontFaceRule = `@font-face { font-family: "${fontFamily}"; src: ${fontDataUrl}; }`;
+
+  if (ruleIndex !== -1) {
+    styleSheet.deleteRule(ruleIndex);
+  }
+
+  styleSheet.insertRule(
+    newFontFaceRule,
+    ruleIndex !== -1 ? ruleIndex : styleSheet.cssRules.length
+  );
 }
 
 function loadDesktopBG() {
-  const imagePath = JSON.parse(fileContents["system"]["settings.json"]).desktopBGPath;
+  const imagePath = JSON.parse(
+    fileContents["system"]["settings.json"]
+  ).desktopBGPath;
   const directories = imagePath.split("/");
   const fileName = directories.pop();
   const directoryPath = directories.join("/");
-  let base64ImageData = findFileContents(
-    directoryPath,
-    fileContents,
-    fileName
-  );
- 
+  let base64ImageData = findFileContents(directoryPath, fileContents, fileName);
+
   const binaryString = atob(base64ImageData);
   const dataArray = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
@@ -42,12 +79,13 @@ function populateMenu() {
 
   function appendToMenu(program, nested, dir) {
     if (nested) {
-      const dontAppendMatch =
-        fileContents.programs[dir][program].match(/<!--.*dontShowOnStartMenu.*-->/);
+      const dontAppendMatch = fileContents.programs[dir][program].match(
+        /<!--.*dontShowOnStartMenu.*-->/
+      );
       if (dontAppendMatch) {
         return;
       }
-    } 
+    }
 
     let menuItem = document.createElement("div");
     menuItem.innerHTML = program;

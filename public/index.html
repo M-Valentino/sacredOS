@@ -192,7 +192,7 @@
     if (userAgent.includes("Edg")) {
       // Do nothing
     } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
+      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should. Safari also will not load the desktop background and will not load the system font. Chrome is a better choice.`;
     } else if (userAgent.includes("Firefox")) {
       document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
     }
@@ -209,6 +209,8 @@
         "fileTable.json",
         "settings.json",
         "desktopBG.png",
+        "system12px.woff2",
+        "Font License.txt",
         {
           icons: [
             "document.json",

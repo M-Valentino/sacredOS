@@ -11,12 +11,19 @@
   --bgRepeat: no-repeat;
   --bgAttachment: fixed;
   --bgSize: 100% 100%;
-  /* Gui.js will update this var on OS start */
+  /* gui.js will update this var on OS start */
   --bgBlobURL: "";
+}
+
+@font-face { 
+  font-family: "Ark Pixel 12px Proportional latin";
+  /* gui.js will update this src on OS start */
+  src: "";
 }
 
 * {
   box-sizing: border-box;
+  font-family: "Ark Pixel 12px Proportional latin";
 }
 
 body {
@@ -48,7 +55,6 @@ input:focus {
 }
 
 textarea {
-  font-family: 'Times New Roman', Times, serif;
   border: 1px solid var(--secColorDark);
 }
 
@@ -73,7 +79,6 @@ input[type='checkbox'] {
 }
 
 .oSButton {
-  font-family: 'Times New Roman', Times, serif;
   border: var(--borderWidth) outset var(--secColorDark);
   cursor: pointer;
 }
@@ -83,8 +88,8 @@ input[type='checkbox'] {
 }
 
 .prgrmBarPrgrmBtn {
-  height: 40px;
-  transform: translateY(-3.5px);
+  transform: translateY(-5.125px);
+  height: 100%;
 }
 
 .windowControlButton {
@@ -104,7 +109,6 @@ input[type='checkbox'] {
   margin-right: 2px;
   font-size: 24px;
   font-weight: 800;
-  transform: translateY(4px);
   color: var(--primColor);
   filter: brightness(0.8);
 }
