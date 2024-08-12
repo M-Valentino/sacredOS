@@ -192,7 +192,7 @@
     if (userAgent.includes("Edg")) {
       // Do nothing
     } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should. Safari also will not load the desktop background and will not load the system font. Chrome is a better choice.`;
+      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
     } else if (userAgent.includes("Firefox")) {
       document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
     }
@@ -277,16 +277,20 @@
         if (response.ok) {
           const contentType = response.headers.get('Content-Type') || '';
           const extension = fileURL.split('.').pop().toLowerCase();
-
           // Determine if the file is of a type that we handle as text
           if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
             return await response.text();
           } else {
             const arrayBuffer = await response.arrayBuffer();
             const binaryContent = new Uint8Array(arrayBuffer);
-            const base64String = btoa(
-              String.fromCharCode(...binaryContent)
-            );
+            let base64String = "";
+            // In Safari, String.fromCharCode supports a max arg length of 65535
+            for (let i = 0; i < binaryContent.length; i += 65535) {
+              base64String += btoa(
+                String.fromCharCode(...binaryContent.slice(i, i + 65535))
+              );
+            }
+
             return base64String;
           }
         } else {
