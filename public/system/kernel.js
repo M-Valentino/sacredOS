@@ -204,7 +204,6 @@ function makeFolder(directoryPath, fileContents, folderName) {
       if (parsedFileTable && typeof parsedFileTable === "object") {
         updateFileTableWithFolder(directoryPath, parsedFileTable, folderName);
         fileContents.system["fileTable.json"] = JSON.stringify(parsedFileTable);
-        populateMenu();
       } else {
         console.error("Invalid fileTable.json structure.");
       }

@@ -78,10 +78,14 @@ function populateMenu() {
   ];
 
   function appendToMenu(program, nested, dir) {
+    const dontAppendRegex = /<!--.*dontShowOnStartMenu.*-->/;
     if (nested) {
-      const dontAppendMatch = fileContents.programs[dir][program].match(
-        /<!--.*dontShowOnStartMenu.*-->/
-      );
+      const dontAppendMatch = fileContents.programs[dir][program].match(dontAppendRegex);
+      if (dontAppendMatch) {
+        return;
+      }
+    } else {
+      const dontAppendMatch = fileContents.programs[programName].match(dontAppendRegex);
       if (dontAppendMatch) {
         return;
       }
