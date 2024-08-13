@@ -44,11 +44,11 @@
 </head>
 
 <body id="screen">
-  <main id="crtAndBootContainer">
+  <div id="crtAndBootContainer">
     <div class="crtborderHighlight">
       <div class="crtBorder">
         <div class="innerCrtBorder">
-          <div id="bootScreen">
+          <main id="bootScreen">
             <header class="flexBetween">
               <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="help" class="biosButton">Help</button>
             </header>
@@ -83,7 +83,7 @@
               <h2 class="mt-20">Compiling OS From Source:</h2>
               <div id="compile" class="biosTextSub"></div>
             </section>
-          </div>
+          </main>
         </div>
         <div id="powerButtonContainer">
           <div id="powerButton" class="powerButtonOn"></div>
@@ -127,7 +127,7 @@
             height="31" alt="ReduxFlakes's site" /></a>
       </div>
     </footer>
-  </main>
+  </div>
   <div id="scanLines"></div>
 
   <script>
@@ -242,6 +242,7 @@
       ]
     };
 
+    // Must be a var because other scripts appended to the DOM need access to it.
     var fileContents = "";
     let defaultFileContents = "";
 
@@ -318,16 +319,12 @@
               let fileURL = `${basePath}${key}/${item}`;
               let content = await fetchContent(fileURL);
 
-              if (typeof content === 'string') {
-                compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
-                lineCount++;
+              compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
+              lineCount++;
 
-                while (lineCount > 20) {
-                  compileElement.removeChild(compileElement.firstChild);
-                  lineCount--;
-                }
-              } else {
-                compileElement.innerHTML += `<div>Loaded binary file: ${fileURL}</div>`;
+              while (lineCount > 20) {
+                compileElement.removeChild(compileElement.firstChild);
+                lineCount--;
               }
 
               tempFileContent[key][item] = content;
