@@ -134,6 +134,50 @@ function makeFile(directoryPath, fileContents, fileName) {
   }
 }
 
+function makeFolder(directoryPath, fileContents, folderName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  // If folder to be created is in root dir
+  if (directoryPath === "") {
+    fileContents[folderName] = {};
+  } else if (
+    currentDirectory &&
+    fileContents.hasOwnProperty(currentDirectory)
+  ) {
+    if (directories.length === 0) {
+      fileContents[folderName] = {};
+    } else {
+      // Continue recursively for nested directories
+      const nestedDirectoryPath = directories.join("/");
+      makeFolder(nestedDirectoryPath, fileContents[currentDirectory], folderName);
+    }
+  } else {
+    window.top.postMessage("ALERT:[Could not create new file here.");
+    return;
+  }
+
+  // Update fileTable.json
+  if (
+    fileContents.system &&
+    fileContents.system["fileTable.json"] &&
+    typeof fileContents.system["fileTable.json"] === "string"
+  ) {
+    try {
+      const parsedFileTable = JSON.parse(fileContents.system["fileTable.json"]);
+      if (parsedFileTable && typeof parsedFileTable === "object") {
+        updateFileTable(directoryPath, parsedFileTable, fileName);
+        fileContents.system["fileTable.json"] = JSON.stringify(parsedFileTable);
+        populateMenu();
+      } else {
+        console.error("Invalid fileTable.json structure.");
+      }
+    } catch (error) {
+      console.error("Error parsing or updating fileTable.json:", error);
+    }
+  }
+}
+
 function saveFileContentsRecursive(
   directoryPath,
   fileContents,
@@ -408,7 +452,16 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
-    } else if (e.data.startsWith("U:TF")) {
+    } else if (e.data.startsWith("MK:D[")) {
+      const filePath = e.data.slice(5, -1);
+      const directories = filePath.split("/");
+      const folderName = directories.pop();
+      const directoryPath = directories.join("/");
+      makeFolder(directoryPath, fileContents, folderName);
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    }
+    
+    else if (e.data.startsWith("U:TF")) {
       if (e.data.substring(4) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
           "settings.json"
