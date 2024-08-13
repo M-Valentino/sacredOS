@@ -46,7 +46,7 @@
       margin-right: 5px;
     }
 
-    #fileNameDialog {
+    #newFileDialog {
       display: none;
       position: absolute;
       top: 50%;
@@ -60,7 +60,7 @@
       padding: 20px;
     }
 
-    #fileNameInput {
+    #newFileNameInput {
       margin-bottom: 10px;
     }
   </style>
@@ -79,14 +79,14 @@
   <div id="topLevelObjects"></div>
 
   <!-- hidden dialog div -->
-  <div id="fileNameDialog" class=" windowRidgeBorder">
+  <div id="newFileDialog" class=" windowRidgeBorder">
     <div class="menuHeader">Create New File</div>
     <div class="dialogBody">
-      <label for="fileNameInput">Enter filename:</label>
-      <input type="text" id="fileNameInput" placeholder="Filename">
+      <label for="newFileNameInput">Enter file name:</label>
+      <input type="text" id="newFileNameInput" placeholder="File name">
       <br>
-      <button id="okButton" class="oSButton osElemBase" onclick="handleOkButtonClick()"> OK </button>
-      <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelButtonClick()">Cancel</button>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
+      <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
     </div>
   </div>
 
@@ -182,17 +182,17 @@
 
     function makeNewFile() {
       // Display the dialog
-      let fileNameDialog = document.getElementById("fileNameDialog");
-      fileNameDialog.style.display = "initial";
+      let newFileDialog = document.getElementById("newFileDialog");
+      newFileDialog.style.display = "initial";
     }
 
-    function handleOkButtonClick() {
+    function handleOkNewFile() {
       // Handle OK button click
-      let fileNameInput = document.getElementById("fileNameInput");
-      let fileNameDialog = document.getElementById("fileNameDialog");
+      let newFileNameInput = document.getElementById("newFileNameInput");
+      let newFileDialog = document.getElementById("newFileDialog");
 
       // Get the entered filename
-      let fileName = fileNameInput.value.trim();
+      let fileName = newFileNameInput.value.trim();
 
       if (!fileName.includes(".")) {
         fileName = fileName.concat(".txt");
@@ -204,13 +204,13 @@
       }
 
       // Hide the dialog
-      fileNameDialog.style.display = "none";
-      fileNameInput.value = "";
+      newFileDialog.style.display = "none";
+      newFileNameInput.value = "";
     }
 
-    function handleCancelButtonClick() {
-      fileNameDialog.style.display = "none";
-      fileNameInput.value = "";
+    function handleCancelNewFile() {
+      newFileDialog.style.display = "none";
+      newFileNameInput.value = "";
     }
 
     function removeOldContextMenus() {
