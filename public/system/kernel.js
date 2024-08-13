@@ -92,7 +92,13 @@ function updateFileTable(directoryPath, fileTable, fileName) {
 
 function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
   // Split the directory path into an array of folders
-  const directories = directoryPath.split("/").filter(dir => dir !== ""); // Remove any empty strings
+  const directories = directoryPath.split("/").filter((dir) => dir !== ""); // Remove any empty strings
+
+  // If no directories provided (root level), directly add to the root of the file table
+  if (directories.length === 0) {
+    parsedFileTable[folderName] = [];
+    return;
+  }
 
   // Function to navigate the file table and insert the new folder
   function addFolderToStructure(currentLevel, dirs) {
@@ -101,11 +107,11 @@ function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
       if (Array.isArray(currentLevel)) {
         // Add the folder as an object
         currentLevel.push({ [folderName]: [] });
-      } else if (typeof currentLevel === 'object') {
+      } else if (typeof currentLevel === "object") {
         // Add the folder as an empty array
         currentLevel[folderName] = [];
       }
-      return true;
+      return;
     }
 
     // Otherwise, navigate to the next directory level
@@ -115,7 +121,10 @@ function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
     let nextLevel = null;
     if (Array.isArray(currentLevel)) {
       for (let i = 0; i < currentLevel.length; i++) {
-        if (typeof currentLevel[i] === "object" && currentLevel[i].hasOwnProperty(currentDir)) {
+        if (
+          typeof currentLevel[i] === "object" &&
+          currentLevel[i].hasOwnProperty(currentDir)
+        ) {
           nextLevel = currentLevel[i][currentDir];
           break;
         }
@@ -151,11 +160,6 @@ function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
   }
 
   addFolderToStructure(currentLevel, directories);
-
-  // If no directories provided (root level), directly add to the root of the file table
-  if (directories.length === 0) {
-    parsedFileTable[folderName] = [];
-  }
 }
 
 function makeFolder(directoryPath, fileContents, folderName) {

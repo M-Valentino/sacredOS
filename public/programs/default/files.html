@@ -94,7 +94,7 @@
       <input type="text" id="newFileNameInput" class="newInput" placeholder="File name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
-      <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
+      <button class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
     </div>
   </div>
 
@@ -106,7 +106,7 @@
         <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
         <br>
         <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
-        <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+        <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
       </div>
     </div>
 
@@ -255,6 +255,11 @@
     function handleCancelNewFile() {
       newFileDialog.style.display = "none";
       newFileNameInput.value = "";
+    }
+
+    function handleCancelNewFolder() {
+      document.getElementById("newFolderDialog").style.display = "none";
+      document.getElementById("newFolderNameInput").value = "";
     }
 
     function removeOldContextMenus() {
