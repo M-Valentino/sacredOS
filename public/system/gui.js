@@ -73,9 +73,7 @@ function loadDesktopBG() {
 function populateMenu() {
   let menu = document.getElementById("menuContent");
   menu.innerHTML = "";
-  const programList = JSON.parse(fileContents["system"]["fileTable.json"])[
-    "programs"
-  ];
+  const programList = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
 
   function appendToMenu(program, nested, dir) {
     const dontAppendRegex = /<!--.*dontShowOnStartMenu.*-->/;
@@ -111,9 +109,7 @@ function populateMenu() {
   }
 
   for (let i = 0; i < programList.length; i++) {
-    if (typeof programList[i] === "object") {
-      const nestedFolder = Object.keys(programList[i])[0];
-      for (let j = 0; j < programList[i][nestedFolder].length; j++) {
+
         appendToMenu(programList[i][nestedFolder][j], true, nestedFolder);
       }
     } else if (typeof programList[i] === "string") {
