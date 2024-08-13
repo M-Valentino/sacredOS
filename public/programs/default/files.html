@@ -48,6 +48,13 @@
 
     #newFileDialog {
       display: none;
+    }
+
+    #newFolderDialog {
+      display: none;
+    }
+
+    .dialog {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -60,7 +67,7 @@
       padding: 20px;
     }
 
-    #newFileNameInput {
+    .newInput {
       margin-bottom: 10px;
     }
   </style>
@@ -71,6 +78,7 @@
   <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span
       class="redX">X</span>Delete</button>
   <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+  <button class="oSButton osElemBase" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -79,16 +87,28 @@
   <div id="topLevelObjects"></div>
 
   <!-- hidden dialog div -->
-  <div id="newFileDialog" class=" windowRidgeBorder">
+  <div id="newFileDialog" class="dialog windowRidgeBorder">
     <div class="menuHeader">Create New File</div>
     <div class="dialogBody">
       <label for="newFileNameInput">Enter file name:</label>
-      <input type="text" id="newFileNameInput" placeholder="File name">
+      <input type="text" id="newFileNameInput" class="newInput" placeholder="File name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
-      <button id="cancelButton" class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
+      <button class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
     </div>
   </div>
+
+    <!-- hidden dialog div -->
+    <div id="newFolderDialog" class="dialog windowRidgeBorder">
+      <div class="menuHeader">Create New Folder</div>
+      <div class="dialogBody">
+        <label for="newFileNameInput">Enter folder name:</label>
+        <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
+        <br>
+        <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
+        <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+      </div>
+    </div>
 
   <script>
     let diskBackup = {};
@@ -186,6 +206,11 @@
       newFileDialog.style.display = "initial";
     }
 
+    function makeNewFolder() {
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      newFolderDialog.style.display = "initial";
+    }
+
     function handleOkNewFile() {
       // Handle OK button click
       let newFileNameInput = document.getElementById("newFileNameInput");
@@ -208,9 +233,33 @@
       newFileNameInput.value = "";
     }
 
+    function handleOkNewFolder() {
+      let newFolderNameInput = document.getElementById("newFolderNameInput");
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      let folderName = newFolderNameInput.value.trim();
+
+      if (folderName.includes(".")) {
+        window.top.postMessage("ALERT:[Can't name a folder with \".\"!");
+      }
+
+      if (folderName !== "") {
+        window.top.postMessage(`MK:D[${document.getElementById("fileDir").value.substring(3)}${folderName}]`, '*');
+      } else {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      }
+
+      newFolderDialog.style.display = "none";
+      newFolderNameInput.value = "";
+    }
+
     function handleCancelNewFile() {
       newFileDialog.style.display = "none";
       newFileNameInput.value = "";
+    }
+
+    function handleCancelNewFolder() {
+      document.getElementById("newFolderDialog").style.display = "none";
+      document.getElementById("newFolderNameInput").value = "";
     }
 
     function removeOldContextMenus() {

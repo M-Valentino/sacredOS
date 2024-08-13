@@ -90,6 +90,130 @@ function updateFileTable(directoryPath, fileTable, fileName) {
   }
 }
 
+function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
+  // Split the directory path into an array of folders
+  const directories = directoryPath.split("/").filter((dir) => dir !== ""); // Remove any empty strings
+
+  // If no directories provided (root level), directly add to the root of the file table
+  if (directories.length === 0) {
+    parsedFileTable[folderName] = [];
+    return;
+  }
+
+  // Function to navigate the file table and insert the new folder
+  function addFolderToStructure(currentLevel, dirs) {
+    // If we are at the final directory (where the folder should be added)
+    if (dirs.length === 0) {
+      if (Array.isArray(currentLevel)) {
+        // Add the folder as an object
+        currentLevel.push({ [folderName]: [] });
+      } else if (typeof currentLevel === "object") {
+        // Add the folder as an empty array
+        currentLevel[folderName] = [];
+      }
+      return;
+    }
+
+    // Otherwise, navigate to the next directory level
+    const currentDir = dirs.shift();
+
+    // Find the next level in the current structure
+    let nextLevel = null;
+    if (Array.isArray(currentLevel)) {
+      for (let i = 0; i < currentLevel.length; i++) {
+        if (
+          typeof currentLevel[i] === "object" &&
+          currentLevel[i].hasOwnProperty(currentDir)
+        ) {
+          nextLevel = currentLevel[i][currentDir];
+          break;
+        }
+      }
+
+      // If the directory doesn't exist, create it
+      if (!nextLevel) {
+        const newDir = { [currentDir]: [] };
+        currentLevel.push(newDir);
+        nextLevel = newDir[currentDir];
+      }
+    } else if (typeof currentLevel === "object") {
+      if (!currentLevel.hasOwnProperty(currentDir)) {
+        currentLevel[currentDir] = [];
+      }
+      nextLevel = currentLevel[currentDir];
+    }
+
+    // Recursively add the folder to the correct position
+    addFolderToStructure(nextLevel, dirs);
+  }
+
+  // Start at the root level if directoryPath is empty or add to a nested level
+  let currentLevel = parsedFileTable;
+  if (directories.length > 0) {
+    const baseDir = directories.shift();
+    if (parsedFileTable.hasOwnProperty(baseDir)) {
+      currentLevel = parsedFileTable[baseDir];
+    } else {
+      console.error(`Directory ${baseDir} does not exist in fileTable.json.`);
+      return;
+    }
+  }
+
+  addFolderToStructure(currentLevel, directories);
+}
+
+function makeFolder(directoryPath, fileContents, folderName) {
+  const directories = directoryPath.split("/");
+  const currentDirectory = directories.shift();
+
+  // If folder to be created is in root dir
+  if (directoryPath === "") {
+    if (!fileContents.hasOwnProperty(folderName)) {
+      fileContents[folderName] = {};
+    }
+  } else if (
+    currentDirectory &&
+    fileContents.hasOwnProperty(currentDirectory)
+  ) {
+    if (directories.length === 0) {
+      if (!fileContents[currentDirectory].hasOwnProperty(folderName)) {
+        fileContents[currentDirectory][folderName] = {};
+      }
+    } else {
+      // Continue recursively for nested directories
+      const nestedDirectoryPath = directories.join("/");
+      makeFolder(
+        nestedDirectoryPath,
+        fileContents[currentDirectory],
+        folderName
+      );
+    }
+  } else {
+    window.top.postMessage("ALERT:[Could not create new folder here.");
+    return;
+  }
+
+  // Update fileTable.json
+  if (
+    fileContents.system &&
+    fileContents.system["fileTable.json"] &&
+    typeof fileContents.system["fileTable.json"] === "string"
+  ) {
+    try {
+      const parsedFileTable = JSON.parse(fileContents.system["fileTable.json"]);
+      if (parsedFileTable && typeof parsedFileTable === "object") {
+        updateFileTableWithFolder(directoryPath, parsedFileTable, folderName);
+        fileContents.system["fileTable.json"] = JSON.stringify(parsedFileTable);
+        populateMenu();
+      } else {
+        console.error("Invalid fileTable.json structure.");
+      }
+    } catch (error) {
+      console.error("Error parsing or updating fileTable.json:", error);
+    }
+  }
+}
+
 function makeFile(directoryPath, fileContents, fileName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
@@ -407,6 +531,13 @@ window.onmessage = function (e) {
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
       makeFile(directoryPath, fileContents, fileName);
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    } else if (e.data.startsWith("MK:D[")) {
+      const filePath = e.data.slice(5, -1);
+      const directories = filePath.split("/");
+      const folderName = directories.pop();
+      const directoryPath = directories.join("/");
+      makeFolder(directoryPath, fileContents, folderName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
     } else if (e.data.startsWith("U:TF")) {
       if (e.data.substring(4) === "24h") {
