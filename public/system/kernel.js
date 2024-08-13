@@ -96,12 +96,8 @@ function updateFileTableWithFolder(directoryPath, fileTable, folderName) {
 
   if (directoryPath === "") {
     // Root directory
-    if (
-      !fileTable.system.some(
-        (entry) => typeof entry === "object" && entry.hasOwnProperty(folderName)
-      )
-    ) {
-      fileTable.system.push({ [folderName]: [] });
+    if (!fileTable.hasOwnProperty(folderName)) {
+      fileTable[folderName] = [];
     }
     return;
   }
@@ -109,22 +105,15 @@ function updateFileTableWithFolder(directoryPath, fileTable, folderName) {
   if (currentDirectory) {
     let found = false;
 
-    for (const key in fileTable) {
-      if (Array.isArray(fileTable[key]) && key === currentDirectory) {
-        // Check if the folder exists in the current directory
-        if (
-          !fileTable[key].some(
-            (entry) =>
-              typeof entry === "object" && entry.hasOwnProperty(folderName)
-          )
-        ) {
-          fileTable[key].push({ [folderName]: [] });
-        }
-        found = true;
-        break;
+    // Check if the current directory is in the root structure
+    if (fileTable.hasOwnProperty(currentDirectory)) {
+      if (!fileTable[currentDirectory].hasOwnProperty(folderName)) {
+        fileTable[currentDirectory][folderName] = [];
       }
+      found = true;
     }
 
+    // If the current directory is not directly in the root, we need to search deeper
     if (!found) {
       for (const key in fileTable) {
         if (Array.isArray(fileTable[key])) {
