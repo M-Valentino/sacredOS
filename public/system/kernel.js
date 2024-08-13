@@ -90,49 +90,73 @@ function updateFileTable(directoryPath, fileTable, fileName) {
   }
 }
 
-function updateFileTableWithFolder(directoryPath, fileTable, folderName) {
-  // Split the directory path into parts and remove any empty strings
-  const directories = directoryPath.split("/").filter(Boolean);
+function updateFileTableWithFolder(directoryPath, parsedFileTable, folderName) {
+  // Split the directory path into an array of folders
+  const directories = directoryPath.split("/").filter(dir => dir !== ""); // Remove any empty strings
 
-  // Base case: If no directories are left, add the folder if it doesn't exist
-  if (directories.length === 0) {
-    if (!fileTable.hasOwnProperty(folderName)) {
-      fileTable[folderName] = [];
-    }
-    return;
-  }
-
-  const currentDirectory = directories.shift();
-
-  // Ensure the currentDirectory exists in the fileTable
-  if (!fileTable.hasOwnProperty(currentDirectory)) {
-    fileTable[currentDirectory] = [];
-  }
-
-  // Handle arrays of objects: Check each item for an object with the currentDirectory key
-  if (Array.isArray(fileTable[currentDirectory])) {
-    let found = false;
-    for (const item of fileTable[currentDirectory]) {
-      if (typeof item === 'object' && item.hasOwnProperty(currentDirectory)) {
-        // Recursively update the file table with the remaining directories
-        updateFileTableWithFolder(directories.join("/"), item[currentDirectory], folderName);
-        found = true;
-        break;
+  // Function to navigate the file table and insert the new folder
+  function addFolderToStructure(currentLevel, dirs) {
+    // If we are at the final directory (where the folder should be added)
+    if (dirs.length === 0) {
+      if (Array.isArray(currentLevel)) {
+        // Add the folder as an object
+        currentLevel.push({ [folderName]: [] });
+      } else if (typeof currentLevel === 'object') {
+        // Add the folder as an empty array
+        currentLevel[folderName] = [];
       }
+      return true;
     }
 
-    // If not found in the array, create a new directory object and recurse
-    if (!found) {
-      const newDir = {};
-      fileTable[currentDirectory].push(newDir);
-      updateFileTableWithFolder(directories.join("/"), newDir, folderName);
+    // Otherwise, navigate to the next directory level
+    const currentDir = dirs.shift();
+
+    // Find the next level in the current structure
+    let nextLevel = null;
+    if (Array.isArray(currentLevel)) {
+      for (let i = 0; i < currentLevel.length; i++) {
+        if (typeof currentLevel[i] === "object" && currentLevel[i].hasOwnProperty(currentDir)) {
+          nextLevel = currentLevel[i][currentDir];
+          break;
+        }
+      }
+
+      // If the directory doesn't exist, create it
+      if (!nextLevel) {
+        const newDir = { [currentDir]: [] };
+        currentLevel.push(newDir);
+        nextLevel = newDir[currentDir];
+      }
+    } else if (typeof currentLevel === "object") {
+      if (!currentLevel.hasOwnProperty(currentDir)) {
+        currentLevel[currentDir] = [];
+      }
+      nextLevel = currentLevel[currentDir];
     }
-  } else {
-    // Handle objects directly
-    updateFileTableWithFolder(directories.join("/"), fileTable[currentDirectory], folderName);
+
+    // Recursively add the folder to the correct position
+    addFolderToStructure(nextLevel, dirs);
+  }
+
+  // Start at the root level if directoryPath is empty or add to a nested level
+  let currentLevel = parsedFileTable;
+  if (directories.length > 0) {
+    const baseDir = directories.shift();
+    if (parsedFileTable.hasOwnProperty(baseDir)) {
+      currentLevel = parsedFileTable[baseDir];
+    } else {
+      console.error(`Directory ${baseDir} does not exist in fileTable.json.`);
+      return;
+    }
+  }
+
+  addFolderToStructure(currentLevel, directories);
+
+  // If no directories provided (root level), directly add to the root of the file table
+  if (directories.length === 0) {
+    parsedFileTable[folderName] = [];
   }
 }
-
 
 function makeFolder(directoryPath, fileContents, folderName) {
   const directories = directoryPath.split("/");
