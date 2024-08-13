@@ -91,52 +91,48 @@ function updateFileTable(directoryPath, fileTable, fileName) {
 }
 
 function updateFileTableWithFolder(directoryPath, fileTable, folderName) {
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
+  // Split the directory path into parts and remove any empty strings
+  const directories = directoryPath.split("/").filter(Boolean);
 
-  if (directoryPath === "") {
-    // Root directory
+  // Base case: If no directories are left, add the folder if it doesn't exist
+  if (directories.length === 0) {
     if (!fileTable.hasOwnProperty(folderName)) {
       fileTable[folderName] = [];
     }
     return;
   }
 
-  if (currentDirectory) {
+  const currentDirectory = directories.shift();
+
+  // Ensure the currentDirectory exists in the fileTable
+  if (!fileTable.hasOwnProperty(currentDirectory)) {
+    fileTable[currentDirectory] = [];
+  }
+
+  // Handle arrays of objects: Check each item for an object with the currentDirectory key
+  if (Array.isArray(fileTable[currentDirectory])) {
     let found = false;
-
-    // Check if the current directory is in the root structure
-    if (fileTable.hasOwnProperty(currentDirectory)) {
-      if (!fileTable[currentDirectory].hasOwnProperty(folderName)) {
-        fileTable[currentDirectory][folderName] = [];
+    for (const item of fileTable[currentDirectory]) {
+      if (typeof item === 'object' && item.hasOwnProperty(currentDirectory)) {
+        // Recursively update the file table with the remaining directories
+        updateFileTableWithFolder(directories.join("/"), item[currentDirectory], folderName);
+        found = true;
+        break;
       }
-      found = true;
     }
 
-    // If the current directory is not directly in the root, we need to search deeper
+    // If not found in the array, create a new directory object and recurse
     if (!found) {
-      for (const key in fileTable) {
-        if (Array.isArray(fileTable[key])) {
-          for (let i = 0; i < fileTable[key].length; i++) {
-            if (
-              typeof fileTable[key][i] === "object" &&
-              fileTable[key][i].hasOwnProperty(currentDirectory)
-            ) {
-              updateFileTableWithFolder(
-                directories.join("/"),
-                fileTable[key][i][currentDirectory],
-                folderName
-              );
-              found = true;
-              break;
-            }
-          }
-        }
-        if (found) break;
-      }
+      const newDir = {};
+      fileTable[currentDirectory].push(newDir);
+      updateFileTableWithFolder(directories.join("/"), newDir, folderName);
     }
+  } else {
+    // Handle objects directly
+    updateFileTableWithFolder(directories.join("/"), fileTable[currentDirectory], folderName);
   }
 }
+
 
 function makeFolder(directoryPath, fileContents, folderName) {
   const directories = directoryPath.split("/");
