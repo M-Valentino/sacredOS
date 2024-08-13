@@ -91,13 +91,13 @@
   </div>
 
   <script>
-    var diskBackup = {};
+    let diskBackup = {};
     const MODES = {
       DELETE: "DELETE",
       OPEN: "OPEN"
     }
-    var mode = MODES.OPEN;
-    var firstLoad = true;
+    let mode = MODES.OPEN;
+    let firstLoad = true;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
@@ -146,7 +146,7 @@
         document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
         mode = MODES.DELETE;
 
-        var documentFiles = document.querySelectorAll(".document,.folder");
+        let documentFiles = document.querySelectorAll(".document,.folder");
 
         documentFiles.forEach(file => {
           let delIcon = document.createElement('img');
@@ -275,12 +275,12 @@
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
-      var displayArea = document.getElementById("topLevelObjects");
+      let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
-      var topLevelKeys = Object.keys(backupObject);
+      const topLevelKeys = Object.keys(backupObject);
       topLevelKeys.forEach(function (key) {
-        var button = document.createElement('button');
+        let button = document.createElement('button');
         button.textContent = key;
         button.classList = "oSButton osElemBase fileOrDir";
         button.onclick = function () {
