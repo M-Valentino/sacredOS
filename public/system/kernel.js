@@ -462,6 +462,7 @@ window.onmessage = function (e) {
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
       deleteFile(directoryPath, fileContents, fileName);
+      populateMenu();
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
     } else if (e.data.startsWith("U:PRIMC")) {
       var jsonString = e.data.substring(7);
