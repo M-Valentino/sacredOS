@@ -14,6 +14,7 @@ async function copyData() {
   return false;
 }
 async function install() {
+  window.top.postMessage("MK:F[programs/canvasBird.html]", "*");
   const installedCorrectly = await copyData();
 
   if (installedCorrectly) {

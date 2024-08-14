@@ -88,17 +88,14 @@ function populateMenu() {
   }
 
   for (let i = 0; i < programList.length; i++) {
-    appendToMenu(
-      programList[i],
-      findFileContents(
-        programList[i].substring(0, programList[i].lastIndexOf("/")),
-        fileContents,
-        programList[i].split("/").pop()
-      )
+    const programData = findFileContents(
+      programList[i].substring(0, programList[i].lastIndexOf("/")),
+      fileContents,
+      programList[i].split("/").pop()
     );
-    console.log(programList[i].substring(0, programList[i].lastIndexOf("/")),
-
-    programList[i].split("/").pop())
+    if (programData !== null) {
+      appendToMenu(programList[i], programData);
+    }
   }
 }
 
