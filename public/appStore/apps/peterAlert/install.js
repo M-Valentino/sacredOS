@@ -13,11 +13,15 @@ async function copyData() {
   }
   return false;
 }
+async function install() {
+  const installedCorrectly = await copyData();
 
-if (copyData()) {
-  window.top.postMessage("MK:MENU-SC[programs/peterAlert.html");
-  window.top.postMessage("POPULATE-MENU");
-  window.top.postMessage("ALERT:[Peter Alert installed!");
-} else {
-  window.top.postMessage("ALERT:[Could Not install Peter Alert.");
+  if (installedCorrectly) {
+    window.top.postMessage("MK:MENU-SC[programs/peterAlert.html");
+    window.top.postMessage("ALERT:[Peter Alert installed!");
+  } else {
+    window.top.postMessage("ALERT:[Could Not install Peter Alert.");
+  }
 }
+
+install();

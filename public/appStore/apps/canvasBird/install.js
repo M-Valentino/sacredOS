@@ -13,10 +13,15 @@ async function copyData() {
   }
   return false;
 }
+async function install() {
+  const installedCorrectly = await copyData();
 
-if (copyData()) {
-  window.top.postMessage("POPULATE-MENU");
-  window.top.postMessage("ALERT:[Canvas Bird installed!");
-} else {
-  window.top.postMessage("ALERT:[Could Not install Canvas Bird.");
+  if (installedCorrectly) {
+    window.top.postMessage("MK:MENU-SC[programs/canvasBird.html");
+    window.top.postMessage("ALERT:[Canvas Bird installed!");
+  } else {
+    window.top.postMessage("ALERT:[Could Not install Canvas Bird.");
+  }
 }
+
+install();

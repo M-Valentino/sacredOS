@@ -96,6 +96,9 @@ function populateMenu() {
         programList[i].split("/").pop()
       )
     );
+    console.log(programList[i].substring(0, programList[i].lastIndexOf("/")),
+
+    programList[i].split("/").pop())
   }
 }
 

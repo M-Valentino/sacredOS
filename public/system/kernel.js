@@ -543,6 +543,7 @@ window.onmessage = function (e) {
       let newShortcuts = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
       newShortcuts.push(path);
       fileContents["system"]["menuShortcuts.json"] = JSON.stringify(newShortcuts); 
+      populateMenu();
     } else if (e.data.startsWith("U:TF")) {
       if (e.data.substring(4) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
@@ -560,8 +561,6 @@ window.onmessage = function (e) {
         "settings.json"
       ].replace(regexBG, `$1${imgPath}$2`);
       loadDesktopBG();
-    } else if (e.data === "POPULATE-MENU") {
-      populateMenu();
     } else if (e.data.startsWith("ALERT:[")) {
       var jsonString = e.data.substring(7);
       createAlert(jsonString);
