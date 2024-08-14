@@ -1,3 +1,8 @@
+function saveToLocalStorage() {
+  localStorage.setItem("SacredSession", JSON.stringify(fileContents));
+  window.top.postMessage("ALERT:[Your session has been saved! It is now safe to leave this webpage.");
+}
+
 function sendMessageToAllIframes(message) {
   const iframes = document.getElementsByTagName("iframe");
   for (let i = 0; i < iframes.length; i++) {

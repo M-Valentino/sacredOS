@@ -71,7 +71,7 @@ function loadDesktopBG() {
 }
 
 function populateMenu() {
-  let menu = document.getElementById("menuContent");
+  let menu = document.getElementById("programs");
   menu.innerHTML = "";
   const programList = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
 

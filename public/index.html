@@ -52,22 +52,41 @@
             <header class="flexBetween">
               <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="help" class="biosButton">Help</button>
             </header>
-            <div id="helpDialog">
-              <p>JSON disk backups allow you to back up files that you have modified, added, or deleted. You can create
-                these backups in the Files program in Sacred OS. The backups can be saved to your real computer.
+            <div id="helpDialog" class="biosDialog">
+              <p>
+                Sacred OS can boot in three ways: from <b>local storage</b>, from a <b>JSON disk backup</b>, or with a
+                <b>fresh install</b>.
+                If this is your first time using Sacred OS, you will want to boot with a fresh install.
               </p>
-              <button id="closeHelp" class="biosButton">Ok</button>
+              <p>To save your data and come back to where you left off, open the start menu and click the button that
+                says "Save Session". You can now boot from local storage. Local storage is kind of like a large cookie,
+                which allows you store a lot of data. Don't forget to click the Save Session button as Sacred OS,
+                <b>does not</b> automatically save your data.
+              </p>
+              <p>If you frequently clear your browser's data or want to use Sacred on a different device, You want to
+                boot from a JSON disk backup. JSON disk backups will save your session exactly as how local storage
+                does, but you are able to save it as a file anywhere on your real computer. You can create
+                these backups in the files.html program.
+              </p>
+              <button id="closeHelp" class="biosButton closeDialog">Ok</button>
+            </div>
+            <div id="noLSDialog" class="biosDialog">
+              <p>No saved session on your device's local storage was found. If this is your first time using Sacred OS,
+                you should boot with a fresh install. Please click the help button for more info.
+              </p>
+              <button id="closeNoLS" class="biosButton closeDialog">Ok</button>
             </div>
             <hr class="biosHrMain mb-20" />
             <section id="bootOptions">
-              <div class="biosTextMain">Do you want to boot Sacred OS from your JSON disk backup?</div>
-              <button id="uploadJson" class="biosButton mt-20 mr-20">Yes, boot with uploaded disk</button>
+              <div class="biosTextMain">Choose a boot source:</div>
+              <button id="localStorage" class="biosButton mt-20 mr-20">Local Storage (Recommended)</button>
+              <button id="uploadJson" class="biosButton mt-20 mr-20">JSON Disk Backup</button>
               <input type="file" id="fileInput" style="display:none;">
-              <button id="defaultSettings" class="biosButton mt-20">No, Continue with fresh install</button>
+              <button id="defaultSettings" class="biosButton mt-20">Fresh install</button>
               <hr class="biosHrSub mt-20" />
             </section>
             <section id="sysChecks">
-              <h2 class="mt-20">System Checks:</h2>
+              <h2 class="mt-20">System Checks</h2>
               <div id="screenRes" class="biosTextSub"></div>
               <div id="screenResWarning" class="warning"></div>
               <div id="inputDev" class="biosTextSub"></div>
@@ -137,6 +156,10 @@
 
     document.getElementById("closeHelp").addEventListener("click", function () {
       document.getElementById("helpDialog").style.display = "none";
+    });
+
+    document.getElementById("closeNoLS").addEventListener("click", function () {
+      document.getElementById("noLSDialog").style.display = "none";
     });
 
     let powerOn = true;
@@ -249,6 +272,17 @@
 
     document.getElementById("uploadJson").addEventListener("click", function () {
       document.getElementById("fileInput").click();
+    });
+
+    document.getElementById("localStorage").addEventListener("click", function () {
+      fileContents = JSON.parse(localStorage.getItem("SacredSession"));
+      if (fileContents === null) {
+
+        document.getElementById("noLSDialog").style.display = "initial";
+
+      } else {
+        afterFileContentLoaded();
+      }
     });
 
     document.getElementById("fileInput").addEventListener("change", async function (event) {

@@ -139,7 +139,7 @@
   background-color: #000;
 }
 
-#helpDialog {
+.biosDialog {
   display: none;
   position: absolute;
   top: 150px;
@@ -153,23 +153,23 @@
 }
 
 @media only screen and (min-width:680px) {
-  #helpDialog {
+  .biosDialog {
     padding: 20px;
     width: 600px;
-    left: calc(50% - 345px);
+    left: calc(50% - 335px);
   }
 
 }
 
 @media only screen and (max-width:679px) {
-  #helpDialog {
+  .biosDialog {
     padding: 16px;
     width: unset;
     left: 0;
   }
 }
 
-#helpDialog a {
+.biosDialog a {
   text-decoration: none;
   color: #ff0;
 }
@@ -180,7 +180,6 @@
   height: 70vh;
   background-color: #00c;
   padding: 16px;
-  user-select: none;
   overflow: hidden;
   border: 4px solid #000;
   box-shadow: inset 3px -3.5px 20px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 3px 0px rgba(0, 0, 0, 0.96);
@@ -220,7 +219,7 @@ h2 {
   margin-bottom: 16px;
 }
 
-#closeHelp {
+.closeDialog {
   display: block;
   margin: auto;
 }
