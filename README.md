@@ -30,8 +30,7 @@ After cloning the repo, go into your terminal and change the current directory t
 
 ## Communicating with the kernel
 
-Right now Sacred OS isn't stable and is in it's early phase of development, so things like syntax for messages
-to the kernel may change.
+To see an incomplete list of kernel commands, <a href="https://sacred.neocities.org/outsideTheOS/about">Click here</a>.
 
 ### Requesting System styling for a program
 

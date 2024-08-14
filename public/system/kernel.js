@@ -456,7 +456,7 @@ window.onmessage = function (e) {
       }
 
       return;
-    } else if (e.data.startsWith("DEL:")) {
+    } else if (e.data.startsWith("DEL[")) {
       const filePath = e.data.substring(4);
       const directories = filePath.split("/");
       const fileName = directories.pop();

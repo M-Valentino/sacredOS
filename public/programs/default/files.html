@@ -193,9 +193,9 @@
 
       // Prepare the delete request
       if (isFolder) {
-        window.top.postMessage(`DEL:${path}`, '*');
+        window.top.postMessage(`DEL[${path}`, '*');
       } else {
-        window.top.postMessage(`DEL:${path}`, '*');
+        window.top.postMessage(`DEL[${path}`, '*');
       }
       toggleDeleteMode();
     }

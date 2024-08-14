@@ -48,6 +48,13 @@
       margin-top: 5px;
     }
 
+    .code {
+      background-color: #ddd;
+      font-family: 'Courier New', Courier, monospace;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+
     body {
       max-width: 800px;
       margin: 10px auto;
@@ -59,6 +66,27 @@
       padding: 32px;
       margin-left: 10px;
       margin-right: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    td,
+    th {
+      border: 1px solid #999;
+      text-align: left;
+      padding: 8px;
+    }
+
+    td:nth-child(1) {
+      font-family: 'Courier New', Courier, monospace;
+      min-width: 150px;
     }
 
     @media only screen and (max-width:660px) {
@@ -99,13 +127,13 @@
     <p>
       Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernel, programs,
       and more are all stored here. The bootloader writes to this object either by uploading a disk backup or by
-      fetching all the necessary files and storing them (what happens when you boot from a fresh install). Sacred
-      OS and the bootloader uses a file table so that they can properly index files (like NTFS or ext4).
+      fetching all the necessary files and storing them (what happens when you boot from a fresh install).
     </p>
     <p>
       In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
       contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
-      the system's main style sheet or writing to the disk.
+      the system's main style sheet or writing to the disk. Communication to the kernel from program iframes is
+      accomplished through the <span class="code">window.postMessage()</span> method.
     </p>
     <h2>
       Current State
@@ -116,6 +144,41 @@
       OS
       version.
     </p>
+    <h2>List of Kernel Commands (Incomplete)</h2>
+    <table>
+      <tr>
+        <th>Command</th>
+        <th>Function</th>
+      </tr>
+      <tr>
+        <td>ALERT:[</td>
+        <td>Makes an alert to the user that they must acknowledge before continuing. The message for the alert is after
+          the left bracket.</td>
+      </tr>
+      <tr>
+        <td>DEL[</td>
+        <td>Deletes a file or folder with the specified path after the bracket.</td>
+      </tr>
+      <tr>
+        <td>MK:D[</td>
+        <td>Makes a directory (folder) in the specified path after the bracket.</td>
+      </tr>
+      <tr>
+        <td>MK:F[</td>
+        <td>Makes an empty file in the specified path (including the file name) after the bracket.</td>
+      </tr>
+      <tr>
+        <td>MK:MENU-SC[</td>
+        <td>Adds the file path after the left bracket to <span class="code">system/menuShortcuts.json</span>, which
+          holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel adds
+          the program associated with the path to the start menu.</td>
+      </tr>
+      <tr>
+        <td>U:DSKTP-BG[</td>
+        <td>Applies a new desktop background from the specified path after the left bracket. <span
+            class="code">system/settings.json</span> is then updated with the new path.</td>
+      </tr>
+    </table>
     <h2>Credits</h2>
     <ul>
       <li><a target="_blank" rel="noopener noreferrer"
