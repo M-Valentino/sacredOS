@@ -9,16 +9,11 @@ use the OS with your saved settings, programs, files, etc.
 
 Sacred OS runs off a JavaScript object which is essentially the "hard disk". The GUI, the kernal, programs,
 and more are all stored here. The bootloader writes to this object either by uploading a disk backup or by
-fetching all the necessary files and storing them (what happens when you boot from a fresh install). Sacred
-OS and the bootloader uses a file table so that they can properly index files (like NTFS or ext4).
+fetching all the necessary files and storing them (what happens when you boot from a fresh install).
 
 In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
 contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
 the system's main style sheet or writing to the disk.
-
-## Current State
-
-File creation is limited at the moment in Sacred OS. Right now you can only create txt files and create one new file per directory. You can delete files, but you can't delete folders. Eventually you will be able to edit HTML files. Right now clicking on HTML files in the file explorer just executes them in a window.
 
 ## Running Locally
 
