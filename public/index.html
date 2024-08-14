@@ -150,6 +150,14 @@
   <div id="scanLines"></div>
 
   <script>
+    if ('caches' in window) {
+      caches.keys().then(function (keyList) {
+        return Promise.all(keyList.map(function (key) {
+          return caches.delete(key);
+        }));
+      });
+    }
+
     document.getElementById("help").addEventListener("click", function () {
       document.getElementById("helpDialog").style.display = "initial";
     });
