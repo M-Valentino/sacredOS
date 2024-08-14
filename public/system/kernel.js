@@ -538,6 +538,11 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFolder(directoryPath, fileContents, folderName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    } else if (e.data.startsWith("MK:MENU-SC[")) {
+      const path = e.data.substring(11);
+      let newShortcuts = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
+      newShortcuts.push(path);
+      fileContents["system"]["menuShortcuts.json"] = JSON.stringify(newShortcuts); 
     } else if (e.data.startsWith("U:TF")) {
       if (e.data.substring(4) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][

@@ -14,8 +14,8 @@ async function copyData() {
   return false;
 }
 
-window.top.postMessage(`MK:F[programs/peterAlert.html]`, "*");
 if (copyData()) {
+  window.top.postMessage("MK:MENU-SC[programs/peterAlert.html");
   window.top.postMessage("POPULATE-MENU");
   window.top.postMessage("ALERT:[Peter Alert installed!");
 } else {
