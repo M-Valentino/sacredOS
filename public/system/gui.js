@@ -75,12 +75,13 @@ function populateMenu() {
   menu.innerHTML = "";
   const programList = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
 
-  function appendToMenu(program, programData, dir) {
+  function appendToMenu(program, programData) {
     let menuItem = document.createElement("div");
-    menuItem.innerHTML = program;
+    const programName = program.substring(program.lastIndexOf("/") + 1);
+    menuItem.innerHTML = programName;
     menuItem.classList = "oSButton osElemBase";
     menuItem.onclick = menuItem.onclick = function () {
-      openProgram("test", programData, true);
+      openProgram(programName, programData, true);
     };
 
     menu.appendChild(menuItem);
