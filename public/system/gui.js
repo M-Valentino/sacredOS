@@ -75,46 +75,26 @@ function populateMenu() {
   menu.innerHTML = "";
   const programList = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
 
-  function appendToMenu(program, nested, dir) {
-    const dontAppendRegex = /<!--.*dontShowOnStartMenu.*-->/;
-    if (nested) {
-      const dontAppendMatch = fileContents.programs[dir][program].match(dontAppendRegex);
-      if (dontAppendMatch) {
-        return;
-      }
-    } else {
-      const dontAppendMatch = fileContents.programs[programName].match(dontAppendRegex);
-      if (dontAppendMatch) {
-        return;
-      }
-    }
-
+  function appendToMenu(program, programData, dir) {
     let menuItem = document.createElement("div");
     menuItem.innerHTML = program;
     menuItem.classList = "oSButton osElemBase";
-    menuItem.onclick = menuItem.onclick = (function (programName) {
-      return function () {
-        if (nested) {
-          openProgram(
-            programName,
-            fileContents.programs[dir][programName],
-            true
-          );
-        } else {
-          openProgram(programName, fileContents.programs[programName], true);
-        }
-      };
-    })(program);
+    menuItem.onclick = menuItem.onclick = function () {
+      openProgram("test", programData, true);
+    };
+
     menu.appendChild(menuItem);
   }
 
   for (let i = 0; i < programList.length; i++) {
-
-        appendToMenu(programList[i][nestedFolder][j], true, nestedFolder);
-      }
-    } else if (typeof programList[i] === "string") {
-      appendToMenu(programList[i], false);
-    }
+    appendToMenu(
+      programList[i],
+      findFileContents(
+        programList[i].substring(0, programList[i].lastIndexOf("/")),
+        fileContents,
+        programList[i].split("/").pop()
+      )
+    );
   }
 }
 
