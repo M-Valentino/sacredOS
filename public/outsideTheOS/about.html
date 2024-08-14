@@ -48,7 +48,7 @@
       margin-top: 5px;
     }
 
-    .code {
+    code {
       background-color: #ddd;
       font-family: 'Courier New', Courier, monospace;
       padding-left: 2px;
@@ -133,7 +133,7 @@
       In Sacred OS, HTML files are executable. When you execute an HTML file, it is loaded into a window which
       contains an iframe of the HTML file. These HTML files can communicate with the kernel, such as requesting
       the system's main style sheet or writing to the disk. Communication to the kernel from program iframes is
-      accomplished through the <span class="code">window.postMessage()</span> method.
+      accomplished through the <code>window.postMessage()</code> method.
     </p>
     <h2>
       Current State
@@ -169,14 +169,26 @@
       </tr>
       <tr>
         <td>MK:MENU-SC[</td>
-        <td>Adds the file path after the left bracket to <span class="code">system/menuShortcuts.json</span>, which
+        <td>Adds the file path after the left bracket to <code>system/menuShortcuts.json</code>, which
           holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel adds
           the program associated with the path to the start menu.</td>
       </tr>
       <tr>
+        <td>REQ:AF</td>
+        <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this message will
+          send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
+          <code>AF:</code></td>
+      </tr>
+      <tr>
+        <td>REQ:SS</td>
+        <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
+          a string to the iframe (program) that sent
+          the message. The string containing the style sheet is prepended with <code>SS:</code></td>
+      </tr>
+      <tr>
         <td>U:DSKTP-BG[</td>
-        <td>Applies a new desktop background from the specified path after the left bracket. <span
-            class="code">system/settings.json</span> is then updated with the new path.</td>
+        <td>Applies a new desktop background from the specified path after the left bracket.
+          <code>system/settings.json</code> is then updated with the new path.</td>
       </tr>
     </table>
     <h2>Credits</h2>

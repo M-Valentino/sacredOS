@@ -430,7 +430,6 @@ function changeBGMode(mode) {
 window.onmessage = function (e) {
   if (typeof e.data === "string") {
     console.log(e.data);
-    // Ensure e.data is a string
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
