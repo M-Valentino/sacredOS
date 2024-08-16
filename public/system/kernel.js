@@ -549,12 +549,12 @@ window.onmessage = function (e) {
       newShortcuts.push(path);
       fileContents["system"]["menuShortcuts.json"] = JSON.stringify(newShortcuts); 
       populateMenu();
-    } else if (e.data.startsWith("U:TF")) {
-      if (e.data.substring(4) === "24h") {
+    } else if (e.data.startsWith("U:TF[")) {
+      if (e.data.substring(5) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
           "settings.json"
         ].replace(`"timeFormat": "12h"`, `"timeFormat": "24h"`);
-      } else {
+      } else if (e.data.substring(5) === "12h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
           "settings.json"
         ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
