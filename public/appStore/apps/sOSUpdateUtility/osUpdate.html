@@ -9,6 +9,35 @@
 <body>
   <button class="osElemBase oSButton" id="updateSystem">Update System</button>
   <script>
+    let diskBackup;
+    
+    window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:AF", "*");
+
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("AF:")) {
+        const jsonString = e.data.substring(3);
+        try {
+          diskBackup = JSON.parse(jsonString);
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
+        return;
+      } else if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    });
+
+
     const systemFiles = {
       system: [
         "gui.css",
@@ -106,24 +135,33 @@
       return tempFileContent;
     }
 
-    window.top.postMessage("REQ:SS", "*");
-    window.onmessage = function (e) {
-      if (e.data.startsWith("SS:")) {
-        const stylesheet = e.data.substring(3);
-        try {
-          const styleElement = document.createElement('style');
-          styleElement.type = 'text/css';
-          styleElement.innerText = stylesheet;
-          document.head.appendChild(styleElement);
-        } catch (error) {
-          console.error("Error requesting stylesheet:", error);
-        }
-        return;
-      }
-    };
     document.getElementById("updateSystem").addEventListener("click", async function () {
       let defaultFileContents = await updateSystem(systemFiles);
-      console.log(defaultFileContents);
+      function mergeDeep(target, source) {
+        for (let key in source) {
+          // Check if the value is an object and not an array
+          if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+            // If the target doesn't have this key, initialize it as an empty object
+            if (!target[key]) {
+              target[key] = {};
+            }
+            // Recursively merge
+            mergeDeep(target[key], source[key]);
+          } else {
+            // Otherwise, just overwrite the target key with the source key
+            target[key] = source[key];
+          }
+        }
+        return target;
+      }
+
+
+
+        // Merge defaultFileContents into oldObject
+        let mergedObject = mergeDeep(diskBackup, defaultFileContents);
+
+        console.log(defaultFileContents);
+   
     });
   </script>
 </body>
