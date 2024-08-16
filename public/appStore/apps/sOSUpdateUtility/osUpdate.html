@@ -33,7 +33,6 @@
         "gui.frag.html",
         "gui.js",
         "kernel.js",
-        "fileTable.json",
         "settings.json",
         "desktopBG.png",
         "system12px.woff2",
@@ -147,6 +146,7 @@
 
     document.getElementById("updateSystem").addEventListener("click", async function () {
       await updateSystem(systemFiles);
+      window.top.postMessage("ALERT:[Sacred OS has been updated. Your session has been saved. Sacred OS must restart.");
 
     });
   </script>
