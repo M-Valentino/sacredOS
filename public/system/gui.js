@@ -163,7 +163,7 @@ function createMinimizeButton(currentWindowID) {
   let minimizeButton = document.createElement("button");
   minimizeButton.id = `min${currentWindowID}`; // Unique ID for the close button
   minimizeButton.classList = "osElemBase oSButton windowControlButton";
-  minimizeButton.textContent = "__";
+  minimizeButton.textContent = "＿";
   minimizeButton.style.float = "right";
   minimizeButton.onclick = function () {
     minimizeProgram(`win${currentWindowID}`, `men${currentWindowID}`);
