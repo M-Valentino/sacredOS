@@ -229,15 +229,13 @@
     }
     ////////// End of System Check Code //////////
 
-    // The data already here is the file paths for the OS to boot with a fresh install.
-    // This gets overwritten when "fileTable.json" is loaded.
+    // These are the file paths for the OS to boot with a fresh install.
     var fileTable = {
       system: [
         "gui.css",
         "gui.frag.html",
         "gui.js",
         "kernel.js",
-        "fileTable.json",
         "settings.json",
         "desktopBG.png",
         "system12px.woff2",
@@ -402,20 +400,17 @@
           styleElement.innerText = fileContents.system['gui.css'];
           document.head.appendChild(styleElement);
         }
-        if (fileContents.system['gui.js']) {
-          let guiScript = document.createElement('script');
-          guiScript.type = 'text/javascript';
-          guiScript.textContent = fileContents.system['gui.js'];
-          document.body.appendChild(guiScript);
-        }
         if (fileContents.system['kernel.js']) {
           let kernelScript = document.createElement('script');
           kernelScript.type = 'text/javascript';
           kernelScript.textContent = fileContents.system['kernel.js'];
           document.body.appendChild(kernelScript);
         }
-        if (fileContents.system['fileTable.json']) {
-          fileTable = JSON.parse(fileContents.system['fileTable.json']);
+        if (fileContents.system['gui.js']) {
+          let guiScript = document.createElement('script');
+          guiScript.type = 'text/javascript';
+          guiScript.textContent = fileContents.system['gui.js'];
+          document.body.appendChild(guiScript);
           guiStart();
         }
       }
