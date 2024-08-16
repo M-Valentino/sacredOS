@@ -1,18 +1,111 @@
-<!--width="314" height="321" noRS-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-
-  </style>
 </head>
 
 <body>
-
+  <button class="osElemBase oSButton" id="updateSystem">Update System</button>
   <script>
+    const systemFiles = {
+      system: [
+        "gui.css",
+        "gui.frag.html",
+        "gui.js",
+        "kernel.js",
+        "fileTable.json",
+        "settings.json",
+        "desktopBG.png",
+        "system12px.woff2",
+        "Font License.txt",
+        "menuShortcuts.json",
+        {
+          icons: [
+            "document.json",
+            "folder.json",
+            "deleteIndicator.json"
+          ]
+        }
+      ],
+      programs: [
+        {
+          default: [
+            "files.html",
+            "doug.html",
+            "youTubeFilter.html",
+            "notepad.html",
+            "imageViewer.html",
+            "calculator.html",
+            "tetrJS.html",
+            "mBO.html",
+            "appStore.html",
+            "browser.html",
+            "settings.html"
+          ]
+        }
+      ],
+    };
+
+    async function fetchContent(fileURL) {
+      try {
+        let time = new Date().getTime();
+        const response = await fetch(`${fileURL}?t=${time}`);
+
+        if (response.ok) {
+          const contentType = response.headers.get('Content-Type') || '';
+          const extension = fileURL.split('.').pop().toLowerCase();
+
+          if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+            return await response.text();
+          } else {
+            const arrayBuffer = await response.arrayBuffer();
+            const binaryContent = new Uint8Array(arrayBuffer);
+            let base64String = "";
+
+            for (let i = 0; i < binaryContent.length; i += 65535) {
+              base64String += btoa(
+                String.fromCharCode(...binaryContent.slice(i, i + 65535))
+              );
+            }
+
+            return base64String;
+          }
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+    async function updateSystem(systemFiles, basePath = '') {
+      let tempFileContent = {};
+      for (let key in systemFiles) {
+        if (Array.isArray(systemFiles[key])) {
+          tempFileContent[key] = {};
+          for (let item of systemFiles[key]) {
+            if (typeof item === 'string') {
+              let fileURL = `http://192.168.6.100:8080/${basePath}${key}/${item}`;
+              let content = await fetchContent(fileURL);
+              tempFileContent[key][item] = content;
+            } else if (typeof item === 'object') {
+              for (let nestedKey in item) {
+                // Initialize the nested object if it doesn't exist
+                if (!tempFileContent[key][nestedKey]) {
+                  tempFileContent[key][nestedKey] = {};
+                }
+
+                tempFileContent[key][nestedKey] = await updateSystem({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+              }
+            }
+          }
+        }
+      }
+      return tempFileContent;
+    }
+
     window.top.postMessage("REQ:SS", "*");
     window.onmessage = function (e) {
       if (e.data.startsWith("SS:")) {
@@ -28,7 +121,10 @@
         return;
       }
     };
-
+    document.getElementById("updateSystem").addEventListener("click", async function () {
+      let defaultFileContents = await updateSystem(systemFiles);
+      console.log(defaultFileContents);
+    });
   </script>
 </body>
 
