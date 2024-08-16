@@ -1,0 +1,35 @@
+<!--width="314" height="321" noRS-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+
+  </style>
+</head>
+
+<body>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+
+  </script>
+</body>
+
+</html>

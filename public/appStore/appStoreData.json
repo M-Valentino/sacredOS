@@ -1,12 +1,12 @@
 [
   {
-    "name": "Blue Future",
-    "dir": "/apps/blueFuture",
+    "name": "Sacred OS Update Utility",
+    "dir": "/apps/sOSUpdateUtility",
     "icon": "icon.png",
-    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included.",
+    "description": "This program will update the system files of Sacred OS to the latest versions.",
     "author": "Mark Valentino",
     "link": "https://github.com/M-Valentino",
-    "mode": "Download"
+    "mode": "Install"
   },
   {
     "name": "Peter Alert",
@@ -25,5 +25,14 @@
     "author": "Yiotis Kaltsikis",
     "link": "https://github.com/giotiskl",
     "mode": "Install"
+  },
+  {
+    "name": "Blue Future",
+    "dir": "/apps/blueFuture",
+    "icon": "icon.png",
+    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included.",
+    "author": "Mark Valentino",
+    "link": "https://github.com/M-Valentino",
+    "mode": "Download"
   }
 ]
