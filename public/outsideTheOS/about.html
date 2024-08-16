@@ -105,9 +105,13 @@
       margin-right: 10px;
     }
 
+    .tableContainer {
+      width: 100%;
+      overflow-x: scroll;
+    }
+
     table {
       border-collapse: collapse;
-      width: 100%;
     }
 
     th {
@@ -123,7 +127,7 @@
 
     td:nth-child(1) {
       font-family: 'Courier New', Courier, monospace;
-      min-width: 150px;
+      min-width: 120px;
     }
 
     @media only screen and (max-width:1700px) {
@@ -172,6 +176,14 @@
 
       main {
         padding: 24px;
+      }
+
+      table {
+        font-size: 14px;
+      }
+
+      td:nth-child(1) {
+        min-width: 100px;
       }
     }
   </style>
@@ -253,54 +265,58 @@
       <li>Programs having custom icons</li>
     </ul>
     <h2 id="kernel-commands">List of Kernel Commands (Incomplete)</h2>
-    <table>
-      <tr>
-        <th>Command</th>
-        <th>Function</th>
-      </tr>
-      <tr>
-        <td>ALERT:[</td>
-        <td>Makes an alert to the user that they must acknowledge before continuing. The message for the alert is after
-          the left bracket.</td>
-      </tr>
-      <tr>
-        <td>DEL[</td>
-        <td>Deletes a file or folder with the specified path after the bracket.</td>
-      </tr>
-      <tr>
-        <td>MK:D[</td>
-        <td>Makes a directory (folder) in the specified path after the bracket.</td>
-      </tr>
-      <tr>
-        <td>MK:F[</td>
-        <td>Makes an empty file in the specified path (including the file name) after the bracket.</td>
-      </tr>
-      <tr>
-        <td>MK:MENU-SC[</td>
-        <td>Adds the file path after the left bracket to <code>system/menuShortcuts.json</code>, which
-          holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel adds
-          the program associated with the path to the start menu.</td>
-      </tr>
-      <tr>
-        <td>REQ:AF</td>
-        <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this message will
-          send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
-          <code>AF:</code>
-        </td>
-      </tr>
-      <tr>
-        <td>REQ:SS</td>
-        <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
-          a string to the iframe (program) that sent
-          the message. The string containing the style sheet is prepended with <code>SS:</code></td>
-      </tr>
-      <tr>
-        <td>U:DSKTP-BG[</td>
-        <td>Applies a new desktop background from the specified path after the left bracket.
-          <code>system/settings.json</code> is then updated with the new path.
-        </td>
-      </tr>
-    </table>
+    <div class="tableContainer">
+      <table>
+        <tr>
+          <th>Command</th>
+          <th>Function</th>
+        </tr>
+        <tr>
+          <td>ALERT:[</td>
+          <td>Makes an alert to the user that they must acknowledge before continuing. The message for the alert is
+            after
+            the left bracket.</td>
+        </tr>
+        <tr>
+          <td>DEL[</td>
+          <td>Deletes a file or folder with the specified path after the bracket.</td>
+        </tr>
+        <tr>
+          <td>MK:D[</td>
+          <td>Makes a directory (folder) in the specified path after the bracket.</td>
+        </tr>
+        <tr>
+          <td>MK:F[</td>
+          <td>Makes an empty file in the specified path (including the file name) after the bracket.</td>
+        </tr>
+        <tr>
+          <td>MK:MENU-SC[</td>
+          <td>Adds the file path after the left bracket to <code>system/menuShortcuts.json</code>, which
+            holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel adds
+            the program associated with the path to the start menu.</td>
+        </tr>
+        <tr>
+          <td>REQ:AF</td>
+          <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this message
+            will
+            send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
+            <code>AF:</code>
+          </td>
+        </tr>
+        <tr>
+          <td>REQ:SS</td>
+          <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
+            a string to the iframe (program) that sent
+            the message. The string containing the style sheet is prepended with <code>SS:</code></td>
+        </tr>
+        <tr>
+          <td>U:DSKTP-BG[</td>
+          <td>Applies a new desktop background from the specified path after the left bracket.
+            <code>system/settings.json</code> is then updated with the new path.
+          </td>
+        </tr>
+      </table>
+    </div>
     <h2 id="credits">Credits</h2>
     <ul>
       <li><a target="_blank" rel="noopener noreferrer"
