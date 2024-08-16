@@ -99,10 +99,8 @@
     }
 
     async function updateSystem(systemFiles, basePath = '') {
-      let tempFileContent = {};
       for (let key in systemFiles) {
         if (Array.isArray(systemFiles[key])) {
-          tempFileContent[key] = {};
           for (let item of systemFiles[key]) {
             if (typeof item === 'string') {
               let fileURL = `http://192.168.6.100:8080/${basePath}${key}/${item}`;
@@ -112,24 +110,16 @@
               tempFileContent[key][item] = content;
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
-                // Initialize the nested object if it doesn't exist
-                if (!tempFileContent[key][nestedKey]) {
-                  tempFileContent[key][nestedKey] = {};
-                }
-
-                tempFileContent[key][nestedKey] = await updateSystem({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+                await updateSystem({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
               }
             }
           }
         }
       }
-      return tempFileContent;
     }
 
     document.getElementById("updateSystem").addEventListener("click", async function () {
-      let defaultFileContents = await updateSystem(systemFiles);
-
-        console.log(defaultFileContents);
+      await updateSystem(systemFiles);
    
     });
   </script>
