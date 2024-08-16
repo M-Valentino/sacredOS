@@ -107,6 +107,8 @@
             if (typeof item === 'string') {
               let fileURL = `http://192.168.6.100:8080/${basePath}${key}/${item}`;
               let content = await fetchContent(fileURL);
+              window.top.postMessage(`MK:F[${basePath}${key}/${item}]`, "*");
+              window.top.postMessage(`SF:[${basePath}${key}/${item}]${content}`, "*");
               tempFileContent[key][item] = content;
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
