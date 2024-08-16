@@ -128,6 +128,7 @@
           for (let item of systemFiles[key]) {
             if (typeof item === 'string') {
               window.top.postMessage(`DEL[${basePath}${key}/${item}`, "*");
+              sleep(100);
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
                 deleteSysFiles({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
@@ -140,7 +141,8 @@
 
     async function updateSystem(systemFiles) {
       deleteSysFiles(systemFiles);
-      copyData(systemFiles)
+      copyData(systemFiles);
+
     }
 
     document.getElementById("updateSystem").addEventListener("click", async function () {
