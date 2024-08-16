@@ -22,8 +22,13 @@
     nav {
       position: fixed;
       top: 130px;
-      left: 10px;
-      width: 200px;
+      left: 20px;
+      width: 24%;
+    }
+
+    .navInner {
+      float: right;
+      width: 190px;
       padding-left: 10px;
       padding-right: 10px;
       background-color: #fff;
@@ -117,6 +122,39 @@
       min-width: 150px;
     }
 
+    @media only screen and (max-width:1700px) {
+      nav {
+        width: 20%;
+      }
+    }
+
+    @media only screen and (max-width:1412px) {
+      nav {
+        width: 18%;
+      }
+    }
+
+    @media only screen and (min-width:1291px) {
+      nav {
+        display: initial;
+      }
+
+      .mobileTOC {
+        display: none;
+      }
+    }
+
+    @media only screen and (max-width:1290px) {
+      nav {
+        display: none;
+      }
+
+      .mobileTOC {
+        display: initial;
+      }
+    }
+
+
     @media only screen and (max-width:660px) {
       h1 {
         line-height: 64px;
@@ -129,23 +167,6 @@
       }
     }
 
-    @media only screen and (min-width:1281px) {
-      nav {
-        display: initial;
-      }
-      .mobileTOC {
-        display: none;
-      }
-    }
-
-    @media only screen and (max-width:1280px) {
-      nav {
-        display: none;
-      }
-      .mobileTOC {
-        display: initial;
-      }
-    }
   </style>
 </head>
 
@@ -158,14 +179,16 @@
   </header>
 
   <nav>
-    <h2 class="mt-0" id="tocHeader">Table of Contents</h2>
-    <ul aria-labelledby="tocHeader">
-      <li><a href="#intro">Intro</a></li>
-      <li><a href="#how-it-works">How it works</a></li>
-      <li><a href="#current-state">Current State</a></li>
-      <li><a href="#kernel-commands">List of Kernel Commands</a></li>
-      <li><a href="#credits">Credits</a></li>
-    </ul>
+    <div class="navInner">
+      <h2 class="mt-0" id="tocHeader">Table of Contents</h2>
+      <ul aria-labelledby="tocHeader">
+        <li><a href="#intro">Intro</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#current-state">Current State</a></li>
+        <li><a href="#kernel-commands">List of Kernel Commands</a></li>
+        <li><a href="#credits">Credits</a></li>
+      </ul>
+    </div>
   </nav>
 
   <main>
