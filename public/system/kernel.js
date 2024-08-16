@@ -1,6 +1,8 @@
 function saveToLocalStorage() {
   localStorage.setItem("SacredSession", JSON.stringify(fileContents));
-  window.top.postMessage("ALERT:[Your session has been saved! It is now safe to leave this webpage.");
+  window.top.postMessage(
+    "ALERT:[Your session has been saved! It is now safe to leave this webpage."
+  );
 }
 
 function sendMessageToAllIframes(message) {
@@ -545,10 +547,15 @@ window.onmessage = function (e) {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
-      let newShortcuts = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
-      newShortcuts.push(path);
-      fileContents["system"]["menuShortcuts.json"] = JSON.stringify(newShortcuts); 
-      populateMenu();
+      let newShortcuts = JSON.parse(
+        fileContents["system"]["menuShortcuts.json"]
+      );
+      if (!newShortcuts.includes(path)) {
+        newShortcuts.push(path);
+        fileContents["system"]["menuShortcuts.json"] =
+          JSON.stringify(newShortcuts);
+        populateMenu();
+      }
     } else if (e.data.startsWith("U:TF[")) {
       if (e.data.substring(5) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
