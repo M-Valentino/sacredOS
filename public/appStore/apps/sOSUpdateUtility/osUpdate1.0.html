@@ -116,7 +116,7 @@
         if (Array.isArray(systemFiles[key])) {
           for (let item of systemFiles[key]) {
             if (typeof item === 'string') {
-              let fileURL = `http://192.168.6.100:8080/${basePath}${key}/${item}`;
+              let fileURL = `https://sacred.neocities.org/${basePath}${key}/${item}`;
               try {
                 let content = await fetchContent(fileURL);
                 window.top.postMessage(`MK:F[${basePath}${key}/${item}]`, "*");
