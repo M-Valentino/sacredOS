@@ -19,6 +19,34 @@
   <link rel="manifest" href="../site.webmanifest">
   <title>About Sacred OS</title>
   <style>
+    nav {
+      position: fixed;
+      top: 130px;
+      left: 10px;
+      width: 200px;
+      padding-left: 10px;
+      padding-right: 10px;
+      background-color: #fff;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin-bottom: 10px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #000;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
     header {
       display: flex;
       flex-direction: row;
@@ -100,6 +128,24 @@
         width: 64px;
       }
     }
+
+    @media only screen and (min-width:1281px) {
+      nav {
+        display: initial;
+      }
+      .mobileTOC {
+        display: none;
+      }
+    }
+
+    @media only screen and (max-width:1280px) {
+      nav {
+        display: none;
+      }
+      .mobileTOC {
+        display: initial;
+      }
+    }
   </style>
 </head>
 
@@ -110,8 +156,31 @@
       About Sacred OS
     </h1>
   </header>
+
+  <nav>
+    <h2 class="mt-0" id="tocHeader">Table of Contents</h2>
+    <ul aria-labelledby="tocHeader">
+      <li><a href="#intro">Intro</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#current-state">Current State</a></li>
+      <li><a href="#kernel-commands">List of Kernel Commands</a></li>
+      <li><a href="#credits">Credits</a></li>
+    </ul>
+  </nav>
+
   <main>
-    <h2 class="mt-0">
+    <span class="mobileTOC">
+      <h2 class="mt-0" id="tocHeaderMobile">Table of Contents</h2>
+      <ul aria-labelledby="tocHeaderMobile">
+        <li><a href="#intro">Intro</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#current-state">Current State</a></li>
+        <li><a href="#kernel-commands">List of Kernel Commands</a></li>
+        <li><a href="#credits">Credits</a></li>
+      </ul>
+    </span>
+
+    <h2 class="mt-0" id="intro">
       Intro
     </h2>
     <p>
@@ -121,7 +190,7 @@
       open source, and <a target="_blank" rel="noopener noreferrer" href="https://github.com/M-Valentino/sacredOS">
         the code can be found here</a>.
     </p>
-    <h2>
+    <h2 id="how-it-works">
       How it works
     </h2>
     <p>
@@ -135,7 +204,7 @@
       the system's main style sheet or writing to the disk. Communication to the kernel from program iframes is
       accomplished through the <code>window.postMessage()</code> method.
     </p>
-    <h2>
+    <h2 id="current-state">
       Current State
     </h2>
     <p>
@@ -144,7 +213,7 @@
       OS
       version.
     </p>
-    <h2>List of Kernel Commands (Incomplete)</h2>
+    <h2 id="kernel-commands">List of Kernel Commands (Incomplete)</h2>
     <table>
       <tr>
         <th>Command</th>
@@ -177,7 +246,8 @@
         <td>REQ:AF</td>
         <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this message will
           send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
-          <code>AF:</code></td>
+          <code>AF:</code>
+        </td>
       </tr>
       <tr>
         <td>REQ:SS</td>
@@ -188,10 +258,11 @@
       <tr>
         <td>U:DSKTP-BG[</td>
         <td>Applies a new desktop background from the specified path after the left bracket.
-          <code>system/settings.json</code> is then updated with the new path.</td>
+          <code>system/settings.json</code> is then updated with the new path.
+        </td>
       </tr>
     </table>
-    <h2>Credits</h2>
+    <h2 id="credits">Credits</h2>
     <ul>
       <li><a target="_blank" rel="noopener noreferrer"
           href="https://github.com/Diegogagan2587/Calculator">Diegogagan2587
