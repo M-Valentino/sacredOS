@@ -162,7 +162,7 @@
     document.getElementById("updateSystem").addEventListener("click", async function () {
       const successful = await updateSystem(systemFiles);
       if (successful) {
-        window.top.postMessage("ALERT:[Sacred OS has been updated. Please save your session and reboot.");
+        window.top.postMessage("ALERT:[Sacred OS has been updated. Please save your session and reboot. You will see system programs dissapear in the start menu until you reboot. This is normal");
       } else {
         window.top.postMessage("ALERT:[Sacred OS wasn't updated. You likely have a bad internet connection. Please reboot.");
       }
