@@ -288,8 +288,9 @@ window.onmessage = function (e) {
         e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");
       }
       return;
+    } else if (e.data == "REQ:OSV") {
+      e.source.postMessage("OSV:1.1", "*");
     } else if (e.data.startsWith("SF:[")) {
-      // Find the index of the right bracket to correctly separate the file path from the data
       const rightBracketIndex = e.data.indexOf("]");
 
       // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
@@ -301,7 +302,6 @@ window.onmessage = function (e) {
       // Extract the data content, which starts immediately after the right bracket
       const fileContent = e.data.substring(rightBracketIndex + 1);
 
-      // Save the file content in the fileContents object using recursive function
       saveFileContentsRecursive(
         directoryPath,
         fileContents,

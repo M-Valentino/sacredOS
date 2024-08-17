@@ -53,7 +53,7 @@
 </head>
 
 <body class="program">
-  <p>You are using Sacred OS v1.0</p>
+  <p>You are using Sacred OS v<span id="osVersion"></span></p>
   <h3>Colors</h3>
   <div class="setting mb-10">
     <label for="themeSelector">Select Theme: </label>
@@ -122,6 +122,7 @@
 
   <script>
     window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:OSV", "*");
     const settingsFilePath = "system/settings.json";
     window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
 
@@ -248,6 +249,8 @@
           document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
           document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
         }
+      } else if (e.data.startsWith("OSV:")) {
+        document.getElementById("osVersion").innerText = e.data.substring(4);
       }
     };
   </script>
