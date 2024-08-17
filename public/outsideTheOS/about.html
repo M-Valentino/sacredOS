@@ -127,7 +127,15 @@
 
     td:nth-child(1) {
       font-family: 'Courier New', Courier, monospace;
-      min-width: 120px;
+      white-space: nowrap;
+      min-width: fit-content;
+    }
+
+    table ul {
+      padding-left: 15px;
+      padding-top: 0;
+      padding-bottom: 0;
+      margin: 0;
     }
 
     @media only screen and (max-width:1700px) {
@@ -205,6 +213,7 @@
         <li><a href="#how-it-works">How it works</a></li>
         <li><a href="#kernel-commands">List of Kernel Commands</a></li>
         <li><a href="#current-state">Current State</a></li>
+        <li><a href="#change-log">Change Log</a></li>
         <li><a href="#credits">Credits</a></li>
       </ul>
     </div>
@@ -218,6 +227,7 @@
         <li><a href="#how-it-works">How it works</a></li>
         <li><a href="#kernel-commands">List of Kernel Commands</a></li>
         <li><a href="#current-state">Current State</a></li>
+        <li><a href="#change-log">Change Log</a></li>
         <li><a href="#credits">Credits</a></li>
       </ul>
       <hr />
@@ -287,6 +297,12 @@
           </td>
         </tr>
         <tr>
+          <td>REQ:OSV</td>
+          <td>The kernel will send the current version of the OS to the iframe sending the message in the format:
+            <code>OSV:1.1</code>.
+          </td>
+        </tr>
+        <tr>
           <td>REQ:SS</td>
           <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
             a string to the iframe (program) that sent
@@ -325,6 +341,30 @@
       <li>Cut, copy, paste, and drag 'n drop functionality for files</li>
       <li>Programs having custom icons</li>
     </ul>
+    <h2 id="change-log">Change Log</h2>
+    <div class="tableContainer">
+      <table>
+        <tr>
+          <th>Version</th>
+          <th>Changes</th>
+        </tr>
+        <tr>
+          <td>1.1</td>
+          <td>
+            <ul>
+              <li>The kernel code got some refactoring and a marginal performance boost.</li>
+              <li>The kernel can now return the current OS version.</li>
+              <li>The horizontal rule on the start menu (line below program list) now has the same color as the system's
+                border colors.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>1.0</td>
+          <td>Includes all previous untracked changes. This is the first tracked version.</td>
+        </tr>
+      </table>
+    </div>
     <h2 id="credits">Credits</h2>
     <ul>
       <li><a target="_blank" rel="noopener noreferrer"

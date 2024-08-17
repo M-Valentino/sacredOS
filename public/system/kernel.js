@@ -264,32 +264,30 @@ window.onmessage = function (e) {
       deleteFile(directoryPath, fileContents, fileName);
       populateMenu();
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("U:PRIMC")) {
-      var jsonString = e.data.substring(7);
-      updateColorVariable("--primColor", jsonString);
+      updateColorVariable("--primColor", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCL")) {
-      var jsonString = e.data.substring(7);
-      updateColorVariable("--secColorLight", jsonString);
+      updateColorVariable("--secColorLight", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCD")) {
-      var jsonString = e.data.substring(7);
-      updateColorVariable("--secColorDark", jsonString);
+      updateColorVariable("--secColorDark", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECC")) {
-      var jsonString = e.data.substring(6);
-      updateColorVariable("--secColor", jsonString);
+      updateColorVariable("--secColor", e.data.substring(6));
       return;
     } else if (e.data.startsWith("U:BGM-")) {
-      var jsonString = e.data.substring(6);
-      changeBGMode(jsonString);
+      changeBGMode(e.data.substring(6));
+      return;
     } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system["gui.css"]) {
         e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");
       }
       return;
+    } else if (e.data == "REQ:OSV") {
+      e.source.postMessage("OSV:1.1", "*");
     } else if (e.data.startsWith("SF:[")) {
-      // Find the index of the right bracket to correctly separate the file path from the data
       const rightBracketIndex = e.data.indexOf("]");
 
       // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
@@ -301,7 +299,6 @@ window.onmessage = function (e) {
       // Extract the data content, which starts immediately after the right bracket
       const fileContent = e.data.substring(rightBracketIndex + 1);
 
-      // Save the file content in the fileContents object using recursive function
       saveFileContentsRecursive(
         directoryPath,
         fileContents,
@@ -325,6 +322,7 @@ window.onmessage = function (e) {
       } catch (error) {
         console.error("Error parsing message:", error);
       }
+      return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
@@ -332,6 +330,7 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("MK:D[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
@@ -339,6 +338,7 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFolder(directoryPath, fileContents, folderName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
       let newShortcuts = JSON.parse(
@@ -350,6 +350,7 @@ window.onmessage = function (e) {
           JSON.stringify(newShortcuts);
         populateMenu();
       }
+      return;
     } else if (e.data.startsWith("U:TF[")) {
       if (e.data.substring(5) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
@@ -360,6 +361,7 @@ window.onmessage = function (e) {
           "settings.json"
         ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
       }
+      return;
     } else if (e.data.startsWith("U:DSKTP-BG[")) {
       const imgPath = e.data.substring(11);
       const regexBG = new RegExp(`("desktopBGPath":\\s*").*?(")`);
@@ -367,9 +369,10 @@ window.onmessage = function (e) {
         "settings.json"
       ].replace(regexBG, `$1${imgPath}$2`);
       loadDesktopBG();
+      return;
     } else if (e.data.startsWith("ALERT:[")) {
-      var jsonString = e.data.substring(7);
-      createAlert(jsonString);
+      createAlert(e.data.substring(7));
+      return;
     }
   }
   try {

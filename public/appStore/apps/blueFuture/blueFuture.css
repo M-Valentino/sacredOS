@@ -69,6 +69,10 @@ input[type='radio'], input[type='checkbox'] {
   border: var(--borderWidth) outset var(--secColorDark);
 }
 
+hr {
+  border-color: var(--secColorDark);
+}
+
 .oSButton {
   font-family: 'Times New Roman', Times, serif;
   border: var(--borderWidth) outset var(--secColorDark);
