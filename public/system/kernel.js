@@ -374,8 +374,7 @@ window.onmessage = function (e) {
       loadDesktopBG();
       return;
     } else if (e.data.startsWith("ALERT:[")) {
-      const jsonString = e.data.substring(7);
-      createAlert(jsonString);
+      createAlert(e.data.substring(7));
       return;
     }
   }
