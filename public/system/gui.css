@@ -78,6 +78,10 @@ input[type='checkbox'] {
   border: var(--borderWidth) outset var(--secColorDark);
 }
 
+hr {
+  border-color: var(--secColorDark);
+}
+
 .oSButton {
   border: var(--borderWidth) outset var(--secColorDark);
   cursor: pointer;
