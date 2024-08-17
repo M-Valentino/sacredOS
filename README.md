@@ -29,7 +29,7 @@ After cloning the repo, go into your terminal and change the current directory t
 ## Developing in Sacred OS
 If you want to make a pull request on this repo, you should make a fork off the current unreleased Sacred OS version. Alternatively, if you have an app you want to publish and don't feel comfortable working with the repo, you can make an issue with a link to your app's repo. I can put the app in the OS for you.
 
-## Communicating with the kernel
+### Communicating with the kernel
 
 To see an incomplete list of kernel commands, <a href="https://sacred.neocities.org/outsideTheOS/about">Click here</a>.
 
