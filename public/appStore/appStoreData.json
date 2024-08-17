@@ -1,9 +1,9 @@
 [
   {
-    "name": "Sacred OS v1.0 Update Utility",
+    "name": "Sacred OS v1.1 Update Utility",
     "dir": "/apps/sOSUpdateUtility",
     "icon": "icon.png",
-    "description": "This program will update the system files of Sacred OS to v1.0.",
+    "description": "This program will update the system files of Sacred OS to the latest version.",
     "author": "Mark Valentino",
     "link": "https://github.com/M-Valentino",
     "mode": "Install"

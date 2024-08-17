@@ -249,6 +249,7 @@
           document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
           document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
         }
+        return;
       } else if (e.data.startsWith("OSV:")) {
         document.getElementById("osVersion").innerText = e.data.substring(4);
       }
