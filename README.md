@@ -27,6 +27,7 @@ After cloning the repo, go into your terminal and change the current directory t
 `npx http-server --cors`.
 
 ## Developing in Sacred OS
+If you want to make a pull request on this repo, you should make a fork off the current unreleased Sacred OS version. Alternatively, if you have an app you want to publish and don't feel comfortable working with the repo, you can make an issue with a link to your app's repo. I can put the app in the OS for you.
 
 ## Communicating with the kernel
 
@@ -61,6 +62,8 @@ If you have a good single page web app or game that can be contained in an HTML 
 to add it into my OS's app store. You will need to add your app inside the `appStore/apps` directory and update
 `appStoreData.json`. You will need an `install.js` file. You can simply copy and paste the code from an existing one and then modify it. Your icon should be square shaped. I do ask that assets from external URLs should only be used for fonts and coding libraries from
 well known organizations like Tailwind CSS and Google Fonts for example.
+
+Apps must not contain content that violates copyright.
 
 ### Sacred OS HTML Program Headers
 
