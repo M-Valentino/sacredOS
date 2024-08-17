@@ -27,11 +27,14 @@ After cloning the repo, go into your terminal and change the current directory t
 `npx http-server --cors`.
 
 ## Developing in Sacred OS
-If you want to make a pull request on this repo, you should make a fork off the current unreleased Sacred OS version. Alternatively, if you have an app you want to publish and don't feel comfortable working with the repo, you can make an issue with a link to your app's repo. I can put the app in the OS for you.
+
+If you want to make a pull request for the operating system portion of the code, you should make a fork off the current unreleased Sacred OS version, otherwise, make a fork off of main. Anything inside the `appStore` and `outsideTheOS` directories are not part of the operating system code. Changes to those places aren't included in release notes or the change log.
+
+If you have an app you want to publish and don't feel comfortable working with the repo, you can make an issue with a link to your app's repo. I can put the app in the OS for you.
 
 ### Communicating with the kernel
 
-To see an incomplete list of kernel commands, <a href="https://sacred.neocities.org/outsideTheOS/about">Click here</a>.
+To see an incomplete list of kernel commands, <a href="https://sacred.neocities.org/outsideTheOS/about#kernel-commands">Click here</a>.
 
 ### Requesting System styling for a program
 
