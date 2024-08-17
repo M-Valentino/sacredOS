@@ -264,25 +264,22 @@ window.onmessage = function (e) {
       deleteFile(directoryPath, fileContents, fileName);
       populateMenu();
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("U:PRIMC")) {
-      const jsonString = e.data.substring(7);
-      updateColorVariable("--primColor", jsonString);
+      updateColorVariable("--primColor", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCL")) {
-      const jsonString = e.data.substring(7);
-      updateColorVariable("--secColorLight", jsonString);
+      updateColorVariable("--secColorLight", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCD")) {
-      const jsonString = e.data.substring(7);
-      updateColorVariable("--secColorDark", jsonString);
+      updateColorVariable("--secColorDark", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECC")) {
-      const jsonString = e.data.substring(6);
-      updateColorVariable("--secColor", jsonString);
+      updateColorVariable("--secColor", e.data.substring(6));
       return;
     } else if (e.data.startsWith("U:BGM-")) {
-      const jsonString = e.data.substring(6);
-      changeBGMode(jsonString);
+      changeBGMode(e.data.substring(6));
+      return;
     } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system["gui.css"]) {
         e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");
