@@ -265,23 +265,23 @@ window.onmessage = function (e) {
       populateMenu();
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
     } else if (e.data.startsWith("U:PRIMC")) {
-      var jsonString = e.data.substring(7);
+      const jsonString = e.data.substring(7);
       updateColorVariable("--primColor", jsonString);
       return;
     } else if (e.data.startsWith("U:SECCL")) {
-      var jsonString = e.data.substring(7);
+      const jsonString = e.data.substring(7);
       updateColorVariable("--secColorLight", jsonString);
       return;
     } else if (e.data.startsWith("U:SECCD")) {
-      var jsonString = e.data.substring(7);
+      const jsonString = e.data.substring(7);
       updateColorVariable("--secColorDark", jsonString);
       return;
     } else if (e.data.startsWith("U:SECC")) {
-      var jsonString = e.data.substring(6);
+      const jsonString = e.data.substring(6);
       updateColorVariable("--secColor", jsonString);
       return;
     } else if (e.data.startsWith("U:BGM-")) {
-      var jsonString = e.data.substring(6);
+      const jsonString = e.data.substring(6);
       changeBGMode(jsonString);
     } else if (e.data == "REQ:SS") {
       if (fileContents.system && fileContents.system["gui.css"]) {
@@ -325,6 +325,7 @@ window.onmessage = function (e) {
       } catch (error) {
         console.error("Error parsing message:", error);
       }
+      return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
@@ -332,6 +333,7 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("MK:D[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
@@ -339,6 +341,7 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       makeFolder(directoryPath, fileContents, folderName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
       let newShortcuts = JSON.parse(
@@ -350,6 +353,7 @@ window.onmessage = function (e) {
           JSON.stringify(newShortcuts);
         populateMenu();
       }
+      return;
     } else if (e.data.startsWith("U:TF[")) {
       if (e.data.substring(5) === "24h") {
         fileContents["system"]["settings.json"] = fileContents["system"][
@@ -360,6 +364,7 @@ window.onmessage = function (e) {
           "settings.json"
         ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
       }
+      return;
     } else if (e.data.startsWith("U:DSKTP-BG[")) {
       const imgPath = e.data.substring(11);
       const regexBG = new RegExp(`("desktopBGPath":\\s*").*?(")`);
@@ -367,9 +372,11 @@ window.onmessage = function (e) {
         "settings.json"
       ].replace(regexBG, `$1${imgPath}$2`);
       loadDesktopBG();
+      return;
     } else if (e.data.startsWith("ALERT:[")) {
-      var jsonString = e.data.substring(7);
+      const jsonString = e.data.substring(7);
       createAlert(jsonString);
+      return;
     }
   }
   try {
