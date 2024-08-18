@@ -32,6 +32,7 @@
       padding-left: 10px;
       padding-right: 10px;
       background-color: #fff;
+      box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.125);
     }
 
     nav ul {
@@ -214,6 +215,7 @@
         <li><a href="#kernel-commands">List of Kernel Commands</a></li>
         <li><a href="#current-state">Current State</a></li>
         <li><a href="#change-log">Change Log</a></li>
+        <li><a href="#qa">Q&A</a></li>
         <li><a href="#credits">Credits</a></li>
       </ul>
     </div>
@@ -228,6 +230,7 @@
         <li><a href="#kernel-commands">List of Kernel Commands</a></li>
         <li><a href="#current-state">Current State</a></li>
         <li><a href="#change-log">Change Log</a></li>
+        <li><a href="#qa">Q&A</a></li>
         <li><a href="#credits">Credits</a></li>
       </ul>
       <hr />
@@ -365,6 +368,34 @@
         </tr>
       </table>
     </div>
+    <h2 id="qa">Q&A</h2>
+    <p>
+      <strong>Q:</strong> What inspired you to make Sacred OS?
+      <br />
+      <strong>A:</strong> <a href="https://dustinbrett.com/">Daedal OS</a> actually inspired me. I thought it was really
+      incredible that a Windows 10-like desktop environment could be coded inside a webpage. I saw that it was recieving
+      a lot of attention and thought, "hmmm, I can do that too and put it on my resume". I didn't want to totally copy
+      what Dustin Brett did, and I thought I could possibly do what he did but better in some ways. So I came up with
+      the idea to make a retro Windows inspired operating system written with vanilla JavaScript that would allow you do
+      save and backup your data more easily. I chose to use Vanilla JS as opposed to a framework because it would allow
+      me to have more access to low level features in JavaScript, giving me more code control, and potentially more
+      performance.
+    </p>
+    <p>
+      <strong>Q:</strong> Are there file size limits for the JSON disk backups and the virtual hard drive?
+      <br />
+      <strong>A:</strong> Yes, and they are determined by the browser. The virtual hard drive is a JavaScript object. I
+      can't find much information on how large an object can be in the main modern browsers, but a developer forum for
+      <a href="https://issues.chromium.org/issues/42211664">Chromium has a post from 2010 saying Chromium has a limit of
+        2GB</a>. I can't find anything on the max size for saving files in JavaScript either, but I wouldn't be suprised
+      if such a limit existed, it would be at least 1GB for Firefox and Chrome. For saving anything to local storage,
+      the limit in most browsers is 5MiB, but Firefox and Chrome allow users to increase the limit.
+    </p>
+    <p>
+      <strong>Q:</strong> Why is orange the main color of Sacred OS?
+      <br />
+      <strong>A:</strong> Its my favorite color 😁.
+    </p>
     <h2 id="credits">Credits</h2>
     <ul>
       <li><a target="_blank" rel="noopener noreferrer"
