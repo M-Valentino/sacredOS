@@ -147,19 +147,21 @@
         params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
       };
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
-
     }
+
+    const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
 
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
-      if (keyToCheck.split('.').pop() === "html") {
+      const extension = keyToCheck.split('.').pop();
+      if (extension === "html") {
         const message = {
           action: "openProgram",
           params: { fileName: key, fileData: backupObject[key] }
         };
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
-      } else if (keyToCheck.split('.').pop() === "png") {
+      } else if (imgExtensions.some(ext => key.includes(ext))) {
         openInImageViewer(key);
         return;
       } else if (key.match(/\..*/)) {
@@ -310,8 +312,8 @@
         };
         contextMenu.appendChild(menuItemEdit);
       }
-
-      if (key.includes(".png")) {
+      
+      if (imgExtensions.some(ext => key.includes(ext))) {
         let setDesktopBG = document.createElement("button");
         setDesktopBG.textContent = "Set as Desktop BG";
         setDesktopBG.classList.add("oSButton", "osElemBase");
