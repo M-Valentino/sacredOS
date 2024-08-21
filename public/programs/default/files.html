@@ -46,6 +46,12 @@
       margin-right: 5px;
     }
 
+    .blueCaret {
+      color: #22f;
+      font-weight: bolder;
+      margin-right: 5px;
+    }
+
     #newFileDialog {
       display: none;
     }
@@ -79,6 +85,9 @@
       class="redX">X</span>Delete</button>
   <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
   <button class="oSButton osElemBase" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
+  <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
+  <input type="file" id="fileUpload" style="display:none;">
+
   <div class="flexRowLarge">
     <input id="fileDir">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
@@ -320,6 +329,22 @@
         }
       });
     }
+
+    document.getElementById("fileUploadButton").addEventListener("click", function () {
+      document.getElementById("fileUpload").click();
+    });
+
+    document.getElementById("fileUpload").addEventListener("change", async function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          const uploadedFile = e.target.result;
+          console.log(uploadedFile);
+        };
+        reader.readAsText(file);
+      }
+    });
 
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
