@@ -336,17 +336,14 @@
 
     document.getElementById("fileUpload").addEventListener("change", async function (event) {
       const file = event.target.files[0];
-      if (file) {
+      const filename = file.name;
+      const extension = file.name.split('.').pop();
+      if (file && ['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
         const reader = new FileReader();
         reader.onload = async function (e) {
-
           const uploadedFile = e.target.result;
-          const filename = file.name;
-          const extension = file.name.split('.').pop();
-          console.log(uploadedFile, extension);
           const path = document.getElementById("fileDir").value.substring(3) + filename;
           window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
-          console.log(uploadedFile);
         };
         reader.readAsText(file);
       }
