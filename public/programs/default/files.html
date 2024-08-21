@@ -338,6 +338,7 @@
       const file = event.target.files[0];
       const filename = file.name;
       const extension = file.name.split('.').pop();
+      // For text files
       if (file && ['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
         const reader = new FileReader();
         reader.onload = async function (e) {
@@ -346,6 +347,15 @@
           window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
         };
         reader.readAsText(file);
+        // For binary files
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64File = e.target.result.split(',')[1];  // Strips off the data URL prefix to get pure base64 content
+          const path = document.getElementById("fileDir").value.substring(3) + filename;
+          window.top.postMessage(`SF:[${path}]${base64File}`, "*");
+        };
+        reader.readAsDataURL(file);
       }
     });
 
