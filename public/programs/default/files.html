@@ -107,17 +107,17 @@
     </div>
   </div>
 
-    <!-- hidden dialog div -->
-    <div id="newFolderDialog" class="dialog windowRidgeBorder">
-      <div class="menuHeader">Create New Folder</div>
-      <div class="dialogBody">
-        <label for="newFileNameInput">Enter folder name:</label>
-        <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
-        <br>
-        <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
-        <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
-      </div>
+  <!-- hidden dialog div -->
+  <div id="newFolderDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Create New Folder</div>
+    <div class="dialogBody">
+      <label for="newFileNameInput">Enter folder name:</label>
+      <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
+      <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
     </div>
+  </div>
 
   <script>
     let diskBackup = {};
@@ -339,7 +339,13 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = async function (e) {
+
           const uploadedFile = e.target.result;
+          const filename = file.name;
+          const extension = file.name.split('.').pop();
+          console.log(uploadedFile, extension);
+          const path = document.getElementById("fileDir").value.substring(3) + filename;
+          window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
           console.log(uploadedFile);
         };
         reader.readAsText(file);
