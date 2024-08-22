@@ -37,6 +37,8 @@
     }
 
     const filePath = extractFilePath(); // Extract the file path from a comment
+    const extension = filePath.split('.').pop();
+    
     if (filePath !== null) {
       window.top.postMessage(`REQ:PH[${filePath}]`, "*");
     }
@@ -60,14 +62,11 @@
             document.getElementById("noValidImage").remove();
             // Extract file content by removing the initial part of the message
             let fileContent = e.data.substring(expectedPattern.length);
-            if (fileContent === "undefined") {
-              fileContent = "Creating new files in notepad coming soon.";
-            }
 
             let imageContainer = document.getElementById('imageContainer');
             let image = document.createElement("img");
 
-            image.src= `data:image/png;base64, ${fileContent}`;
+            image.src= `data:image/${extension};base64,${fileContent}`;
             imageContainer.appendChild(image);
           }
         }
