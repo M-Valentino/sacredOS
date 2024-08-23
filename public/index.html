@@ -97,6 +97,8 @@
               <div id="languageWarning" class="warning"></div>
               <div id="userAgent" class="biosTextSub"></div>
               <div id="userAgentWarning" class="warning"></div>
+              <div id="memoryLimit" class="biosTextSub"></div>
+              <div id="memoryLimitWarning" class="warning"></div>
             </section>
             <section id="freshInstallInfo">
               <h2 class="mt-20">Compiling OS From Source:</h2>
@@ -220,12 +222,25 @@
     const userAgent = window.navigator.userAgent;
     document.getElementById("userAgent").innerHTML =
       "Detected User Agent: <b>" + window.navigator.userAgent; + "</b>.";
+    let userAgentWarning = document.getElementById("userAgentWarning");
     if (userAgent.includes("Edg")) {
       // Do nothing
     } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
+      userAgentWarning.innerHTML = `<b>Warning</b> Safari has graphical bugs and does not update the cursor type when it should.`;
     } else if (userAgent.includes("Firefox")) {
-      document.getElementById("userAgentWarning").innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
+      userAgentWarning.innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
+    }
+
+    let memLimitText =  document.getElementById("memoryLimit").innerHTML;
+    if (performance && performance.memory) {
+      const memoryLimit = (performance.memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2);
+      memLimitText.innerHTML = `Detected JS Heap Size Limit: <b>${memoryLimit} MB</b>`;
+
+      if (performance.memory.jsHeapSizeLimit < 1024 * 1024 * 48) { // Less than 48MB
+        document.getElementById("memoryLimitWarning").innerHTML = `<b>Warning</b> Your device has limited memory resources. Sacred OS may run slowly.`;
+      }
+    } else {
+      memLimitText.innerHTML = `No JS heap size limit detected.`;
     }
     ////////// End of System Check Code //////////
 
