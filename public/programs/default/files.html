@@ -60,6 +60,10 @@
       display: none;
     }
 
+    #fileRenameDialog {
+      display: none;
+    }
+
     .dialog {
       position: absolute;
       top: 50%;
@@ -67,6 +71,7 @@
       transform: translate(-50%, -50%);
       z-index: 1000;
       background-color: var(--secColor);
+      box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.25);
     }
 
     .dialogBody {
@@ -75,6 +80,13 @@
 
     .newInput {
       margin-bottom: 10px;
+    }
+
+    .contextMenu {
+      width: 140px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.25);
     }
   </style>
 </head>
@@ -116,6 +128,18 @@
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
       <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="fileRenameDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Rename File</div>
+    <div class="dialogBody">
+      <label for="renameFileNameInput">Enter new name:</label>
+      <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
+      <button class="oSButton osElemBase" onclick="handleCancelRenameFile()">Cancel</button>
     </div>
   </div>
 
@@ -263,6 +287,21 @@
       newFolderNameInput.value = "";
     }
 
+    function handleOkRenameFile() {
+      let renameFileInput = document.getElementById("renameFileNameInput");
+      let renameFileDialog = document.getElementById("fileRenameDialog");
+      let newFileName = renameFileInput.value.trim();
+      if (newFileName === "") {
+        window.top.postMessage("ALERT:[Empty file name!");
+      } else if (!newFileName.includes(".")) {
+        window.top.postMessage("ALERT:[File names must include an extension!");
+      } else {
+        window.top.postMessage(`RNF:[${renamingFile}]${newFileName}`, "*");
+        renameFileInput.value = "";
+      }
+      renameFileDialog.style.display = "none";
+    }
+
     function handleCancelNewFile() {
       newFileDialog.style.display = "none";
       newFileNameInput.value = "";
@@ -271,6 +310,11 @@
     function handleCancelNewFolder() {
       document.getElementById("newFolderDialog").style.display = "none";
       document.getElementById("newFolderNameInput").value = "";
+    }
+
+    function handleCancelRenameFile() {
+      document.getElementById("fileRenameDialog").style.display = "none";
+      document.getElementById("renameFileNameInput").value = "";
     }
 
     function removeOldContextMenus() {
@@ -285,6 +329,7 @@
       });
     }
 
+    let renamingFile = "";
     function handleContextMenu(e, key) {
       e.preventDefault();
       // Prevents duplicate context menus from being made
@@ -297,8 +342,7 @@
       contextMenu.style.position = "absolute";
       contextMenu.style.left = e.clientX + "px";
       contextMenu.style.top = e.clientY + "px";
-      contextMenu.style.width = "100px";
-      contextMenu.classList.add("windowRidgeBorder", "osElemBase");
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase", "contextMenu");
       document.body.appendChild(contextMenu);
 
       // Folders don't have periods and shouldn't be edited.
@@ -311,8 +355,18 @@
           removeOldContextMenus();
         };
         contextMenu.appendChild(menuItemEdit);
+
+        let fileRenameBttn = document.createElement("button");
+        fileRenameBttn.textContent = "Rename";
+        fileRenameBttn.classList.add("oSButton", "osElemBase");
+        fileRenameBttn.onclick = function () {
+          let renameFileDialog = document.getElementById("fileRenameDialog");
+          renameFileDialog.style.display = "initial";
+          renamingFile = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+        };
+        contextMenu.appendChild(fileRenameBttn);
       }
-      
+
       if (imgExtensions.some(ext => key.includes(ext))) {
         let setDesktopBG = document.createElement("button");
         setDesktopBG.textContent = "Set as Desktop BG";

@@ -229,12 +229,11 @@ function changeBGMode(mode) {
 }
 
 window.onmessage = function (e) {
-  if (typeof e.data === "string") {
+  if (e.origin === window.origin && typeof e.data === "string") {
     console.log(e.data);
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
-      // TODO convert this line to regex match paths
     } else if (e.data.startsWith("REQ:PH[")) {
       // Extract the file path from the message
       const filePath = e.data.slice(7, -1);
@@ -286,7 +285,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.2", "*");
+      e.source.postMessage("OSV:1.3", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -306,6 +305,31 @@ window.onmessage = function (e) {
         fileContent
       );
 
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      return;
+    } else if (e.data.startsWith("RNF:[")) {
+      const rightBracketIndex = e.data.indexOf("]");
+
+      // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
+      const filePath = e.data.slice(5, rightBracketIndex);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+
+      // Extract the data content, which starts immediately after the right bracket
+      const newName = e.data.substring(rightBracketIndex + 1);
+      const fileOriginalContent = findFileContents(
+        directoryPath,
+        fileContents,
+        fileName
+      );
+      saveFileContentsRecursive(
+        directoryPath,
+        fileContents,
+        newName,
+        fileOriginalContent
+      );
+      deleteFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
     } else if (e.data.startsWith("OP:")) {
@@ -376,7 +400,7 @@ window.onmessage = function (e) {
     }
   }
   try {
-    if (typeof e.data === "string") {
+    if (e.origin === window.origin && typeof e.data === "string") {
       // Ensure e.data is a string for eval
       eval(decodeURI(e.data));
       console.log(e.data);

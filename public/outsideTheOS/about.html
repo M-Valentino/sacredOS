@@ -18,184 +18,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="../site.webmanifest">
   <title>About Sacred OS</title>
-  <style>
-    nav {
-      position: fixed;
-      top: 130px;
-      left: 20px;
-      width: 24%;
-    }
-
-    .navInner {
-      float: right;
-      width: 190px;
-      padding-left: 10px;
-      padding-right: 10px;
-      background-color: #fff;
-      box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.125);
-    }
-
-    nav ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    nav ul li {
-      margin-bottom: 10px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #000;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    hr {
-      border: 1px solid #bbb;
-    }
-
-    header {
-      display: flex;
-      flex-direction: row;
-      margin-bottom: 20px;
-      margin-left: 10px;
-    }
-
-    .logo {
-      margin-right: 10px;
-    }
-
-    h1 {
-      line-height: 100px;
-      margin: unset;
-      font-size: 64px;
-    }
-
-    h2 {
-      margin-bottom: 5px;
-    }
-
-    .mt-0 {
-      margin-top: 0;
-    }
-
-    p {
-      margin-top: 5px;
-    }
-
-    code {
-      background-color: #ddd;
-      font-family: 'Courier New', Courier, monospace;
-      padding-left: 2px;
-      padding-right: 2px;
-    }
-
-    body {
-      max-width: 800px;
-      margin: 10px auto;
-      background-color: #fddf79;
-    }
-
-    main {
-      background-color: #fff;
-      padding: 32px;
-      margin-left: 10px;
-      margin-right: 10px;
-    }
-
-    .tableContainer {
-      width: 100%;
-      overflow-x: scroll;
-    }
-
-    table {
-      border-collapse: collapse;
-    }
-
-    th {
-      background-color: #eee;
-    }
-
-    td,
-    th {
-      border: 1px solid #999;
-      text-align: left;
-      padding: 8px;
-    }
-
-    td:nth-child(1) {
-      font-family: 'Courier New', Courier, monospace;
-      white-space: nowrap;
-      min-width: fit-content;
-    }
-
-    table ul {
-      padding-left: 15px;
-      padding-top: 0;
-      padding-bottom: 0;
-      margin: 0;
-    }
-
-    @media only screen and (max-width:1700px) {
-      nav {
-        width: 20%;
-      }
-    }
-
-    @media only screen and (max-width:1412px) {
-      nav {
-        width: 18%;
-      }
-    }
-
-    @media only screen and (min-width:1291px) {
-      nav {
-        display: initial;
-      }
-
-      .mobileTOC {
-        display: none;
-      }
-    }
-
-    @media only screen and (max-width:1290px) {
-      nav {
-        display: none;
-      }
-
-      .mobileTOC {
-        display: initial;
-      }
-    }
-
-
-    @media only screen and (max-width:660px) {
-      h1 {
-        line-height: 64px;
-        font-size: 32px;
-      }
-
-      .logo {
-        height: 64px;
-        width: 64px;
-      }
-
-      main {
-        padding: 24px;
-      }
-
-      table {
-        font-size: 14px;
-      }
-
-      td:nth-child(1) {
-        min-width: 100px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="about.css" />
 </head>
 
 <body>
@@ -331,7 +154,7 @@
       Current State
     </h2>
     <p>
-      File manipulation is limited at the moment in Sacred OS. Currently you can't rename files or do cut and paste
+      File manipulation is limited at the moment in Sacred OS. Currently you can't rename folders or do cut and paste
       operations, but I'm working on it. I'm also working on a way to let users update their saved JSON disk backups to
       the latest OS version.
     </p>
@@ -349,6 +172,17 @@
         <tr>
           <th>Version</th>
           <th>Changes</th>
+        </tr>
+        <tr>
+          <td>1.3</td>
+          <td>
+            <ul>
+              <li>Fixed security vulnerability where websites visited in Sacred's browser could run kernal commands and
+                methods.</li>
+              <li>Added file renaming functionality.</li>
+              <li>Dialogs and context menus in the files program look nicer.</li>
+            </ul>
+          </td>
         </tr>
         <tr>
           <td>1.2</td>

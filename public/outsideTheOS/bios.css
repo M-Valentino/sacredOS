@@ -1,3 +1,7 @@
+:root {
+  --powerBttnTxtOutline: -0.5px -0.5px 0 #ded8bd, 0.5px -0.5px 0 #ded8bd, -0.5px 0.5px 0 #ded8bd, 0.5px 0.5px 0 #ded8bd;
+}
+
 #crtAndBootContainer {
   margin: auto;
   width: fit-content;
@@ -130,15 +134,18 @@
   line-height: 37px;
   font-weight: 900;
   font-size: 24px;
-  color: #3e3d36;
 }
 
 .powerButtonOn {
   box-shadow: inset 2px 2px 5px #000, inset -2px -2px 5px #000, 0 0 2px #000;
+  color: #f8b84b;
+  text-shadow: var(--powerBttnTxtOutline), 2px 1px 4px #f8b84b99;
 }
 
 .powerButtonOff {
+  color: #706e69;
   box-shadow: inset 2px 2px 5px #000, inset -2px -2px 5px #666, 0 0 4px #000;
+  text-shadow: var(--powerBttnTxtOutline);
 }
 
 #screen {
@@ -308,7 +315,6 @@ footer img {
   justify-content: space-evenly;
 }
 
-
 @media only screen and (max-width:1023px),
 screen and (max-height: 780px) {
   .crtBorder {
@@ -356,5 +362,25 @@ screen and (max-height: 780px) {
 @media only screen and (max-width:584px) {
   .eighty8x31Row {
     display: block;
+  }
+}
+
+@media only screen and (max-height:840px) {
+  .biosTextSub {
+    font-size: 15px;
+  }
+
+  .biosHrMain {
+    border-top: 8px solid #fff;
+    border-bottom: 8px solid #fff;
+    border-style: double;
+  }
+
+  #biosTitle {
+    font-size: 38px;
+  }
+
+  .biosTextMain {
+    font-size: 17px;
   }
 }
