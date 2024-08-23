@@ -358,3 +358,22 @@ screen and (max-height: 780px) {
     display: block;
   }
 }
+
+@media only screen and (max-height:840px) {
+  .biosTextSub {
+    font-size: 15px;
+  }
+
+  .biosHrMain {
+    border-top: 8px solid #fff;
+    border-bottom: 8px solid #fff;
+    border-style: double;
+  }
+
+  #biosTitle {
+    font-size: 38px;
+  }
+  .biosTextMain {
+    font-size: 17px;
+  }
+}
