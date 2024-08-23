@@ -229,12 +229,11 @@ function changeBGMode(mode) {
 }
 
 window.onmessage = function (e) {
-  if (typeof e.data === "string") {
+  if (e.origin === window.origin && typeof e.data === "string") {
     console.log(e.data);
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
-      // TODO convert this line to regex match paths
     } else if (e.data.startsWith("REQ:PH[")) {
       // Extract the file path from the message
       const filePath = e.data.slice(7, -1);
@@ -376,7 +375,7 @@ window.onmessage = function (e) {
     }
   }
   try {
-    if (typeof e.data === "string") {
+    if (e.origin === window.origin && typeof e.data === "string") {
       // Ensure e.data is a string for eval
       eval(decodeURI(e.data));
       console.log(e.data);
