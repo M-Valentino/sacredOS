@@ -80,6 +80,12 @@
     .newInput {
       margin-bottom: 10px;
     }
+
+    .contextMenu {
+      width: 140px;
+      display: flex;
+      flex-direction: column;
+    }
   </style>
 </head>
 
@@ -279,6 +285,13 @@
       newFolderNameInput.value = "";
     }
 
+    function handleOkRenameFile() {
+      let renameFileInput = document.getElementById("renameFileNameInput");
+      let renameFileDialog = document.getElementById("fileRenameDialog");
+      let folderName = newFolderNameInput.value.trim();
+      renameFileDialog.style.display = "none";
+    }
+
     function handleCancelNewFile() {
       newFileDialog.style.display = "none";
       newFileNameInput.value = "";
@@ -313,8 +326,7 @@
       contextMenu.style.position = "absolute";
       contextMenu.style.left = e.clientX + "px";
       contextMenu.style.top = e.clientY + "px";
-      contextMenu.style.width = "100px";
-      contextMenu.classList.add("windowRidgeBorder", "osElemBase");
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase", "contextMenu");
       document.body.appendChild(contextMenu);
 
       // Folders don't have periods and shouldn't be edited.
@@ -332,9 +344,8 @@
         fileRenameBttn.textContent = "Rename";
         fileRenameBttn.classList.add("oSButton", "osElemBase");
         fileRenameBttn.onclick = function () {
-          let renameDialog = document.getElementById("renameDialog");
-          renameDialog.style.display = "initial";
-          window.top.postMessage(`RN:[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
+          let renameFileDialog = document.getElementById("fileRenameDialog");
+          renameFileDialog.style.display = "initial";
         };
         contextMenu.appendChild(fileRenameBttn);
       }
