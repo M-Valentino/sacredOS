@@ -71,7 +71,7 @@
       transform: translate(-50%, -50%);
       z-index: 1000;
       background-color: var(--secColor);
-      box-shadow: 10px 10px 0 0 rgba(0,0,0,0.25);
+      box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.25);
     }
 
     .dialogBody {
@@ -139,7 +139,7 @@
       <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleOkRenameFile()">Cancel</button>
+      <button class="oSButton osElemBase" onclick="handleCancelRenameFile()">Cancel</button>
     </div>
   </div>
 
@@ -297,6 +297,7 @@
         window.top.postMessage("ALERT:[File names must include an extension!");
       } else {
         window.top.postMessage(`RNF:[${renamingFile}]${newFileName}`, "*");
+        renameFileInput.value = "";
       }
       renameFileDialog.style.display = "none";
     }
@@ -309,6 +310,11 @@
     function handleCancelNewFolder() {
       document.getElementById("newFolderDialog").style.display = "none";
       document.getElementById("newFolderNameInput").value = "";
+    }
+
+    function handleCancelRenameFile() {
+      document.getElementById("fileRenameDialog").style.display = "none";
+      document.getElementById("renameFileNameInput").value = "";
     }
 
     function removeOldContextMenus() {
