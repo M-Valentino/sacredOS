@@ -312,7 +312,7 @@
         };
         contextMenu.appendChild(menuItemEdit);
       }
-      
+
       if (imgExtensions.some(ext => key.includes(ext))) {
         let setDesktopBG = document.createElement("button");
         setDesktopBG.textContent = "Set as Desktop BG";
@@ -322,6 +322,14 @@
         };
         contextMenu.appendChild(setDesktopBG);
       }
+
+      let renameBttn = document.createElement("button");
+      renameBttn.textContent = "Rename";
+      renameBttn.classList.add("oSButton", "osElemBase");
+      renameBttn.onclick = function () {
+        window.top.postMessage(`RN:[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
+      };
+      contextMenu.appendChild(renameBttn);
 
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
