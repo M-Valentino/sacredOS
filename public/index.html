@@ -231,7 +231,7 @@
       userAgentWarning.innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
     }
 
-    let memLimitText =  document.getElementById("memoryLimit").innerHTML;
+    let memLimitText =  document.getElementById("memoryLimit");
     if (performance && performance.memory) {
       const memoryLimit = (performance.memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2);
       memLimitText.innerHTML = `Detected JS Heap Size Limit: <b>${memoryLimit} MB</b>`;
