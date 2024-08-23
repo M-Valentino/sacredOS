@@ -60,6 +60,10 @@
       display: none;
     }
 
+    #fileRenameDialog {
+      display: none;
+    }
+
     .dialog {
       position: absolute;
       top: 50%;
@@ -116,6 +120,18 @@
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
       <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="fileRenameDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Rename File</div>
+    <div class="dialogBody">
+      <label for="renameFileNameInput">Enter new name:</label>
+      <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
+      <button class="oSButton osElemBase" onclick="handleOkRenameFile()">Cancel</button>
     </div>
   </div>
 
@@ -311,6 +327,16 @@
           removeOldContextMenus();
         };
         contextMenu.appendChild(menuItemEdit);
+
+        let fileRenameBttn = document.createElement("button");
+        fileRenameBttn.textContent = "Rename";
+        fileRenameBttn.classList.add("oSButton", "osElemBase");
+        fileRenameBttn.onclick = function () {
+          let renameDialog = document.getElementById("renameDialog");
+          renameDialog.style.display = "initial";
+          window.top.postMessage(`RN:[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
+        };
+        contextMenu.appendChild(fileRenameBttn);
       }
 
       if (imgExtensions.some(ext => key.includes(ext))) {
@@ -322,14 +348,6 @@
         };
         contextMenu.appendChild(setDesktopBG);
       }
-
-      let renameBttn = document.createElement("button");
-      renameBttn.textContent = "Rename";
-      renameBttn.classList.add("oSButton", "osElemBase");
-      renameBttn.onclick = function () {
-        window.top.postMessage(`RN:[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
-      };
-      contextMenu.appendChild(renameBttn);
 
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
