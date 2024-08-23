@@ -85,6 +85,7 @@
       width: 140px;
       display: flex;
       flex-direction: column;
+      box-shadow: 5px 5px 0 0 rgba(0, 0, 0, 0.25);
     }
   </style>
 </head>
@@ -288,7 +289,14 @@
     function handleOkRenameFile() {
       let renameFileInput = document.getElementById("renameFileNameInput");
       let renameFileDialog = document.getElementById("fileRenameDialog");
-      let folderName = newFolderNameInput.value.trim();
+      let newFileName = renameFileInput.value.trim();
+      if (newFileName === "") {
+        window.top.postMessage("ALERT:[Empty file name!");
+      } else if (!newFileName.includes(".")) {
+        window.top.postMessage("ALERT:[File names must include an extension!");
+      } else {
+        window.top.postMessage(`RNF:[${renamingFile}]${newFileName}`, "*");
+      }
       renameFileDialog.style.display = "none";
     }
 
@@ -314,6 +322,7 @@
       });
     }
 
+    let renamingFile = "";
     function handleContextMenu(e, key) {
       e.preventDefault();
       // Prevents duplicate context menus from being made
@@ -346,6 +355,7 @@
         fileRenameBttn.onclick = function () {
           let renameFileDialog = document.getElementById("fileRenameDialog");
           renameFileDialog.style.display = "initial";
+          renamingFile = `${document.getElementById("fileDir").value.substring(3)}${key}`;
         };
         contextMenu.appendChild(fileRenameBttn);
       }
