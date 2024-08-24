@@ -40,13 +40,6 @@
       ]
     }
   </script>
-  <script>
-    // Replaces site thumbnail on Neocities
-    const urlParams = new URLSearchParams(window.location.search);
-    if (navigator.userAgent.includes('Screenjesus')) {
-      document.getElementsByTagName('body')[0].innerHTML = '<style>*{margin: 0;padding: 0;box-sizing: border-box;}img{width:100vw;height:100vh;}</style><img src="outsideTheOS/neocitiesThumbnail.png">';
-    }
-  </script>
 </head>
 
 <body id="screen">
@@ -164,6 +157,12 @@
           return caches.delete(key);
         }));
       });
+    }
+
+    // Replaces site thumbnail on Neocities
+    const urlParams = new URLSearchParams(window.location.search);
+    if (navigator.userAgent.includes('Screenjesus')) {
+      document.getElementsByTagName('body')[0].innerHTML = '<style>*{margin: 0;padding: 0;box-sizing: border-box;}img{width:100vw;height:100vh;image-rendering:pixelated;}</style><img src="outsideTheOS/neocitiesThumbnail.png">';
     }
 
     document.getElementById("help").addEventListener("click", function () {
