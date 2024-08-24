@@ -26,7 +26,6 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="canonical" href="https://sacred.neocities.org/">
   <link rel="stylesheet" href="outsideTheOS/bios.css" />
-
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -39,6 +38,13 @@
         "https://github.com/M-Valentino/sacredOS/",
         "https://mark-valentino.vercel.app/project/Sacred%20OS"
       ]
+    }
+  </script>
+  <script>
+    // Replaces site thumbnail on Neocities
+    const urlParams = new URLSearchParams(window.location.search);
+    if (navigator.userAgent.includes('Screenjesus')) {
+      document.getElementsByTagName('body')[0].innerHTML = '<style>*{margin: 0;padding: 0;box-sizing: border-box;}img{width:100vw;height:100vh;}</style><img src="public/outsideTheOS/neocitiesThumbnail.png">';
     }
   </script>
 </head>
@@ -231,7 +237,7 @@
       userAgentWarning.innerHTML = `<b>Warning</b> The retro styled scrollbars in Sacred OS aren't supported in Firefox.`;
     }
 
-    let memLimitText =  document.getElementById("memoryLimit");
+    let memLimitText = document.getElementById("memoryLimit");
     if (performance && performance.memory) {
       const memoryLimit = (performance.memory.jsHeapSizeLimit / (1024 * 1024)).toFixed(2);
       memLimitText.innerHTML = `Detected JS Heap Size Limit: <b>${memoryLimit} MB</b>`;
