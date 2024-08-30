@@ -1,15 +1,18 @@
-nav {
-  position: fixed;
-  top: 130px;
-  left: 20px;
-  width: 24%;
+.navAndMain {
+  margin: auto;
+  max-width: fit-content;
+  transform: translateX(calc(-220px / 2));
+  display: flex;
+  justify-content: space-between;
 }
 
 .navInner {
-  float: right;
-  width: 190px;
-  padding-left: 10px;
-  padding-right: 10px;
+  position: sticky;
+  top: 130px;
+  left: 0;
+  box-sizing: border-box;
+  width: 210px;
+  padding: 10px;
   background-color: #fff;
   box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.125);
 }
@@ -40,7 +43,7 @@ header {
   display: flex;
   flex-direction: row;
   margin-bottom: 20px;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 .logo {
@@ -73,7 +76,6 @@ code {
 }
 
 body {
-  max-width: 800px;
   margin: 10px auto;
   background-color: #fddf79;
 }
@@ -81,8 +83,8 @@ body {
 main {
   background-color: #fff;
   padding: 32px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 20px;
+  max-width: 900px;
 }
 
 .tableContainer {
@@ -118,19 +120,13 @@ table ul {
   margin: 0;
 }
 
-@media only screen and (max-width:1700px) {
-  nav {
-    width: 20%;
+@media only screen and (max-width:1432px) {
+  .navAndMain {
+    transform: unset;
   }
 }
 
-@media only screen and (max-width:1412px) {
-  nav {
-    width: 18%;
-  }
-}
-
-@media only screen and (min-width:1291px) {
+@media only screen and (min-width:1261px) {
   nav {
     display: initial;
   }
@@ -140,13 +136,22 @@ table ul {
   }
 }
 
-@media only screen and (max-width:1290px) {
+@media only screen and (max-width:1260px) {
   nav {
     display: none;
   }
 
   .mobileTOC {
     display: initial;
+  }
+
+  main {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  header {
+    margin-left: 10px;
   }
 }
 
