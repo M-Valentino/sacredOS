@@ -17,21 +17,21 @@
   box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.125);
 }
 
-nav ul {
+.desktopNav ul {
   list-style-type: none;
   padding: 0;
 }
 
-nav ul li {
+.desktopNav ul li {
   margin-bottom: 10px;
 }
 
-nav a {
+.desktopNav a {
   text-decoration: none;
   color: #000;
 }
 
-nav a:hover {
+.desktopNav a:hover {
   text-decoration: underline;
 }
 
@@ -127,21 +127,21 @@ table ul {
 }
 
 @media only screen and (min-width:1261px) {
-  nav {
+  .desktopNav {
     display: initial;
   }
 
-  .mobileTOC {
+  .mobileNav {
     display: none;
   }
 }
 
 @media only screen and (max-width:1260px) {
-  nav {
+  .desktopNav {
     display: none;
   }
 
-  .mobileTOC {
+  .mobileNav {
     display: initial;
   }
 
