@@ -362,9 +362,13 @@
         fileRenameBttn.onclick = function () {
           let renameFileDialog = document.getElementById("fileRenameDialog");
           renameFileDialog.style.display = "initial";
-          document.getElementById("renameFileNameInput").value = key;
+          const input = document.getElementById("renameFileNameInput");
+          input.value = key;
+          input.select();
+
           renamingFile = `${document.getElementById("fileDir").value.substring(3)}${key}`;
         };
+
         contextMenu.appendChild(fileRenameBttn);
       }
 
