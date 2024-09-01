@@ -1,6 +1,40 @@
 User-agent: *
+Allow: /
+
+User-agent: Baiduspider
 Disallow: /appStore/*
 Disallow: /programs/*
 Disallow: /documents/*
 Disallow: /system/*
+
+User-agent: Bingbot
+Disallow: /appStore/*
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+
+User-agent: DuckDuckBot
+Disallow: /appStore/*
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+
+User-agent: Googlebot
+Disallow: /appStore/*
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+
+User-agent: Slurp
+Disallow: /appStore/*
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+
+User-agent: Yandex
+Disallow: /appStore/*
+Disallow: /programs/*
+Disallow: /documents/*
+Disallow: /system/*
+
 Sitemap: https://sacred.neocities.org/sitemap.xml
