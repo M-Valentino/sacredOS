@@ -86,79 +86,79 @@
           accomplished through the <code>window.postMessage()</code> method.
         </p>
         <h2 id="kernel-commands">List of Kernel Commands (Incomplete)</h2>
-        <div class="tableContainer">
-          <table>
-            <tr>
-              <th>Command</th>
-              <th>Function</th>
-            </tr>
-            <tr>
-              <td>ALERT:[</td>
-              <td>Makes an alert to the user that they must acknowledge before continuing. The message for the alert is
-                after
-                the left bracket.</td>
-            </tr>
-            <tr>
-              <td>DEL[</td>
-              <td>Deletes a file or folder with the specified path after the bracket.</td>
-            </tr>
-            <tr>
-              <td>MK:D[</td>
-              <td>Makes a directory (folder) in the specified path after the bracket.</td>
-            </tr>
-            <tr>
-              <td>MK:F[</td>
-              <td>Makes an empty file in the specified path (including the file name) after the bracket.</td>
-            </tr>
-            <tr>
-              <td>MK:MENU-SC[</td>
-              <td>Adds the file path after the left bracket to <code>system/menuShortcuts.json</code>, which
-                holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel
-                adds
-                the program associated with the path to the start menu.</td>
-            </tr>
-            <tr>
-              <td>REQ:AF</td>
-              <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this
-                message
-                will
-                send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
-                <code>AF:</code>
-              </td>
-            </tr>
-            <tr>
-              <td>REQ:OSV</td>
-              <td>The kernel will send the current version of the OS to the iframe sending the message in the format:
-                <code>OSV:1.1</code>.
-              </td>
-            </tr>
-            <tr>
-              <td>REQ:SS</td>
-              <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
-                a string to the iframe (program) that sent
-                the message. The string containing the style sheet is prepended with <code>SS:</code></td>
-            </tr>
-            <tr>
-              <td>RNF:[]</td>
-              <td>The kernel will rename the file in the file path inside the brackets to the text after the right
-                bracket.</td>
-            </tr>
-            <tr>
-              <td>U:DSKTP-BG[</td>
-              <td>Applies a new desktop background from the specified path after the left bracket.
-                <code>system/settings.json</code> is then updated with the new path.
-              </td>
-            </tr>
-            <tr>
-              <td>U:TF[12h</td>
-              <td>Changes the OS's clock to the 12 hour time format.</td>
-            </tr>
-            <tr>
-              <td>U:TF[24h</td>
-              <td>Changes the OS's clock to the 24 hour time format.</td>
-            </tr>
-          </table>
-        </div>
+
+        <table>
+          <tr>
+            <th>Command</th>
+            <th>Function</th>
+          </tr>
+          <tr>
+            <td>ALERT:[</td>
+            <td>Makes an alert to the user that they must acknowledge before continuing. The message for the alert is
+              after
+              the left bracket.</td>
+          </tr>
+          <tr>
+            <td>DEL[</td>
+            <td>Deletes a file or folder with the specified path after the bracket.</td>
+          </tr>
+          <tr>
+            <td>MK:D[</td>
+            <td>Makes a directory (folder) in the specified path after the bracket.</td>
+          </tr>
+          <tr>
+            <td>MK:F[</td>
+            <td>Makes an empty file in the specified path (including the file name) after the bracket.</td>
+          </tr>
+          <tr>
+            <td>MK:MENU-SC[</td>
+            <td>Adds the file path after the left bracket to <code>system/menuShortcuts.json</code>, which
+              holds a list of all files on the start menu. After the path has been added to the JSON file, the kernel
+              adds
+              the program associated with the path to the start menu.</td>
+          </tr>
+          <tr>
+            <td>REQ:AF</td>
+            <td>Sends a request to get all files on the virtual hard disk disk. The kernel, upon recieving this
+              message
+              will
+              send the entire disk encoded using <code>JSON.stringify()</code>. The message string is prepended with
+              <code>AF:</code>
+            </td>
+          </tr>
+          <tr>
+            <td>REQ:OSV</td>
+            <td>The kernel will send the current version of the OS to the iframe sending the message in the format:
+              <code>OSV:1.1</code>.
+            </td>
+          </tr>
+          <tr>
+            <td>REQ:SS</td>
+            <td>The kernel will send the entire system CSS style sheet, <code>system/gui.css</code> encoded as
+              a string to the iframe (program) that sent
+              the message. The string containing the style sheet is prepended with <code>SS:</code></td>
+          </tr>
+          <tr>
+            <td>RNF:[]</td>
+            <td>The kernel will rename the file in the file path inside the brackets to the text after the right
+              bracket.</td>
+          </tr>
+          <tr>
+            <td>U:DSKTP-BG[</td>
+            <td>Applies a new desktop background from the specified path after the left bracket.
+              <code>system/settings.json</code> is then updated with the new path.
+            </td>
+          </tr>
+          <tr>
+            <td>U:TF[12h</td>
+            <td>Changes the OS's clock to the 12 hour time format.</td>
+          </tr>
+          <tr>
+            <td>U:TF[24h</td>
+            <td>Changes the OS's clock to the 24 hour time format.</td>
+          </tr>
+        </table>
+
         <h2 id="current-state">
           Current State
         </h2>
@@ -178,63 +178,63 @@
           <li>Programs having custom icons</li>
         </ul>
         <h2 id="change-log">Change Log</h2>
-        <div class="tableContainer">
-          <table>
-            <tr>
-              <th>Version</th>
-              <th>Changes</th>
-            </tr>
-            <tr>
-              <td>1.4</td>
-              <td>
-                <ul>
-                  <li>The dialog for renaming files has the original file name already populated inside, and it's text
-                    highlighted.</li>
-                  <li>
-                    Image files now have their own icon in the files program.
-                  </li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>1.3</td>
-              <td>
-                <ul>
-                  <li>Fixed security vulnerability where websites visited in Sacred's browser could run kernel commands
-                    and
-                    methods.</li>
-                  <li>Added file renaming functionality.</li>
-                  <li>Dialogs and context menus in the files program look nicer.</li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>1.2</td>
-              <td>
-                <ul>
-                  <li>File upload feature added! You can now import external files into Sacred OS.</li>
-                  <li>The image viewer can now show JPG, GIF, and WEBP files.</li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>1.1</td>
-              <td>
-                <ul>
-                  <li>The kernel code got some refactoring and a marginal performance boost.</li>
-                  <li>The kernel can now return the current OS version.</li>
-                  <li>The horizontal rule on the start menu (line below program list) now has the same color as the
-                    system's
-                    border colors.</li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td>1.0</td>
-              <td>Includes all previous untracked changes. This is the first tracked version.</td>
-            </tr>
-          </table>
-        </div>
+
+        <table>
+          <tr>
+            <th>Version</th>
+            <th>Changes</th>
+          </tr>
+          <tr>
+            <td>1.4</td>
+            <td>
+              <ul>
+                <li>The dialog for renaming files has the original file name already populated inside, and it's text
+                  highlighted.</li>
+                <li>
+                  Image files now have their own icon in the files program.
+                </li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>1.3</td>
+            <td>
+              <ul>
+                <li>Fixed security vulnerability where websites visited in Sacred's browser could run kernel commands
+                  and
+                  methods.</li>
+                <li>Added file renaming functionality.</li>
+                <li>Dialogs and context menus in the files program look nicer.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>1.2</td>
+            <td>
+              <ul>
+                <li>File upload feature added! You can now import external files into Sacred OS.</li>
+                <li>The image viewer can now show JPG, GIF, and WEBP files.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>1.1</td>
+            <td>
+              <ul>
+                <li>The kernel code got some refactoring and a marginal performance boost.</li>
+                <li>The kernel can now return the current OS version.</li>
+                <li>The horizontal rule on the start menu (line below program list) now has the same color as the
+                  system's
+                  border colors.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>1.0</td>
+            <td>Includes all previous untracked changes. This is the first tracked version.</td>
+          </tr>
+        </table>
+
         <h2 id="qa">Q&A</h2>
         <p>
           <strong>Q:</strong> What inspired you to make Sacred OS?

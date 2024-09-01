@@ -87,12 +87,8 @@ main {
   max-width: 900px;
 }
 
-.tableContainer {
-  width: 100%;
-  overflow-x: scroll;
-}
-
 table {
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -177,5 +173,17 @@ table ul {
 
   td:nth-child(1) {
     min-width: 100px;
+  }
+}
+
+@media only screen and (max-width:364px) {
+  main {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
   }
 }
