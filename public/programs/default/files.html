@@ -201,7 +201,7 @@
         document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
         mode = MODES.DELETE;
 
-        let documentFiles = document.querySelectorAll(".document,.folder");
+        let documentFiles = document.querySelectorAll(".fileOrDir");
 
         documentFiles.forEach(file => {
           let delIcon = document.createElement('img');
@@ -222,21 +222,12 @@
     }
 
     function handleDelete(key) {
-      // Check if it's a folder or file
       const path = document.getElementById("fileDir").value.substring(3) + key;
-      const isFolder = diskBackup[path] && typeof diskBackup[path] === "object";
-
-      // Prepare the delete request
-      if (isFolder) {
-        window.top.postMessage(`DEL[${path}`, '*');
-      } else {
-        window.top.postMessage(`DEL[${path}`, '*');
-      }
+      window.top.postMessage(`DEL[${path}`, '*');
       toggleDeleteMode();
     }
 
     function makeNewFile() {
-      // Display the dialog
       let newFileDialog = document.getElementById("newFileDialog");
       newFileDialog.style.display = "initial";
     }
@@ -423,6 +414,7 @@
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
+      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).small;
       let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -447,10 +439,10 @@
 
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
-          button.classList.add("folder");
+        } else if (imgExtensions.some(ext => key.includes(ext))) {
+          icon.src = imageImage;
         } else {
           icon.src = documentImage;
-          button.classList.add("document");
         }
 
         button.appendChild(icon);
