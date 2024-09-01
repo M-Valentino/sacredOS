@@ -14,7 +14,7 @@
 
 <body>
   <main>
-    <h1>𓍰 Sacred OS v1.3 Update</h1>
+    <h1>𓍰 Sacred OS v1.4 Update</h1>
     <p id="updateText">This file will update all files in the system folder, and all files in the programs/default folder. It will
       not
       overwrite any other data. Please make sure you have saved your session before updating to avoid losing data. You may delete this program after installing the update.</p>
@@ -22,7 +22,7 @@
   </main>
   <script>
     let currentOSversion;
-    const updateVersion = 1.3;
+    const updateVersion = 1.4;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:OSV", "*");
@@ -61,6 +61,7 @@
           icons: [
             "document.json",
             "folder.json",
+            "picture.json",
             "deleteIndicator.json"
           ]
         }
