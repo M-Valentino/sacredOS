@@ -77,8 +77,15 @@ function populateMenu() {
 
   function appendToMenu(program, programData) {
     let menuItem = document.createElement("div");
+    const iconMatch = programData.match(/<!--.* microIcon="(.+?)".*-->/);
+    if (iconMatch) {
+      const iconData = iconMatch[1];
+      let img = document.createElement("img");
+      img.src = iconData;
+      menuItem.appendChild(img);
+    }
     const programName = program.substring(program.lastIndexOf("/") + 1);
-    menuItem.innerHTML = programName;
+    menuItem.innerHTML += programName;
     menuItem.classList = "oSButton osElemBase";
     menuItem.onclick = menuItem.onclick = function () {
       openProgram(programName, programData, true);
