@@ -310,13 +310,11 @@ window.onmessage = function (e) {
     } else if (e.data.startsWith("RNF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
-      // Extract the file path using the index of the right bracket, excluding "SF:[" and the right bracket itself
       const filePath = e.data.slice(5, rightBracketIndex);
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
 
-      // Extract the data content, which starts immediately after the right bracket
       const newName = e.data.substring(rightBracketIndex + 1);
       const fileOriginalContent = findFileContents(
         directoryPath,
