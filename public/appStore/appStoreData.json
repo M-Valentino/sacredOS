@@ -30,7 +30,7 @@
     "name": "Blue Future",
     "dir": "/apps/blueFuture",
     "icon": "icon.png",
-    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included.",
+    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included. This version is updated to be compatible with Sacred OS v1.5",
     "author": "Mark Valentino",
     "link": "https://github.com/M-Valentino",
     "mode": "Download"
