@@ -10,7 +10,7 @@
 .stickyNoteContainer {
   position: relative;
   transform: translateY(-220px);
-  filter: drop-shadow(-1px 0px 0.375px #00000020);
+  filter: drop-shadow(-1px 0 0.375px #00000020);
   height: 0;
 }
 
@@ -38,7 +38,7 @@
 .crtborderHighlight {
   background: linear-gradient(35deg, #b9b39c 10%, #fffef8 70%, #fffffe 100%);
   border-radius: 10px;
-  box-shadow: inset 0px 0px 1px 1.5px #ded8bd40;
+  box-shadow: inset 0 0 1px 1.5px #ded8bd40;
   padding: 3px;
   width: fit-content;
 }
@@ -50,7 +50,7 @@
   padding-bottom: 35px;
   background: linear-gradient(45deg, #ded8bd 0%, #fffae2 100%);
   border-radius: 8px;
-  box-shadow: -0.5px 0.5px 0px 1px #ded8bd60;
+  box-shadow: -0.5px 0.5px 0 1px #ded8bd60;
   width: calc((70vh + 120px * 1.25));
 }
 
@@ -82,7 +82,7 @@
   border-bottom-left-radius: 100%;
   border-bottom-right-radius: 100%;
   background: linear-gradient(90deg, #787466 0%, #999481 4%, #b9b39c 40%, #cbc6af 50%, #b9b39c 60%, #999481 96%, #787466 100%);
-  box-shadow: inset 0px 10px 11px 2px #00000047, inset 0px 5px 11px 1px #00000020;
+  box-shadow: inset 0 10px 11px 2px #00000047, inset 0 5px 11px 1px #00000020;
 }
 
 .crtStandContainer {
@@ -90,7 +90,7 @@
   margin: auto;
   width: 750px;
   height: 115px;
-  box-shadow: inset 0px 0px 2px 0px #000000a6;
+  box-shadow: inset 0 0 2px 0 #000000a6;
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
 }
@@ -194,7 +194,7 @@
   padding: 16px;
   overflow: hidden;
   border: 4px solid #000;
-  box-shadow: inset 3px -3.5px 20px 0px rgba(0, 0, 0, 0.2), inset 0px 0px 3px 0px rgba(0, 0, 0, 0.96);
+  box-shadow: inset 3px -3.5px 20px 0 rgba(0, 0, 0, 0.2), inset 0 0 3px 0 rgba(0, 0, 0, 0.96);
 }
 
 .biosButton {
