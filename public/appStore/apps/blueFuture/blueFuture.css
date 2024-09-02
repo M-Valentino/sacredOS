@@ -111,6 +111,12 @@ hr {
   filter: brightness(0.8);
 }
 
+.programMenuIcon {
+  margin-right: 4px;
+  height: 22px;
+  width: 22px;
+}
+
 #menuButton {
   margin-right: 8px;
 }
@@ -135,6 +141,11 @@ hr {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
 }
 
 #clock {

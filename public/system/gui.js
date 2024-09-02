@@ -81,12 +81,18 @@ function populateMenu() {
     if (iconMatch) {
       const iconData = iconMatch[1];
       let img = document.createElement("img");
+      img.classList.add("programMenuIcon")
       img.src = iconData;
       menuItem.appendChild(img);
     }
+
     const programName = program.substring(program.lastIndexOf("/") + 1);
-    menuItem.innerHTML += programName;
-    menuItem.classList = "oSButton osElemBase";
+    let textContainer = document.createElement("div");
+    textContainer.classList.add("flexColCenter");
+    textContainer.innerHTML = programName;
+    menuItem.appendChild(textContainer);
+
+    menuItem.classList = "oSButton osElemBase flexRow";
     menuItem.onclick = menuItem.onclick = function () {
       openProgram(programName, programData, true);
     };
