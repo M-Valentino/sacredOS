@@ -31,7 +31,7 @@
           <li><a href="#intro">Intro</a></li>
           <li><a href="#how-it-works">How it works</a></li>
           <li><a href="#kernel-commands">List of Kernel Commands</a></li>
-          <li><a href="#current-state">Current State</a></li>
+          <li><a href="#planned-features">Planned Features</a></li>
           <li><a href="#change-log">Change Log</a></li>
           <li><a href="#qa">Q&A</a></li>
           <li><a href="#credits">Credits</a></li>
@@ -53,7 +53,7 @@
             <li><a href="#intro">Intro</a></li>
             <li><a href="#how-it-works">How it works</a></li>
             <li><a href="#kernel-commands">List of Kernel Commands</a></li>
-            <li><a href="#current-state">Current State</a></li>
+            <li><a href="#planned-features">Planned Features</a></li>
             <li><a href="#change-log">Change Log</a></li>
             <li><a href="#qa">Q&A</a></li>
             <li><a href="#credits">Credits</a></li>
@@ -139,8 +139,14 @@
               the message. The string containing the style sheet is prepended with <code>SS:</code></td>
           </tr>
           <tr>
+            <td>RND:[]</td>
+            <td>The kernel will rename the folder in the path inside the brackets to the text specified after the right
+              bracket.</td>
+          </tr>
+          <tr>
             <td>RNF:[]</td>
-            <td>The kernel will rename the file in the file path inside the brackets to the text after the right
+            <td>The kernel will rename the file in the file path inside the brackets to the text specified after the
+              right
               bracket.</td>
           </tr>
           <tr>
@@ -158,19 +164,8 @@
             <td>Changes the OS's clock to the 24 hour time format.</td>
           </tr>
         </table>
-
-        <h2 id="current-state">
-          Current State
-        </h2>
-        <p>
-          File manipulation is limited at the moment in Sacred OS. Currently you can't rename folders or do cut and
-          paste
-          operations, but I'm working on it. I'm also working on a way to let users update their saved JSON disk backups
-          to
-          the latest OS version.
-        </p>
-        <h3 id="plannedFeatures">Planned Features</h3>
-        <ul aria-labelledby="plannedFeatures">
+        <h2 id="planned-features">Planned Features</h2>
+        <ul aria-labelledby="planned-features">
           <li>Desktop shortcuts</li>
           <li>Videogame emulators</li>
           <li>Linux-like terminal that can execute JavaScript code</li>
@@ -183,6 +178,29 @@
           <tr>
             <th>Version</th>
             <th>Changes</th>
+          </tr>
+          <tr>
+            <td>1.6</td>
+            <td>
+              <ul>
+                <li>
+                  If programs don't have an icon, they will have the default icon in the start menu.
+                </li>
+                <li>
+                  Impoved the looks of some program icons.
+                </li>
+                <li>
+                  Program icons in the start menu now are shown as a consistent width of 27x27px.
+                </li>
+                <li>
+                  When a dialog is already shown in the files program and a new dialog is shown, the old dialog is
+                  closed.
+                </li>
+                <li>
+                  Folders can now be renamed.
+                </li>
+              </ul>
+            </td>
           </tr>
           <tr>
             <td>1.5</td>
@@ -262,7 +280,8 @@
           do
           save and backup your data more easily. I chose to use Vanilla JS as opposed to a framework because it would
           allow
-          me to have more access to low level features in JavaScript, giving me more code control, and potentially more
+          me to have more access to low level features in JavaScript, giving me more code control, and potentially
+          more
           performance.
         </p>
         <p>

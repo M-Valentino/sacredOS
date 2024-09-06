@@ -78,13 +78,17 @@ function populateMenu() {
   function appendToMenu(program, programData) {
     let menuItem = document.createElement("div");
     const iconMatch = programData.match(/<!--.* microIcon="(.+?)".*-->/);
+    let img = document.createElement("img");
     if (iconMatch) {
-      const iconData = iconMatch[1];
-      let img = document.createElement("img");
-      img.classList.add("programMenuIcon")
-      img.src = iconData;
-      menuItem.appendChild(img);
+      img.src = iconMatch[1];
+    } else {
+      img.src = JSON.parse(
+        fileContents["system"]["icons"]["executable.json"]
+      ).micro;
     }
+    img.classList.add("programMenuIcon");
+    img.width, (img.height = 27);
+    menuItem.appendChild(img);
 
     const programName = program.substring(program.lastIndexOf("/") + 1);
     let textContainer = document.createElement("div");

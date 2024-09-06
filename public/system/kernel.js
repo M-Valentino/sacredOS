@@ -49,14 +49,18 @@ function checkFileExistsAndCreate(directory, fileName) {
   }
 }
 
-function makeFolder(directoryPath, fileContents, folderName) {
+function makeFolder(directoryPath, fileContents, folderName, folderContents=null) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
   // If folder to be created is in root dir
   if (directoryPath === "") {
     if (!fileContents.hasOwnProperty(folderName)) {
-      fileContents[folderName] = {};
+      if (folderContents !== null) {
+        fileContents[folderName] = folderContents;
+      } else {
+        fileContents[folderName] = {};
+      }
     }
   } else if (
     currentDirectory &&
@@ -64,7 +68,11 @@ function makeFolder(directoryPath, fileContents, folderName) {
   ) {
     if (directories.length === 0) {
       if (!fileContents[currentDirectory].hasOwnProperty(folderName)) {
-        fileContents[currentDirectory][folderName] = {};
+        if (folderContents !== null) {
+          fileContents[folderName] = folderContents;
+        } else {
+          fileContents[folderName] = {};
+        }
       }
     } else {
       // Continue recursively for nested directories
@@ -285,7 +293,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.5", "*");
+      e.source.postMessage("OSV:1.6", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -307,7 +315,7 @@ window.onmessage = function (e) {
 
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
-    } else if (e.data.startsWith("RNF:[")) {
+    } else if (e.data.startsWith("RND:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
       const filePath = e.data.slice(5, rightBracketIndex);
@@ -327,6 +335,23 @@ window.onmessage = function (e) {
         newName,
         fileOriginalContent
       );
+      deleteFile(directoryPath, fileContents, fileName);
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+    } else if (e.data.startsWith("RNF:[")) {
+      const rightBracketIndex = e.data.indexOf("]");
+
+      const filePath = e.data.slice(5, rightBracketIndex);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+
+      const newName = e.data.substring(rightBracketIndex + 1);
+      const fileOriginalContent = findFileContents(
+        directoryPath,
+        fileContents,
+        fileName
+      );
+      makeFolder(directoryPath, fileContents, newName, fileOriginalContent)
       deleteFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;

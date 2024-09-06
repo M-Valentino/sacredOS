@@ -14,15 +14,17 @@
 
 <body>
   <main>
-    <h1>𓍰 Sacred OS v1.5 Update</h1>
-    <p id="updateText">This file will update all files in the system folder, and all files in the programs/default folder. It will
+    <h1>𓍰 Sacred OS v1.6 Update</h1>
+    <p id="updateText">This file will update all files in the system folder, and all files in the programs/default
+      folder. It will
       not
-      overwrite any other data. Please make sure you have saved your session before updating to avoid losing data. You may delete this program after installing the update.</p>
+      overwrite any other data. Please make sure you have saved your session before updating to avoid losing data. You
+      may delete this program after installing the update.</p>
     <button class="osElemBase oSButton" id="updateSystem">Update System</button>
   </main>
   <script>
     let currentOSversion;
-    const updateVersion = 1.5;
+    const updateVersion = 1.6;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:OSV", "*");
@@ -60,6 +62,7 @@
         {
           icons: [
             "document.json",
+            "executable.json",
             "folder.json",
             "picture.json",
             "deleteIndicator.json"
@@ -115,9 +118,11 @@
           }
         } else {
           console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+          return null;
         }
       } catch (err) {
         console.error(`Error fetching file ${fileURL}: ${err}`);
+        return null;
       }
     }
 
@@ -127,15 +132,15 @@
           for (let item of systemFiles[key]) {
             if (typeof item === 'string') {
               let fileURL = `https://sacred.neocities.org/${basePath}${key}/${item}`;
-              try {
-                let content = await fetchContent(fileURL);
-                window.top.postMessage(`MK:F[${basePath}${key}/${item}]`, "*");
-                sleep(100);
-                window.top.postMessage(`SF:[${basePath}${key}/${item}]${content}`, "*");
-                sleep(100);
-              } catch {
+              let content = await fetchContent(fileURL);
+              if (content === null) {
                 return false;
               }
+              window.top.postMessage(`MK:F[${basePath}${key}/${item}]`, "*");
+              sleep(100);
+              window.top.postMessage(`SF:[${basePath}${key}/${item}]${content}`, "*");
+              sleep(100);
+
             } else if (typeof item === 'object') {
               for (let nestedKey in item) {
                 await copyData({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
