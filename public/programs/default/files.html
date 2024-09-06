@@ -234,12 +234,21 @@
       toggleDeleteMode();
     }
 
+    function closeExistingDialogs() {
+      const dialogs = document.querySelectorAll(".dialog");
+      dialogs.forEach((d) => {
+        d.style.display = "none";
+      });
+    }
+
     function makeNewFile() {
+      closeExistingDialogs();
       let newFileDialog = document.getElementById("newFileDialog");
       newFileDialog.style.display = "initial";
     }
 
     function makeNewFolder() {
+      closeExistingDialogs();
       let newFolderDialog = document.getElementById("newFolderDialog");
       newFolderDialog.style.display = "initial";
     }
@@ -377,6 +386,7 @@
         fileRenameBttn.textContent = "Rename";
         fileRenameBttn.classList.add("oSButton", "osElemBase");
         fileRenameBttn.onclick = function () {
+          closeExistingDialogs();
           let renameFileDialog = document.getElementById("fileRenameDialog");
           renameFileDialog.style.display = "initial";
           const input = document.getElementById("renameFileNameInput");
@@ -392,6 +402,7 @@
         folderRenameBttn.textContent = "Rename";
         folderRenameBttn.classList.add("oSButton", "osElemBase");
         folderRenameBttn.onclick = function () {
+          closeExistingDialogs();
           let renameFolderDialog = document.getElementById("folderRenameDialog");
           renameFolderDialog.style.display = "initial";
           const input = document.getElementById("renameFolderInput");
