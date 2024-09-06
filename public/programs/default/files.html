@@ -64,6 +64,10 @@
       display: none;
     }
 
+    #folderRenameDialog {
+      display: none;
+    }
+
     .dialog {
       position: absolute;
       top: 50%;
@@ -140,6 +144,18 @@
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
       <button class="oSButton osElemBase" onclick="handleCancelRenameFile()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="folderRenameDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Rename Folder</div>
+    <div class="dialogBody">
+      <label for="renameFolderInput">Enter new name:</label>
+      <input type="text" id="renameFolderInput" class="newInput" placeholder="New name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFolder()"> OK </button>
+      <button class="oSButton osElemBase" onclick="handleCancelRenamefolder()">Cancel</button>
     </div>
   </div>
 
@@ -293,6 +309,19 @@
       renameFileDialog.style.display = "none";
     }
 
+    function handleOkRenameFolder() {
+      let renameFolderInput = document.getElementById("renameFolderInput");
+      let renameFolderDialog = document.getElementById("folderRenameDialog");
+      let newFolderName = renameFolderInput.value.trim();
+      if (newFolderName === "") {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      } else {
+        window.top.postMessage(`RND:[${renamingFolder}]${newFolderName}`, "*");
+        renameFolderInput.value = "";
+      }
+      renameFolderDialog.style.display = "none";
+    }
+
     function handleCancelNewFile() {
       newFileDialog.style.display = "none";
       newFileNameInput.value = "";
@@ -321,6 +350,7 @@
     }
 
     let renamingFile = "";
+    let renamingFolder = "";
     function handleContextMenu(e, key) {
       e.preventDefault();
       // Prevents duplicate context menus from being made
@@ -361,6 +391,21 @@
         };
 
         contextMenu.appendChild(fileRenameBttn);
+      } else {
+        let folderRenameBttn = document.createElement("button");
+        folderRenameBttn.textContent = "Rename";
+        folderRenameBttn.classList.add("oSButton", "osElemBase");
+        folderRenameBttn.onclick = function () {
+          let renameFolderDialog = document.getElementById("folderRenameDialog");
+          renameFolderDialog.style.display = "initial";
+          const input = document.getElementById("renameFolderInput");
+          input.value = key;
+          input.select();
+
+          renamingFolder = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+        };
+
+        contextMenu.appendChild(folderRenameBttn);
       }
 
       if (imgExtensions.some(ext => key.includes(ext))) {
