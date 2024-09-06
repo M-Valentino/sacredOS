@@ -81,7 +81,8 @@ function populateMenu() {
     if (iconMatch) {
       const iconData = iconMatch[1];
       let img = document.createElement("img");
-      img.classList.add("programMenuIcon")
+      img.classList.add("programMenuIcon");
+      img.width, img.height = 27;
       img.src = iconData;
       menuItem.appendChild(img);
     }
