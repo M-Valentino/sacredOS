@@ -146,7 +146,7 @@
       <input type="text" id="renameFolderInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFolder()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelRenamefolder()">Cancel</button>
+      <button class="oSButton osElemBase" onclick="handleCancelRenameFolder()">Cancel</button>
     </div>
   </div>
 
@@ -326,6 +326,11 @@
     function handleCancelRenameFile() {
       document.getElementById("fileRenameDialog").style.display = "none";
       document.getElementById("renameFileNameInput").value = "";
+    }
+
+    function handleCancelRenameFolder() {
+      document.getElementById("folderRenameDialog").style.display = "none";
+      document.getElementById("renameFolderInput").value = "";
     }
 
     function removeOldContextMenus() {
