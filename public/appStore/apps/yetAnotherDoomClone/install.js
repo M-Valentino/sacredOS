@@ -16,7 +16,6 @@ async function copyData(dir) {
   return false;
 }
 async function install() {
-  window.top.postMessage("MK:D[programs/doomClone]");
   const installedCorrectly =
     (await copyData("/appStore/apps/yetAnotherDoomClone/doomClone.html")) &&
     (await copyData("/appStore/apps/yetAnotherDoomClone/javascript-doom-clone-game.js"));

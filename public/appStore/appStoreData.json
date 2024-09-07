@@ -12,7 +12,7 @@
     "name": "Yet Another Doom Clone",
     "dir": "/apps/yetAnotherDoomClone",
     "icon": "icon.png",
-    "description": "A first person Doom clone created written in 13kb of JavaScript code.",
+    "description": "A 3D first person shooter that is a minimalist recreation of classic Doom.",
     "author": "Nicholas Carlini",
     "link": "https://nicholas.carlini.com/writing/2019/javascript-doom-clone-13k.html",
     "mode": "Install"
