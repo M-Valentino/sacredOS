@@ -17,6 +17,7 @@ async function copyData(dir) {
 }
 async function install() {
   const installedCorrectly =
+  (await copyData("/appStore/apps/yetAnotherDoomClone/LICENSE.txt")) &&
     (await copyData("/appStore/apps/yetAnotherDoomClone/doomClone.html")) &&
     (await copyData("/appStore/apps/yetAnotherDoomClone/javascript-doom-clone-game.js"));
 
