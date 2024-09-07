@@ -9,6 +9,15 @@
     "mode": "Install"
   },
   {
+    "name": "Yet Another Doom Clone",
+    "dir": "/apps/yetAnotherDoomClone",
+    "icon": "icon.png",
+    "description": "A first person Doom clone created written in 13kb of JavaScript code.",
+    "author": "Nicholas Carlini",
+    "link": "https://nicholas.carlini.com/writing/2019/javascript-doom-clone-13k.html",
+    "mode": "Install"
+  },
+  {
     "name": "Peter Alert",
     "dir": "/apps/peterAlert",
     "icon": "icon.png",
