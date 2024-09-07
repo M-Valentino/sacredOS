@@ -1,0 +1,12 @@
+This software is licensed under the GPL-3.0 license and the full license has been 
+included in the installation. The original code was made by Nicholas Carlini and
+can be found here:
+https://github.com/carlini/js13k2019-yet-another-doom-clone?tab=readme-ov-file
+
+This software installation has been modified from the source and includes the
+following modifications:
+- The minified JavaScript code was only included.
+- Loading of the game's JavaScript code was modified to be compatible in Sacred OS.
+- The game has the "image-rendering: pixelated" style applied to the the body in 
+the HTML file.
+- An embedded icon and Sacred OS window dimensions code were added.
