@@ -261,38 +261,6 @@ function createAlert(text) {
   window.appendChild(okButton);
 }
 
-function createFileDialog(text) {
-  windowCount++;
-
-  const currentWindowID = `${windowCount}`;
-
-  let underlay = document.createElement("div");
-  underlay.id = `underlay${currentWindowID}`;
-  underlay.classList.add("underlay");
-  document.body.appendChild(underlay);
-
-  let window = createWindow(
-    currentWindowID,
-    document.body.clientWidth / 2 - 150,
-    200,
-    true
-  );
-
-  let header = createHeader(currentWindowID, "Alert", 1);
-  window.appendChild(header);
-
-  let iframe = document.createElement("iframe");
-  iframe.id = `prog${currentWindowID}`;
-  iframe.srcdoc = fileContents['programs']['default']['files.html'];
-  iframe.style.overflow = "hidden";
-  iframe.frameBorder = "0";
-  iframe.style.border = "0";
-  iframe.style.width = "600px";
-  iframe.style.height = "400px";
-  iframe.allowFullscreen = true;
-  window.appendChild(iframe);
-}
-
 function openProgram(programName, data, dontToggleMenu, withFile) {
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
 

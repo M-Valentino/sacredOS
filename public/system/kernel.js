@@ -371,7 +371,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data.startsWith("OPD:[")) {
-      createFileDialog();
+      openProgram("Open File", fileContents['programs']['default']['files.html'], false, false);
     }
      else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
