@@ -11,42 +11,882 @@
     <button onclick="runPython()">Run Project</button>
     <pre id="output"></pre>
 
-    <script id="python-base-class" type="text/python">
-# base_class.py
-class BaseClass:
-    def __init__(self, name):
-        self.name = name
+    <script id="python_code" type="text/python">
+from abc import ABC, abstractmethod
+import re
+import os
+import platform
+import requests
+from bs4 import BeautifulSoup
+import time
+import json
+from pynput import keyboard
+import sys
+import signal
+import platform
+
+
+class page(ABC):
+    def __init__(self):
+        self.clear_console()
+
     
-    def greet(self):
-        return f"Hello, I'm {self.name}"
-    </script>
-
-    <script id="python-derived-class" type="text/python">
-# derived_class.py
-from base_class import BaseClass
-
-class DerivedClass(BaseClass):
-    def __init__(self, name, role):
-        super().__init__(name)
-        self.role = role
+    def display_options(self, options):
+        for i in range(len(options)):
+            print(f"{i}) " + str(options[i].get_name()))
     
-    def introduce(self):
-        return f"{self.greet()} and I'm a {self.role}"
-    </script>
 
-    <script id="python-main" type="text/python">
-# main.py
-from derived_class import DerivedClass
+    """
+    n: int
+    n is the option number to execute
+    """
+    def handle_input(self, n, options):
+        options[n].action()
 
+
+    """
+    n: int
+    n is the number of options
+    we want an integer between [0, n)
+    """
+    def get_input(self, n, message="please select an option: "):
+        pattern = rf'^(?:[0-9]|[1-9][0-9]*)$'
+        while True:
+            i = input(message)
+            if re.match(pattern, i) and int(i) < n:
+                break
+            else:
+                print(f"Error: Enter an integer between and including 0 and {n-1}")
+        return int(i)
+
+
+    def clear_console(self):
+        if platform.system() == "Windows":
+            os.system('cls')
+        else:
+            os.system('clear')
+
+
+
+"""
+Parent class to the biblical collections (Book of Mormon, Old and New Testament)
+"""
+class collection_page(page):
+    def __init__(self, menu, menu_options, collection_name, book_list, main_menu, previous_menu):
+        super().__init__()
+        print(menu)
+        menu_options = []
+        self.create_options(menu_options, collection_name, book_list, main_menu, previous_menu)
+        super().display_options(menu_options)
+        user_input = super().get_input(len(menu_options))
+        super().handle_input(user_input, menu_options)
+
+    def create_options(self, menu_options, collection_title, book_list, main_menu, previous_menu):
+        menu_options.append(
+            menu_option(
+                "Go to Main Menu",
+                main_menu
+            )
+        )
+        menu_options.append(
+            menu_option(
+                "Go back",
+                previous_menu,
+                main_menu
+            )
+        )
+        for i in range(len(book_list)):
+            menu_options.append(
+                menu_option(
+                    book_list[i],
+                    self.read_book,
+                    [collection_title, book_list[i], main_menu]
+                )
+            )
+
+
+    def read_book(self, arguments):
+        collection_name = arguments[0]
+        book_name = arguments[1]
+        with open(f"texts/gospel_text/{collection_name}.txt", "r") as bom_file:
+            lines = bom_file.read().split("\n")
+            idx = None
+            for i in range(len(lines)):
+                if re.search(arguments[1], lines[i]):
+                    idx = i
+            what_users_reading = collection_name + "_" + book_name
+            read_page(what_users_reading, lines, idx, arguments[2])
+
+
+
+
+class bom_page(collection_page):
+    __BOM_MENU = """
+██████╗  ██████╗  ██████╗ ██╗  ██╗     ██████╗ ███████╗    
+██╔══██╗██╔═══██╗██╔═══██╗██║ ██╔╝    ██╔═══██╗██╔════╝    
+██████╔╝██║   ██║██║   ██║█████╔╝     ██║   ██║█████╗      
+██╔══██╗██║   ██║██║   ██║██╔═██╗     ██║   ██║██╔══╝      
+██████╔╝╚██████╔╝╚██████╔╝██║  ██╗    ╚██████╔╝██║         
+╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝         
+                                                           
+███╗   ███╗ ██████╗ ██████╗ ███╗   ███╗ ██████╗ ███╗   ██╗ 
+████╗ ████║██╔═══██╗██╔══██╗████╗ ████║██╔═══██╗████╗  ██║ 
+██╔████╔██║██║   ██║██████╔╝██╔████╔██║██║   ██║██╔██╗ ██║ 
+██║╚██╔╝██║██║   ██║██╔══██╗██║╚██╔╝██║██║   ██║██║╚██╗██║ 
+██║ ╚═╝ ██║╚██████╔╝██║  ██║██║ ╚═╝ ██║╚██████╔╝██║ ╚████║ 
+╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ 
+"""
+    __book_list = [
+        "THE FIRST BOOK OF NEPHI HIS REIGN AND MINISTRY",
+        "THE SECOND BOOK OF NEPHI",
+        "THE BOOK OF JACOB",
+        "THE BOOK OF ENOS",
+        "THE BOOK OF JAROM",
+        "THE BOOK OF OMNI",
+        "THE WORDS OF MORMON",
+        "THE BOOK OF MOSIAH",
+        "THE BOOK OF ALMA",
+        "THE BOOK OF HELAMAN",
+        "THIRD BOOK OF NEPHI",
+        "FOURTH NEPHI",
+        "THE BOOK OF MORMON",
+        "THE BOOK OF ETHER",
+        "THE BOOK OF MORONI",
+    ]
+
+    __menu_options = None
+
+    def __init__(self, menu_list):
+        super().__init__(self.__BOM_MENU, self.__menu_options, "BookofMormon", self.__book_list, menu_list[0], menu_list[1])
+
+
+
+
+
+class gospel_page(page):
+    __COLLECTION_MENU = """
+██████╗ ██╗ ██████╗██╗  ██╗     █████╗                                          
+██╔══██╗██║██╔════╝██║ ██╔╝    ██╔══██╗                                         
+██████╔╝██║██║     █████╔╝     ███████║                                         
+██╔═══╝ ██║██║     ██╔═██╗     ██╔══██║                                         
+██║     ██║╚██████╗██║  ██╗    ██║  ██║                                         
+╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝                                         
+                                                                                
+ ██████╗ ██████╗ ██╗     ██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
+██╔════╝██╔═══██╗██║     ██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║     ██║   ██║██║     ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
+██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
+╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
+ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+    """
+
+    __main_menu = None
+    __menu_options = None
+
+
+    def __init__(self, main_menu):
+        super().__init__()
+        self.__menu_options = []
+        self.__main_menu = main_menu
+        print(self.__COLLECTION_MENU)
+        self.create_options()
+        super().display_options(self.__menu_options)
+        user_input = super().get_input(len(self.__menu_options))
+        super().handle_input(user_input, self.__menu_options)
+
+
+    def create_options(self):
+        self.__menu_options.append(
+            menu_option(
+                "Go to Main Menu",
+                self.__main_menu
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Book of Mormon",
+                bom_page,
+                [self.__main_menu, self.__init__]
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Bible Old Testament",
+                old_testament_page,
+                [self.__main_menu, self.__init__]
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Bible New Testament",
+                new_testament_page,
+                [self.__main_menu, self.__init__]
+            )
+        )
+    
+
+class new_testament_page(collection_page):
+    __NEW_TESTAMENT_MENU = """
+███╗   ██╗███████╗██╗    ██╗    ████████╗███████╗███████╗████████╗ █████╗ ███╗   ███╗███████╗███╗   ██╗████████╗
+████╗  ██║██╔════╝██║    ██║    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+██╔██╗ ██║█████╗  ██║ █╗ ██║       ██║   █████╗  ███████╗   ██║   ███████║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
+██║╚██╗██║██╔══╝  ██║███╗██║       ██║   ██╔══╝  ╚════██║   ██║   ██╔══██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
+██║ ╚████║███████╗╚███╔███╔╝       ██║   ███████╗███████║   ██║   ██║  ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
+╚═╝  ╚═══╝╚══════╝ ╚══╝╚══╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
+"""
+
+    __book_list = [
+        "The New Testament of the King James Bible",
+        "The Gospel According to Saint Matthew",
+        "The Gospel According to Saint Mark",
+        "The Gospel According to Saint Luke",
+        "The Gospel According to Saint John",
+        "The Acts of the Apostles",
+        "The Epistle of Paul the Apostle to the Romans",
+        "The First Epistle of Paul the Apostle to the Corinthians",
+        "The Second Epistle of Paul the Apostle to the Corinthians",
+        "The Epistle of Paul the Apostle to the Galatians",
+        "The Epistle of Paul the Apostle to the Ephesians",
+        "The Epistle of Paul the Apostle to the Philippians",
+        "The Epistle of Paul the Apostle to the Colossians",
+        "The First Epistle of Paul the Apostle to the Thessalonians",
+        "The Second Epistle of Paul the Apostle to the Thessalonians",
+        "The First Epistle of Paul the Apostle to Timothy",
+        "The Second Epistle of Paul the Apostle to Timothy",
+        "The Epistle of Paul the Apostle to Titus",
+        "The Epistle of Paul the Apostle to Philemon",
+        "The Epistle of Paul the Apostle to the Hebrews",
+        "The General Epistle of James",
+        "The First Epistle General of Peter",
+        "The Second General Epistle of Peter",
+        "The First Epistle General of John",
+        "The Second Epistle General of John",
+        "The Third Epistle General of John",
+        "The General Epistle of Jude",
+        "The Revelation of Saint John the Divine",
+    ]
+
+    __menu_options = None
+
+    def __init__(self, menu_list):
+        super().__init__(self.__NEW_TESTAMENT_MENU, self.__menu_options, "BibleNewTestament", self.__book_list, menu_list[0], menu_list[1])
+
+
+
+
+class old_testament_page(collection_page):
+    __OLD_TESTAMENT_MENU = """
+ ██████╗ ██╗     ██████╗     ████████╗███████╗███████╗████████╗ █████╗ ███╗   ███╗███████╗███╗   ██╗████████╗
+██╔═══██╗██║     ██╔══██╗    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+██║   ██║██║     ██║  ██║       ██║   █████╗  ███████╗   ██║   ███████║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
+██║   ██║██║     ██║  ██║       ██║   ██╔══╝  ╚════██║   ██║   ██╔══██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
+╚██████╔╝███████╗██████╔╝       ██║   ███████╗███████║   ██║   ██║  ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
+ ╚═════╝ ╚══════╝╚═════╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
+"""
+    __book_list = [
+        "The First Book of Moses:  Called Genesis",
+        "The Second Book of Moses:  Called Exodus",
+        "The Third Book of Moses:  Called Leviticus",
+        "The Fourth Book of Moses:  Called Numbers",
+        "The Fifth Book of Moses:  Called Deuteronomy",
+        "The Book of Joshua",
+        "The Book of Judges",
+        "The Book of Ruth",
+        "The First Book of Samuel",
+        "The Second Book of Samuel",
+        "The First Book of the Kings",
+        "The Second Book of the Kings",
+        "The First Book of the Chronicles",
+        "The Second Book of the Chronicles",
+        "Ezra",
+        "The Book of Nehemiah",
+        "The Book of Esther",
+        "The Book of Job",
+        "The Book of Psalms",
+        "The Proverbs",
+        "Ecclesiastes",
+        "The Song of Solomon",
+        "The Book of the Prophet Isaiah",
+        "The Book of the Prophet Jeremiah",
+        "The Lamentations of Jeremiah",
+        "The Book of the Prophet Ezekiel",
+        "The Book of Daniel",
+        "Hosea",
+        "Joel",
+        "Amos",
+        "Obadiah",
+        "Jonah",
+        "Micah",
+        "Nahum",
+        "Habakkuk",
+        "Zephaniah",
+        "Haggai",
+        "Zechariah",
+        "Malachi",
+    ]
+
+    __menu_options = None
+
+    def __init__(self, menu_list):
+        super().__init__(self.__OLD_TESTAMENT_MENU, self.__menu_options, "BibleOldTestament", self.__book_list, menu_list[0], menu_list[1])
+
+
+
+class online_content_page(page):
+    __DOWNLOAD_MENU = """
+ ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗               
+██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝               
+██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗                 
+██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝                 
+╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗               
+ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝               
+                                                               
+ ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗
+██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝
+██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║   
+██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║   
+╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║   
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝   
+"""
+
+    __main_menu = None
+    __menu_options = None
+
+    def __init__(self, main_menu):
+        super().__init__()
+        self.__menu_options = []
+        self.__main_menu = main_menu
+        print(self.__DOWNLOAD_MENU)
+        self.create_options()
+        super().display_options(self.__menu_options)
+        user_input = super().get_input(len(self.__menu_options))
+        super().handle_input(user_input, self.__menu_options)
+
+
+    def create_options(self):
+        self.__menu_options.append(
+            menu_option(
+                "Go to Main Menu",
+                self.__main_menu
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Online Library",
+                online_library_page,
+                [self.__init__, self.__main_menu]
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Add New Content by URL",
+                self.add_by_url
+            )
+        )
+
+    def add_by_url(self):
+        while True:
+            try:
+                url = input("Enter a url: ")
+                response = requests.get(url)
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                else:
+                    raise ValueError("")
+                break
+            except:
+                print("Invalid url")
+        
+        # get title and content removing excessive white space
+        title = soup.h1.get_text().strip()
+        content = ""
+        all_ps = soup.find_all('p')
+        for p in all_ps:
+            content += p.get_text()
+        content = content.replace("\n", "").replace("\r", "")
+        content = re.sub(r" {4,}", " ", content)
+
+        # format content into consistant line lengths
+        formatted_content = ""
+        text_length = 65 
+        new_line = False
+        for i in range(len(content)):
+            formatted_content += content[i]
+            if i % text_length == 0:
+                new_line = True
+            if new_line == True and (content[i] == " " or content[i] == "\t"):
+                formatted_content += "\n"
+                new_line = False
+        
+        # save to file
+        file_name = "texts/uploaded_text/" + title.strip().replace(" ", "_") + ".txt"
+        with open(file_name, "w") as file:
+            file.write(title)
+            file.write(formatted_content)
+        
+        self.__init__(self.__main_menu)
+
+
+class online_library_page(page):
+    __library_menu = """
+ ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗    
+██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝    
+██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗      
+██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝      
+╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗    
+ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝    
+                                                    
+██╗     ██╗██████╗ ██████╗  █████╗ ██████╗ ██╗   ██╗
+██║     ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║     ██║██████╔╝██████╔╝███████║██████╔╝ ╚████╔╝ 
+██║     ██║██╔══██╗██╔══██╗██╔══██║██╔══██╗  ╚██╔╝  
+███████╗██║██████╔╝██║  ██║██║  ██║██║  ██║   ██║   
+╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   
+"""
+    __online_content = None
+    __menu_options = None
+    __main_menu = None
+
+    def __init__(self, args):
+        super().__init__()
+        self.__online_content = args[0]
+        self.__main_menu = args[1]
+        self.__menu_options = []
+        print(self.__library_menu)
+        self.create_options()
+        super().display_options(self.__menu_options)
+        user_input = super().get_input(len(self.__menu_options))
+        super().handle_input(user_input, self.__menu_options)
+
+
+    def create_options(self):
+        self.__menu_options.append(
+            menu_option(
+                "Go back",
+                self.__online_content,
+                self.__main_menu
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Remove content",
+                self.remove_content,
+            )
+        )
+        dir_path = "texts/uploaded_text/"
+        for filename in os.listdir(dir_path):
+            filepath = dir_path + filename
+            self.__menu_options.append(
+                menu_option(
+                    filename,
+                    self.read_book,
+                    [filepath, filename]
+                )
+            )
+
+    
+    def remove_content(self):
+        print("Enter number associated with content to remove")
+        user_input = super().get_input(len(self.__menu_options))
+        if user_input == 1:
+            user_input = 0
+        if user_input == 0:
+            super().handle_input(user_input, self.__menu_options)
+        
+        content_name = self.__menu_options[user_input].get_name()
+        file_path = "texts/uploaded_text/" + content_name
+        try:
+            os.remove(file_path)
+            print("File has been deleted successfully")
+        except FileNotFoundError:
+            print("File does not exist")
+        except PermissionError:
+            print("Permission denied: cannot delete")
+        except Exception as e:
+            print(f"An error occurred while deleting: {str(e)}")
+        time.sleep(2)
+        args = [self.__online_content, self.__main_menu]
+        self.__init__(args)
+
+        
+
+    def read_book(self, args):
+        filepath = args[0]
+        filename = args[1]
+        with open(filepath, "r") as file:
+            lines = file.read().split("\n")
+            idx = 0
+            read_page(filename, lines, idx, self.__main_menu)
+
+
+
+"""
+displays text for the user to read
+"""
+class read_page(page):
+    __READ_MENU = """
+██████╗ ███████╗ █████╗ ██████╗ ██╗         
+██╔══██╗██╔════╝██╔══██╗██╔══██╗██║         ↑ to speed up 
+██████╔╝█████╗  ███████║██║  ██║██║         ↓ to slow down
+██╔══██╗██╔══╝  ██╔══██║██║  ██║╚═╝         Speed: {speed:.2f} seconds
+██║  ██║███████╗██║  ██║██████╔╝██╗         ESC to return to main menu
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝
+"""
+
+    def __init__(self, what_users_reading, lines, start_idx, main_menu):
+        super().__init__()
+        self.__what_users_reading = what_users_reading
+        self.__lines = lines
+        self.__curr_idx = start_idx
+        self.__main_menu = main_menu
+        self.__lines_to_display = []
+        self.__SAVE_FILE = "save.json"
+        self.__speed = 5  # default speed
+        self.__listener = None
+        self.__running = False
+
+        self.load_settings()
+        self.start_listener()
+        self.display()
+
+    def start_listener(self):
+        self.__listener = keyboard.Listener(on_press=self.change_speed)
+        self.__listener.start()
+
+    """
+    display the reading page
+    displays self.__READ_MENU
+    displays each line from the text input file, line by line
+        seperated in time by self.__speed
+    """
+    def display(self):
+        self.__running = True
+        finished_book = False
+        while self.__running and self.__curr_idx < len(self.__lines):
+            self.__lines_to_display.append(self.__lines[self.__curr_idx])
+            super().clear_console()
+            print(self.__READ_MENU.format(speed=self.__speed))
+            for line in self.__lines_to_display[-10:]:  # Display last 10 lines
+                print(line)
+            time.sleep(self.__speed)
+            self.__curr_idx += 1
+            if self.__curr_idx == len(self.__lines):
+                finished_book = True
+
+        if finished_book:
+            self.__curr_idx = 0
+        self.cleanup()
+
+    def change_speed(self, key):
+        if key == keyboard.Key.up:
+            self.__speed = max(0.5, self.__speed / 1.1)  # Speed up (lower delay)
+        elif key == keyboard.Key.down:
+            self.__speed = min(10, self.__speed * 1.1)  # Slow down (higher delay)
+        elif key == keyboard.Key.esc:
+            self.__running = False  # Stop the display loop
+
+    """
+    called when exiting read_page
+    """
+    def cleanup(self):
+        self.__listener.stop()
+        self.save_settings()
+        self.flush_input()
+        self.__main_menu()
+
+    def flush_input(self):
+        """Clear the input buffer."""
+        if sys.platform.startswith('win'):
+            self.flush_input_windows()
+        else:  # Unix-like systems (Linux, macOS)
+            self.flush_input_unix()
+
+    def flush_input_windows(self):
+        import msvcrt
+        while msvcrt.kbhit():
+            msvcrt.getch()
+
+    def flush_input_unix(self):
+        import termios
+        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+
+    def load_settings(self):
+        if os.path.exists(self.__SAVE_FILE):
+            try:
+                with open(self.__SAVE_FILE, "r") as save_file:
+                    data = json.load(save_file)
+                    self.__speed = data["speed"]
+                    idx = data[f"{self.__what_users_reading}_line_number"]
+                if idx == None:
+                    self.save_settings()
+                else:
+                    self.__curr_idx = data[f"{self.__what_users_reading}_line_number"]
+            except:
+                self.save_settings()
+        else:
+            self.create_settings()
+
+    def save_settings(self):
+        updates = {
+            "speed": self.__speed,
+            f"{self.__what_users_reading}_line_number": self.__curr_idx
+        }
+        
+        try:
+            # Try to read existing data
+            with open(self.__SAVE_FILE, "r") as save_file:
+                data = json.load(save_file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            # If file doesn't exist or is invalid, start with an empty dict
+            data = {}
+        
+        # Update data
+        data.update(updates)
+        
+        # Write updated data back to file
+        with open(self.__SAVE_FILE, "w") as save_file:
+            json.dump(data, save_file, indent=4)
+
+    def create_settings(self):
+        data = {
+            "speed": self.__speed,
+            f"{self.__what_users_reading}_line_number": self.__curr_idx
+        }
+        with open(self.__SAVE_FILE, "w") as save_file:
+            json.dump(data, save_file, indent=4)
+
+
+
+"""
+menu_option represents all the data and functionality 
+associated with an option on the menu
+"""
+class menu_option():
+    __name = None
+    __function = None
+    __parameters = None
+    
+
+    def __init__(self, name, function, parameters=None):
+        self.__name = name
+        self.__function = function
+        if parameters != None:
+            self.__parameters = parameters
+
+    
+    def get_name(self):
+        return self.__name
+
+
+    def action(self):
+        if self.__parameters != None:
+            self.__function(self.__parameters)
+        else:
+            self.__function()
+
+
+class settings_page(page):
+    __SETTINGS_MENU = """
+███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
+███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
+╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
+███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
+╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+"""
+
+    __SAVE_FILE = "save.json"
+    __main_menu = None
+    __menu_options = None
+
+    __speed = 5
+
+
+    def __init__(self, main_menu):
+        super().__init__()
+        self.__menu_options = []
+        self.__main_menu = main_menu
+        print(self.__SETTINGS_MENU)
+        self.load_settings()
+        self.display_settings()
+        self.create_options()
+        super().display_options(self.__menu_options)
+        user_input = super().get_input(len(self.__menu_options))
+        super().handle_input(user_input, self.__menu_options)
+
+
+    def save_settings(self):
+        # Read the existing data
+        if os.path.exists(self.__SAVE_FILE):
+            with open(self.__SAVE_FILE, "r") as save_file:
+                data = json.load(save_file)
+        else:
+            data = {}
+
+        # Update only the speed field
+        data["speed"] = self.__speed
+
+        # Write the updated data back to the file
+        with open(self.__SAVE_FILE, "w") as save_file:
+            json.dump(data, save_file, indent=4)
+        
+        print("Save complete...")
+        time.sleep(1)
+        self.__init__(self.__main_menu)   
+
+
+    def load_settings(self):
+        if os.path.exists(self.__SAVE_FILE):
+            with open(self.__SAVE_FILE, "r") as save_file:
+                self.__speed = json.load(save_file)["speed"]
+        else:
+            data = {
+                "speed": self.__speed,
+            }
+            with open(self.__SAVE_FILE, "w") as save_file:
+                json.dump(data, save_file, indent=4)
+            self.__init__(self.__main_menu)
+       
+
+
+    def display_settings(self):
+        print("Speed: ", self.__speed)
+        print()
+
+
+    def create_options(self):
+        self.__menu_options.append(
+            menu_option(
+                "Go to Main Menu",
+                self.__main_menu
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Change Reading Speed",
+                self.change_speed
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Reset Book Marks",
+                self.reset_book_marks
+            )
+        )
+
+
+    def reset_book_marks(self):
+        data = {
+            "speed": self.__speed,
+        }
+        with open("save.json", "w") as save_file:
+            json.dump(data, save_file, indent=4)
+        print("save complete...")
+        time.sleep(1)
+        self.__init__(self.__main_menu)
+
+
+    def change_speed(self):
+        max_speed = 100
+        self.__speed = super().get_input(max_speed, "new speed: ")
+        self.save_settings()
+        self.__init__(self.__main_menu)
+
+
+"""
+main_menu has all the data asscociated with displaying the main menu
+"""
+class main_menu(page):
+    __MAIN_MENU = """
+███████╗██████╗ ███████╗███████╗██████╗       ██████╗ ███████╗ █████╗ ██████╗ 
+██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗      ██╔══██╗██╔════╝██╔══██╗██╔══██╗
+███████╗██████╔╝█████╗  █████╗  ██║  ██║█████╗██████╔╝█████╗  ███████║██║  ██║
+╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║╚════╝██╔══██╗██╔══╝  ██╔══██║██║  ██║
+███████║██║     ███████╗███████╗██████╔╝      ██║  ██║███████╗██║  ██║██████╔╝
+╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝       ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
+                                                       Created by Steven Blanco
+    """
+
+    __menu_options = None
+
+
+    def __init__(self):
+        super().__init__()
+        self.__menu_options = []
+        print(self.__MAIN_MENU)
+        self.create_options()
+        super().display_options(self.__menu_options)
+        user_input = super().get_input(len(self.__menu_options))
+        super().handle_input(user_input, self.__menu_options)
+
+
+    def create_options(self):
+        self.__menu_options.append(
+            menu_option(
+                "Exit",
+                self.exit_program
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Read Gospel Library",
+                gospel_page,
+                self.__init__
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Online Content",
+                online_content_page,
+                self.__init__
+            )
+        )
+        self.__menu_options.append(
+            menu_option(
+                "Settings",
+                settings_page,
+                self.__init__
+            )
+        )
+            
+
+    def exit_program(self):
+        super().clear_console()
+        print("GoodBye!")
+        exit()
+
+
+
+"""
+handles the ctrl-c signal
+"""
+def sigint_handler(sig, frame):
+    if platform.system() == "Windows":
+        os.system('cls')
+    else:
+        os.system('clear')
+    print("GoodBye!")
+    exit(0)
+
+
+"""
+project plans in file todo and specifications.txt
+"""
 def main():
-    person = DerivedClass("Alice", "Developer")
-    print(person.introduce())
+    signal.signal(signal.SIGINT, sigint_handler)
+    mm = main_menu()
+
 
 if __name__ == "__main__":
     main()
     </script>
 
     <script>
+        async function loadTextFile(url) {
+            const response = await fetch(url);
+            return response.text();
+        }
+
         async function runPython() {
             let pyodide = await loadPyodide();
             await pyodide.loadPackage("micropip");
@@ -56,9 +896,18 @@ if __name__ == "__main__":
 
             try {
                 // Create virtual Python files
-                pyodide.FS.writeFile('/base_class.py', document.getElementById("python-base-class").text);
-                pyodide.FS.writeFile('/derived_class.py', document.getElementById("python-derived-class").text);
-                pyodide.FS.writeFile('/main.py', document.getElementById("python-main").text);
+                // <script id="Python_code" type="text/python">
+                pyodide.FS.writeFile('code.py', document.getElementById("python_code").text);
+
+                // Load text files
+                const bookOfMormon = await loadTextFile('texts/gospel_text/Book of Mormon.txt');
+                // const oldTestament = await loadTextFile('texts/gospel_text/Old Testament.txt');
+                // const newTestament = await loadTextFile('texts/gospel_text/New Testament.txt');
+
+                // Write text files to Pyodide file system
+                pyodide.FS.writeFile('texts/gospel_text/Book of Mormon.txt', bookOfMormon);
+                // pyodide.FS.writeFile('texts/gospel_text/Old Testament.txt', oldTestament);
+                // pyodide.FS.writeFile('texts/gospel_text/New Testament.txt', newTestament);
 
                 // Run the main script
                 let result = await pyodide.runPythonAsync(`
