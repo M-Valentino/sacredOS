@@ -7,17 +7,14 @@
   <style>
     #dirUp {
       width: 32px;
-      margin-left: 8px;
     }
 
     #saveFileHere {
       width: 48px;
-      margin-left: 8px;
     }
 
     #cancelSaveFileHere {
       width: 56px;
-      margin-left: 8px;
     }
 
     .flexRowLarge {
@@ -37,6 +34,10 @@
 
     .mr-8 {
       margin-right: 8px;
+    }
+
+    .ml-8 {
+      margin-left: 8px;
     }
 
     .w-100 {
@@ -125,13 +126,14 @@
     <button id="delFile" class="oSButton osElemBase mr-8" onclick="toggleDeleteMode()"><span
         class="redX">X</span>Delete</button>
     <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
-    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
+      Folder</button>
     <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
     <input type="file" id="fileUpload" style="display:none;">
   </div>
   <div class="flexRowLarge">
     <input type="text" id="fileDir" class="w-100">
-    <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
   <div class="flexColBetween">
@@ -141,8 +143,8 @@
       <hr>
       <div class="flexRowLarge">
         <input type="text" class="w-100" />
-        <button class="oSButton osElemBase" id="saveFileHere">Save</button>
-        <button class="oSButton osElemBase" id="cancelSaveFileHere">Cancel</button>
+        <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
+        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere">Cancel</button>
       </div>
     </div>
   </div>
