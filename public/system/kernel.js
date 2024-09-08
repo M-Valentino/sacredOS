@@ -370,7 +370,10 @@ window.onmessage = function (e) {
         console.error("Error parsing message:", error);
       }
       return;
-    } else if (e.data.startsWith("MK:F[")) {
+    } else if (e.data.startsWith("OPD:[")) {
+      createFileDialog();
+    }
+     else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
       const fileName = directories.pop();
