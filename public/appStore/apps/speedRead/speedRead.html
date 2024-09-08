@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-file Python Project</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+</head>
+<body>
+    <h1>Multi-file Python Project</h1>
+    <button onclick="runPython()">Run Project</button>
+    <pre id="output"></pre>
+
+    <script id="python-base-class" type="text/python">
+# base_class.py
+class BaseClass:
+    def __init__(self, name):
+        self.name = name
+    
+    def greet(self):
+        return f"Hello, I'm {self.name}"
+    </script>
+
+    <script id="python-derived-class" type="text/python">
+# derived_class.py
+from base_class import BaseClass
+
+class DerivedClass(BaseClass):
+    def __init__(self, name, role):
+        super().__init__(name)
+        self.role = role
+    
+    def introduce(self):
+        return f"{self.greet()} and I'm a {self.role}"
+    </script>
+
+    <script id="python-main" type="text/python">
+# main.py
+from derived_class import DerivedClass
+
+def main():
+    person = DerivedClass("Alice", "Developer")
+    print(person.introduce())
+
+if __name__ == "__main__":
+    main()
+    </script>
+
+    <script>
+        async function runPython() {
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage("micropip");
+            
+            const output = document.getElementById("output");
+            output.textContent = "Running Python code...\n";
+
+            try {
+                // Create virtual Python files
+                pyodide.FS.writeFile('/base_class.py', document.getElementById("python-base-class").text);
+                pyodide.FS.writeFile('/derived_class.py', document.getElementById("python-derived-class").text);
+                pyodide.FS.writeFile('/main.py', document.getElementById("python-main").text);
+
+                // Run the main script
+                let result = await pyodide.runPythonAsync(`
+                    import sys
+                    sys.path.append('/')
+                    import io
+                    sys.stdout = io.StringIO()
+                    
+                    with open('/main.py', 'r') as file:
+                        exec(file.read())
+                    
+                    sys.stdout.getvalue()
+                `);
+                output.textContent += result;
+            } catch (error) {
+                output.textContent += `Error: ${error.message}\n`;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
