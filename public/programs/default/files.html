@@ -9,12 +9,11 @@
       width: 32px;
     }
 
-    #saveFileHere {
-      width: 48px;
-    }
-
+    #saveFileHere,
+    #openFileHere,
     #cancelSaveFileHere {
-      width: 56px;
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
     .flexRowLarge {
@@ -143,6 +142,7 @@
       <hr>
       <div class="flexRowLarge">
         <input type="text" class="w-100" />
+        <button class="oSButton osElemBase ml-8" id="openFileHere">Open</button>
         <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
         <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere">Cancel</button>
       </div>
