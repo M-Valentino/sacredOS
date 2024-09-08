@@ -10,6 +10,11 @@
       margin-left: 8px;
     }
 
+    #saveFileHere {
+      width: 48px;
+      margin-left: 8px;
+    }
+
     .flexRowLarge {
       margin-top: 4px;
       display: flex;
@@ -20,6 +25,18 @@
 
     .w-100 {
       width: 100%;
+    }
+
+    #topLevelObjects {
+      overflow-y: scroll;
+      height: 100%;
+    }
+
+    .flexColBetween {
+      height: calc(100% - 75px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .fileOrDir {
@@ -100,16 +117,17 @@
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
-  <div id="topLevelObjects"></div>
+  <div class="flexColBetween">
+    <div id="topLevelObjects"></div>
 
-  <span id="saveFileDialogContent">
-    <hr>
-    <div class="flexRowLarge">
-      <input type="text" class="w-100" />
-      <button class="oSButton osElemBase" id="saveFileHere">Save</button>
+    <div id="saveFileDialogContent">
+      <hr>
+      <div class="flexRowLarge">
+        <input type="text" class="w-100" />
+        <button class="oSButton osElemBase" id="saveFileHere">Save</button>
+      </div>
     </div>
-  </span>
-
+  </div>
   <!-- hidden dialog div -->
   <div id="newFileDialog" class="dialog windowRidgeBorder">
     <div class="menuHeader">Create New File</div>
