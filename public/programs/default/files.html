@@ -18,7 +18,7 @@
       width: 100%;
     }
 
-    #fileDir {
+    .w-100 {
       width: 100%;
     }
 
@@ -96,11 +96,19 @@
   <input type="file" id="fileUpload" style="display:none;">
 
   <div class="flexRowLarge">
-    <input id="fileDir">
+    <input type="text" id="fileDir" class="w-100">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
   <div id="topLevelObjects"></div>
+
+  <span id="saveFileDialogContent">
+    <hr>
+    <div class="flexRowLarge">
+      <input type="text" class="w-100" />
+      <button class="oSButton osElemBase" id="saveFileHere">Save</button>
+    </div>
+  </span>
 
   <!-- hidden dialog div -->
   <div id="newFileDialog" class="dialog windowRidgeBorder">
