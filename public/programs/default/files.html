@@ -23,6 +23,17 @@
       width: 100%;
     }
 
+    .flexBttnRow {
+      display: flex;
+      flex-direction: row;
+      overflow-x: hidden;
+      white-space: nowrap;
+    }
+
+    .mr-8 {
+      margin-right: 8px;
+    }
+
     .w-100 {
       width: 100%;
     }
@@ -104,14 +115,15 @@
 </head>
 
 <body class="program">
-  <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
-  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span
-      class="redX">X</span>Delete</button>
-  <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
-  <button class="oSButton osElemBase" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
-  <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
-  <input type="file" id="fileUpload" style="display:none;">
-
+  <div class="flexBttnRow">
+    <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
+    <button id="delFile" class="oSButton osElemBase mr-8" onclick="toggleDeleteMode()"><span
+        class="redX">X</span>Delete</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
+    <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
+    <input type="file" id="fileUpload" style="display:none;">
+  </div>
   <div class="flexRowLarge">
     <input type="text" id="fileDir" class="w-100">
     <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
