@@ -49,7 +49,12 @@ function checkFileExistsAndCreate(directory, fileName) {
   }
 }
 
-function makeFolder(directoryPath, fileContents, folderName, folderContents=null) {
+function makeFolder(
+  directoryPath,
+  fileContents,
+  folderName,
+  folderContents = null
+) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
@@ -351,7 +356,7 @@ window.onmessage = function (e) {
         fileContents,
         fileName
       );
-      makeFolder(directoryPath, fileContents, newName, fileOriginalContent)
+      makeFolder(directoryPath, fileContents, newName, fileOriginalContent);
       deleteFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
@@ -371,9 +376,14 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data.startsWith("OPD:[")) {
-      openProgram("Open File", fileContents['programs']['default']['files.html'], false, false);
-    }
-     else if (e.data.startsWith("MK:F[")) {
+      let fileDialogData = fileContents["programs"]["default"]["files.html"];
+      fileDialogData = fileDialogData.replace(
+        "--displayBottomDialogActions: none;",
+        "--displayBottomDialogActions: initial;"
+      );
+      openProgram("Open File", fileDialogData, false, false);
+      return;
+    } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
       const fileName = directories.pop();

@@ -25,6 +25,7 @@
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="save()">Save</button>
+  <button class="oSButton osElemBase" onclick="openFile()">Open</button>
   <div id="textareaContainer">
     <textarea id="mainTextarea"></textarea>
   </div>
@@ -55,6 +56,10 @@
       } else {
         window.top.postMessage("ALERT:[You currently can't create new files at the moment. It's comming soon.")
       }
+    }
+
+    function openFile() {
+      window.top.postMessage("OPD:[", "*");
     }
 
     window.onmessage = function (e) {
