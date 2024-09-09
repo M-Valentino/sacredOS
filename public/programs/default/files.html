@@ -558,6 +558,10 @@
           } else if (mode === MODES.DELETE) {
             handleDelete(key);
           } else if (mode === MODES.OPEN_FOR_PROGRAM) {
+            let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+            prevSelectedButtons.forEach(bttn => {
+              bttn.classList.replace("oSButtonDashed", "oSButton");
+            });
             button.classList.replace("oSButton", "oSButtonDashed");
           }
         };
