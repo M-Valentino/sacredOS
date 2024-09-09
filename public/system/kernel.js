@@ -382,6 +382,10 @@ window.onmessage = function (e) {
         "--displayBottomDialogActions: initial;"
       );
       fileDialogData = fileDialogData.replace(
+        "--dontDisplayIfOpenFileMode: flex;",
+        "--dontDisplayIfOpenFileMode: none;"
+      );
+      fileDialogData = fileDialogData.replace(
         "const initialMode = MODES.OPEN;",
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
