@@ -552,19 +552,33 @@
         let button = document.createElement('button');
         button.textContent = key;
         button.classList = "oSButton osElemBase fileOrDir";
+
+        let clickTimeout;
+        let clickCount = 0;
         button.onclick = function () {
-          if (mode === MODES.OPEN) {
-            handleOpen(key, backupObject);
-          } else if (mode === MODES.DELETE) {
-            handleDelete(key);
-          } else if (mode === MODES.OPEN_FOR_PROGRAM) {
-            let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
-            prevSelectedButtons.forEach(bttn => {
-              bttn.classList.replace("oSButtonDashed", "oSButton");
-            });
-            button.classList.replace("oSButton", "oSButtonDashed");
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimeout = setTimeout(() => {
+              clickCount = 0;
+            }, 1000);
+            if (mode === MODES.OPEN_FOR_PROGRAM) {
+              let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+              prevSelectedButtons.forEach(bttn => {
+                bttn.classList.replace("oSButtonDashed", "oSButton");
+              });
+              button.classList.replace("oSButton", "oSButtonDashed");
+            }
+          } else if (clickCount === 2) {
+            if (mode === MODES.OPEN || mode === MODES.OPEN_FOR_PROGRAM) {
+              handleOpen(key, backupObject);
+            } else if (mode === MODES.DELETE) {
+              handleDelete(key);
+            }
+            clearTimeout(clickTimeout);
+            clickCount = 0;
           }
         };
+
         button.addEventListener('contextmenu', function (e) {
           handleContextMenu(e, key);
         }, false);
