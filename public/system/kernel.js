@@ -375,11 +375,15 @@ window.onmessage = function (e) {
         console.error("Error parsing message:", error);
       }
       return;
-    } else if (e.data.startsWith("OPD:[")) {
+    } else if (e.data.startsWith("OPWD:[")) {
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
         "--displayBottomDialogActions: none;",
         "--displayBottomDialogActions: initial;"
+      );
+      fileDialogData = fileDialogData.replace(
+        "const initialMode = MODES.OPEN;",
+        "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
       openProgram("Open File", fileDialogData, false, false);
       return;

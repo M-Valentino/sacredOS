@@ -80,6 +80,13 @@ hr {
   cursor: pointer;
 }
 
+.oSButtonDashed {
+  font-family: 'Times New Roman', Times, serif;
+  border: var(--borderWidth) dashed var(--secColorDark);
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+}
+
 .oSButton:hover {
   background-color: var(--secColorLight);
 }

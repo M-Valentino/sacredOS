@@ -87,6 +87,11 @@ hr {
   cursor: pointer;
 }
 
+.oSButtonDashed {
+  border: var(--borderWidth) dashed #000;
+  cursor: pointer;
+}
+
 .oSButton:hover {
   background-color: var(--secColorLight);
 }

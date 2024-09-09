@@ -229,9 +229,11 @@
     let diskBackup = {};
     const MODES = {
       DELETE: "DELETE",
-      OPEN: "OPEN"
+      OPEN: "OPEN",
+      OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
     }
-    let mode = MODES.OPEN;
+    const initialMode = MODES.OPEN;
+    let mode = initialMode;
     let firstLoad = true;
 
     window.top.postMessage("REQ:SS", "*");
@@ -294,7 +296,7 @@
 
       } else {
         document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
-        mode = MODES.OPEN;
+        mode = initialMode;
         // Remove the delIcon elements when switching back to OPEN mode
         let delIcons = document.querySelectorAll('.delIcon');
         delIcons.forEach(icon => {
@@ -555,6 +557,8 @@
             handleOpen(key, backupObject);
           } else if (mode === MODES.DELETE) {
             handleDelete(key);
+          } else if (mode === MODES.OPEN_FOR_PROGRAM) {
+            button.classList.replace("oSButton", "oSButtonDashed");
           }
         };
         button.addEventListener('contextmenu', function (e) {
