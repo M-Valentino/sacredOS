@@ -375,6 +375,12 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data.startsWith("OPWD:[")) {
+      if (document.getElementById("winOpeningFileDialog")) {
+        window.top.postMessage(
+          "ALERT:[Please open a file from the existing dialog or cancel it"
+        );
+        return;
+      }
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
         "--displayBottomDialogActions: none;",
