@@ -191,7 +191,8 @@
       <input type="text" id="newFileNameInput" class="newInput" placeholder="File name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFileDialog', 'newFileNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -406,16 +407,6 @@
         renameFolderInput.value = "";
       }
       renameFolderDialog.style.display = "none";
-    }
-
-    function handleCancelNewFile() {
-      newFileDialog.style.display = "none";
-      newFileNameInput.value = "";
-    }
-
-    function handleCancelNewFolder() {
-      document.getElementById("newFolderDialog").style.display = "none";
-      document.getElementById("newFolderNameInput").value = "";
     }
 
     function handleCancelDialog(dialogId, inputId) {
