@@ -388,7 +388,7 @@ window.onmessage = function (e) {
         "const initialMode = MODES.OPEN;",
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
-      openProgram("Open File", fileDialogData, false, false);
+      openProgram("Open File", fileDialogData, false, false, "OpeningFileDialog");
       openingFileFor = e.source;
       return;
     } else if (e.data.startsWith("SFFD:[")) {
@@ -403,6 +403,7 @@ window.onmessage = function (e) {
       );
       openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
       openingFileFor = "";
+      closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
       return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);

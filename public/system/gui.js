@@ -261,14 +261,14 @@ function createAlert(text) {
   window.appendChild(okButton);
 }
 
-function openProgram(programName, data, dontToggleMenu, withFile) {
+function openProgram(programName, data, dontToggleMenu, withFile, customId=null) {
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
 
   if (dontToggleMenu) {
     toggleOpenmenu();
   }
   windowCount++;
-  const currentWindowID = windowCount;
+  const currentWindowID = customId || windowCount;
   let window = createWindow(currentWindowID, 0, 0);
 
   const buttonCount = noResizeMatch ? 2 : 3;
