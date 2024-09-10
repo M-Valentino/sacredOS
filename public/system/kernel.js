@@ -401,7 +401,7 @@ window.onmessage = function (e) {
         fileContents,
         fileName
       );
-      openingFileFor.postMessage(`PHFD:${fileToReturn}`, "*");
+      openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
       openingFileFor = "";
       return;
     } else if (e.data.startsWith("MK:F[")) {

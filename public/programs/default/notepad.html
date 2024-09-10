@@ -47,7 +47,7 @@
       return null; // Return null if no matching comment is found
     }
 
-    const filePath = extractFilePath(); // Extract the file path from a comment
+    let filePath = extractFilePath(); // Extract the file path from a comment
     window.top.postMessage(`REQ:PH[${filePath}]`, "*");
 
     function save() {
@@ -85,20 +85,15 @@
             // Set the content to the textarea
             document.getElementById('mainTextarea').value = fileContent;
           }
-        } else if (e.data.startsWith("PHFD:")) {
-            let fileContent = e.data.substring(5);
+        } else if (e.data.startsWith("PHFD:[")) {
+          const rightBracketIndex = e.data.indexOf("]");
+            filePath = e.data.substring(6, rightBracketIndex);
+            let fileContent = e.data.substring(rightBracketIndex + 1);
             if (fileContent === "undefined") {
               fileContent = "Creating new files in notepad coming soon.";
             }
             document.getElementById('mainTextarea').value = fileContent;
         }
-
-      alert(e.data);
-      // else if (e.data.startsWith("PH:")) {
-      //   var string = e.data.substring(3);
-      //   document.getElementById("mainTextarea").value = string;
-      //   return;
-      // }
     });
 
   </script>
