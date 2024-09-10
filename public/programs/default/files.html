@@ -568,12 +568,12 @@
             clickTimeout = setTimeout(() => {
               clickCount = 0;
             }, 1000);
+            let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+            prevSelectedButtons.forEach(bttn => {
+              bttn.classList.replace("oSButtonDashed", "oSButton");
+            });
+            button.classList.replace("oSButton", "oSButtonDashed");
             if (mode === MODES.OPEN_FOR_PROGRAM) {
-              let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
-              prevSelectedButtons.forEach(bttn => {
-                bttn.classList.replace("oSButtonDashed", "oSButton");
-              });
-              button.classList.replace("oSButton", "oSButtonDashed");
               fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
             }
           } else if (clickCount === 2) {
