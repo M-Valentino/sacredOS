@@ -203,7 +203,8 @@
       <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFolderDialog', 'newFolderNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -215,7 +216,8 @@
       <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelRenameFile()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('fileRenameDialog', 'renameFileNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -227,7 +229,8 @@
       <input type="text" id="renameFolderInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFolder()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelRenameFolder()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('folderRenameDialog', 'renameFolderInput')">Cancel</button>
     </div>
   </div>
 
@@ -415,14 +418,9 @@
       document.getElementById("newFolderNameInput").value = "";
     }
 
-    function handleCancelRenameFile() {
-      document.getElementById("fileRenameDialog").style.display = "none";
-      document.getElementById("renameFileNameInput").value = "";
-    }
-
-    function handleCancelRenameFolder() {
-      document.getElementById("folderRenameDialog").style.display = "none";
-      document.getElementById("renameFolderInput").value = "";
+    function handleCancelDialog(dialogId, inputId) {
+      document.getElementById(dialogId).style.display = "none";
+      document.getElementById(inputId).value = "";
     }
 
     function removeOldContextMenus() {
