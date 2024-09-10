@@ -177,7 +177,7 @@
       <hr>
       <div class="flexRowReverse">
         <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere">Cancel</button>
-        <button class="oSButton osElemBase ml-8" id="openFileHere">Open</button>
+        <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
         <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
         <input id="fileNameInputBottomDialog" type="text" class="w-100" />
       </div>
@@ -546,6 +546,7 @@
       }
     });
 
+    let fileForOpeningFromDialog;
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
@@ -573,6 +574,7 @@
                 bttn.classList.replace("oSButtonDashed", "oSButton");
               });
               button.classList.replace("oSButton", "oSButtonDashed");
+              fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
             }
           } else if (clickCount === 2) {
             if (mode === MODES.OPEN || mode === MODES.OPEN_FOR_PROGRAM) {
@@ -674,6 +676,10 @@
         }
       }
       displayTopLevelObjects(currentObject);
+    }
+
+    function openFileForSource() {
+      window.top.postMessage(`SFFD:[${fileForOpeningFromDialog}`, "*");
     }
 
     window.addEventListener("message", function (e) {

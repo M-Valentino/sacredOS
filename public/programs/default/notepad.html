@@ -62,7 +62,7 @@
       window.top.postMessage("OPWD:[", "*");
     }
 
-    window.onmessage = function (e) {
+    window.addEventListener("message", function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
         try {
@@ -74,8 +74,7 @@
           console.error("Error requesting stylesheet:", error);
         }
         return;
-      } else
-        if (e.data.startsWith("PH:")) {
+      } else if (e.data.startsWith("PH:")) {
           const expectedPattern = `PH:[${filePath}]`;
           if (e.data.startsWith(expectedPattern)) {
             // Extract file content by removing the initial part of the message
@@ -86,13 +85,21 @@
             // Set the content to the textarea
             document.getElementById('mainTextarea').value = fileContent;
           }
+        } else if (e.data.startsWith("PHFD:")) {
+            let fileContent = e.data.substring(5);
+            if (fileContent === "undefined") {
+              fileContent = "Creating new files in notepad coming soon.";
+            }
+            document.getElementById('mainTextarea').value = fileContent;
         }
+
+      alert(e.data);
       // else if (e.data.startsWith("PH:")) {
       //   var string = e.data.substring(3);
       //   document.getElementById("mainTextarea").value = string;
       //   return;
       // }
-    };
+    });
 
   </script>
 

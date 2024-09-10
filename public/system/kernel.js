@@ -240,10 +240,9 @@ function changeBGMode(mode) {
     );
   }
 }
-
+let openingFileFor;
 window.onmessage = function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
-    console.log(e.data);
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
@@ -390,6 +389,20 @@ window.onmessage = function (e) {
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
       openProgram("Open File", fileDialogData, false, false);
+      openingFileFor = e.source;
+      return;
+    } else if (e.data.startsWith("SFFD:[")) {
+      const filePath = e.data.substring(6);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+      const fileToReturn = findFileContents(
+        directoryPath,
+        fileContents,
+        fileName
+      );
+      openingFileFor.postMessage(`PHFD:${fileToReturn}`, "*");
+      openingFileFor = "";
       return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
