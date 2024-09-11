@@ -882,51 +882,45 @@ if __name__ == "__main__":
     </script>
 
     <script>
-        async function loadTextFile(url) {
-            const response = await fetch(url);
-            return response.text();
-        }
-
         async function runPython() {
-            let pyodide = await loadPyodide();
-            await pyodide.loadPackage("micropip");
-            
             const output = document.getElementById("output");
-            output.textContent = "Running Python code...\n";
+            output.textContent = "Running...";
 
             try {
-                // Create virtual Python files
-                // <script id="Python_code" type="text/python">
-                pyodide.FS.writeFile('code.py', document.getElementById("python_code").text);
+                // Load Pyodide
+                let pyodide = await loadPyodide();
+                await pyodide.loadPackage("micropip");
 
-                // Load text files
-                const bookOfMormon = await loadTextFile('texts/gospel_text/Book of Mormon.txt');
-                // const oldTestament = await loadTextFile('texts/gospel_text/Old Testament.txt');
-                // const newTestament = await loadTextFile('texts/gospel_text/New Testament.txt');
+                // Install required packages
+                await pyodide.runPythonAsync(`
+                    import micropip
+                    await micropip.install('pynput')
+                    await micropip.install('beautifulsoup4')
+                    await micropip.install('requests')
+                `);
 
-                // Write text files to Pyodide file system
-                pyodide.FS.writeFile('texts/gospel_text/Book of Mormon.txt', bookOfMormon);
-                // pyodide.FS.writeFile('texts/gospel_text/Old Testament.txt', oldTestament);
-                // pyodide.FS.writeFile('texts/gospel_text/New Testament.txt', newTestament);
+                // Get the Python code
+                const pythonCode = document.getElementById("python_code").text;
 
-                // Run the main script
+                // Run the Python code
                 let result = await pyodide.runPythonAsync(`
                     import sys
-                    sys.path.append('/')
                     import io
+
                     sys.stdout = io.StringIO()
-                    
-                    with open('/main.py', 'r') as file:
-                        exec(file.read())
-                    
+
+                    ${pythonCode}
+
                     sys.stdout.getvalue()
                 `);
-                output.textContent += result;
+
+                output.textContent = result;
             } catch (error) {
-                output.textContent += `Error: ${error.message}\n`;
+                output.textContent = `Error: ${error.message}\n`;
                 console.error(error);
             }
         }
+
     </script>
 </body>
 </html>
