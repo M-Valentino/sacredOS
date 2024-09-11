@@ -1,4 +1,4 @@
-/home/sblanco2465/codeProjects/upworkProjects/sacredOS/type.html
+/home/sblanco2465/codeProjects/upworkProjects/sacredOS/sacredOS/type.html
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,44 +36,44 @@
     <button id="submitButton">Submit</button>
     <script>
         class page {
-            constructor(menu_name, n) {
+            constructor(menu_name, menu_options) {
                 this.menuElement = document.getElementById('menu');
                 this.outputElement = document.getElementById('output');
                 this.inputElement = document.getElementById('userInput');
                 this.submitButton = document.getElementById('submitButton');
                 this.asciiArtElement = document.getElementById('ascii-art');
 
-                this.number_options = n;
-                this.displayMenu(menu_name);
+                this.menu_options = menu_options;
+
+                this.display_options(menu_options);
+                this.asciiArtElement.textContent = menu_name;
                 this.setupEventListeners();
             }
-            displayMenu(menu_name) {
-                this.asciiArtElement.textContent = menu_name;
-                this.menuElement.innerHTML = `
-                    <h2>Menu:</h2>
-                    <p>1. Option 1</p>
-                    <p>2. Option 2</p>
-                    <p>3. Exit</p>
-                `;
+            display_options(menu_options) {
+                let str = "";
+                for (let i = 0; i < menu_options.length; i++) {
+                    str += "<p>" + i.toString() + ") " + menu_options[i].name + "</p>";
+                }
+                this.menuElement.innerHTML = str;
             }
-            get_input(message="please select an option: ") {
+            get_input(n, message="please select an option: ") {
                 const input = this.inputElement.value;
                 const twoDigitPattern = /^(?:[0-9]|[1-9][0-9])$/;
                 if (!twoDigitPattern.test(input)) {
                     this.outputElement.textContent = "Please enter a 2 digit number";
                     return;
                 }
-                
                 let num = parseInt(input)
-                if (num >= number_options) {
-                    this.outputElement.textContent = `Please enter a number between and including 0-${number_options}`;
+                if (num >= n) {
+                    this.outputElement.textContent = `Please enter a number between and including 0-${n}`;
+                    console.log("here");
                     return;
                 }
                 this.inputElement.value = '';
                 return num;
             }
             setupEventListeners() {
-                this.submitButton.addEventListener('click', () => this.get_input());
+                this.submitButton.addEventListener('click', () => this.get_input(this.menu_options.length));
                 this.inputElement.addEventListener('keyup', (event) => {
                     if (event.key === 'Enter') {
                         this.get_input();
@@ -81,26 +81,33 @@
                 });
             }
         }
-        class menu_option() {
-            constructor(name, func, parameters=Null) {
+        class menu_option {
+            constructor(name, func, parameters=null) {
                 this.name = name;
                 this.func = func;
                 this.parameters = parameters;
             }
-
             get_name() {
                 return this.name;
             }
-
             action() {
-                if (this.parameters != Null) {
+                if (this.parameters !== null) {
                     this.func(this.parameters);
                 } else {
                     this.func();
                 }
             }
         }
-
+        class gospel_page { // extends page {
+            constructor() {
+                console.log("gospel_page constructor")
+            }
+        }
+        class online_content_page { // extends page {
+            constructor() {
+                console.log("online_content_page constructor")
+            }
+        }
         class main_menu extends page {
             constructor() {
                 let main_menu = `
@@ -110,10 +117,12 @@
 ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║╚════╝██╔══██╗██╔══╝  ██╔══██║██║  ██║
 ███████║██║     ███████╗███████╗██████╔╝      ██║  ██║███████╗██║  ██║██████╔╝
 ╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝       ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
-                                                       Created by Steven Blanco
-`;
-                // todo you want to recreate the main_menu constructor
-               super(main_menu);
+                                                       Created by Steven Blanco`;
+               let menu_options = [
+                   new menu_option("Read Gospel Library", gospel_page),
+                   new menu_option("Online Content", online_content_page),
+               ];
+               super(main_menu, menu_options);
             }
         }
         function main() {
