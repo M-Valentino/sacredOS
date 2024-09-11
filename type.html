@@ -36,7 +36,7 @@
     <button id="submitButton">Submit</button>
     <script>
         class Page {
-            constructor(menu_name, menu_options) {
+            constructor(menu_name) {
                 console.log("page");
                 this.menuElement = document.getElementById('menu');
                 this.outputElement = document.getElementById('output');
@@ -44,50 +44,55 @@
                 this.submitButton = document.getElementById('submitButton');
                 this.asciiArtElement = document.getElementById('ascii-art');
 
-                this.menu_options = menu_options;
-                this.display_options(menu_options);
                 this.asciiArtElement.textContent = menu_name;
                 this.setupEventListeners();
             }
+
             display_options(menu_options) {
+                this.menu_options = menu_options;
                 let str = "";
                 for (let i = 0; i < menu_options.length; i++) {
                     str += `<p>${i}) ${menu_options[i].name}</p>`;
                 }
                 this.menuElement.innerHTML = str;
             }
+
             get_input() {
                 const input = this.inputElement.value;
                 const twoDigitPattern = /^(?:[0-9]|[1-9][0-9])$/;
                 if (!twoDigitPattern.test(input)) {
                     this.outputElement.textContent = "Please enter a 2 digit number";
+                    this.inputElement.value = '';
                     return;
                 }
                 let num = parseInt(input);
                 if (num >= this.menu_options.length) {
                     this.outputElement.textContent = `Please enter a number between and including 0-${this.menu_options.length - 1}`;
+                    this.inputElement.value = '';
                     return;
                 }
                 this.inputElement.value = '';
+                this.outputElement.value = '';
+                this.cleanup();
                 this.menu_options[num].action();
             }
+
             setupEventListeners() {
-                // clean up existing event listeners 
-                this.submitButton.removeEventListener('click', () => this.get_input());
-                this.inputElement.removeEventListener('keyup', (event) => {
+                this.submitHandler = () => this.get_input();
+                this.keyupHandler = (event) => {
                     if (event.key === 'Enter') {
                         this.get_input();
                     }
-                });
-                // set up new event listeners
-                this.submitButton.addEventListener('click', () => this.get_input());
-                this.inputElement.addEventListener('keyup', (event) => {
-                    if (event.key === 'Enter') {
-                        this.get_input();
-                    }
-                });
+                };
+                this.submitButton.addEventListener('click', this.submitHandler);
+                this.inputElement.addEventListener('keyup', this.keyupHandler);
             }
-            cleanupEventListners() {
+
+            cleanup() {
+                this.submitButton.removeEventListener('click', this.submitHandler);
+                this.inputElement.removeEventListener('keyup', this.keyupHandler);
+                this.outputElement.textContent = '';
+                this.inputElement.textContent = '';
             }
         }
         class Menu_option {
@@ -126,7 +131,8 @@
                 let menu_options = [
                     new Menu_option("Back", Main_menu)
                 ];
-                super(menu, menu_options);
+                super(menu);
+                super.display_options(menu_options);
             }
         }
         class Online_content_page extends Page {
@@ -145,11 +151,41 @@
 ██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║   
 ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║   
 ╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║   
- ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝`
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝`;
+                super(menu);
                 let menu_options = [
-                    new Menu_option("Back", Main_menu)
+                    new Menu_option("Back", Main_menu),
+                    new Menu_option("Online Library", Online_library_page),
+                    new Menu_option("Add New Content by URL", this.add_by_url),
                 ];
-                super(menu, menu_options);
+                super.display_options(menu_options);
+            }
+            add_by_url() {
+
+            }
+        }
+        class Online_library_page extends Page {
+            constructor() {
+                console.log("Online_library_page ");
+                let menu = `
+███████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗    
+██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝    
+██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗      
+██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝      
+╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗    
+ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝    
+                                                    
+██╗     ██╗██████╗ ██████╗  █████╗ ██████╗ ██╗   ██╗
+██║     ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║     ██║██████╔╝██████╔╝███████║██████╔╝ ╚████╔╝ 
+██║     ██║██╔══██╗██╔══██╗██╔══██║██╔══██╗  ╚██╔╝  
+███████╗██║██████╔╝██║  ██║██║  ██║██║  ██║   ██║   
+╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝`;
+                let menu_options = [
+                    new Menu_option("Back", Online_content_page)
+                ];
+                super(menu);
+                super.display_options(menu_options);
             }
         }
         class Main_menu extends Page {
@@ -167,7 +203,8 @@
                    new Menu_option("Read Gospel Library", Gospel_page),
                    new Menu_option("Online Content", Online_content_page),
                ];
-               super(main_menu, menu_options);
+               super(main_menu);
+               super.display_options(menu_options);
             }
         }
         function main() {
