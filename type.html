@@ -35,8 +35,9 @@
     <input type="text" id="userInput" placeholder="Enter your choice">
     <button id="submitButton">Submit</button>
     <script>
-        class page {
+        class Page {
             constructor(menu_name, menu_options) {
+                console.log("page");
                 this.menuElement = document.getElementById('menu');
                 this.outputElement = document.getElementById('output');
                 this.inputElement = document.getElementById('userInput');
@@ -44,7 +45,6 @@
                 this.asciiArtElement = document.getElementById('ascii-art');
 
                 this.menu_options = menu_options;
-
                 this.display_options(menu_options);
                 this.asciiArtElement.textContent = menu_name;
                 this.setupEventListeners();
@@ -52,36 +52,45 @@
             display_options(menu_options) {
                 let str = "";
                 for (let i = 0; i < menu_options.length; i++) {
-                    str += "<p>" + i.toString() + ") " + menu_options[i].name + "</p>";
+                    str += `<p>${i}) ${menu_options[i].name}</p>`;
                 }
                 this.menuElement.innerHTML = str;
             }
-            get_input(n, message="please select an option: ") {
+            get_input() {
                 const input = this.inputElement.value;
                 const twoDigitPattern = /^(?:[0-9]|[1-9][0-9])$/;
                 if (!twoDigitPattern.test(input)) {
                     this.outputElement.textContent = "Please enter a 2 digit number";
                     return;
                 }
-                let num = parseInt(input)
-                if (num >= n) {
-                    this.outputElement.textContent = `Please enter a number between and including 0-${n}`;
-                    console.log("here");
+                let num = parseInt(input);
+                if (num >= this.menu_options.length) {
+                    this.outputElement.textContent = `Please enter a number between and including 0-${this.menu_options.length - 1}`;
                     return;
                 }
                 this.inputElement.value = '';
-                return num;
+                this.menu_options[num].action();
             }
             setupEventListeners() {
-                this.submitButton.addEventListener('click', () => this.get_input(this.menu_options.length));
+                // clean up existing event listeners 
+                this.submitButton.removeEventListener('click', () => this.get_input());
+                this.inputElement.removeEventListener('keyup', (event) => {
+                    if (event.key === 'Enter') {
+                        this.get_input();
+                    }
+                });
+                // set up new event listeners
+                this.submitButton.addEventListener('click', () => this.get_input());
                 this.inputElement.addEventListener('keyup', (event) => {
                     if (event.key === 'Enter') {
                         this.get_input();
                     }
                 });
             }
+            cleanupEventListners() {
+            }
         }
-        class menu_option {
+        class Menu_option {
             constructor(name, func, parameters=null) {
                 this.name = name;
                 this.func = func;
@@ -92,24 +101,60 @@
             }
             action() {
                 if (this.parameters !== null) {
-                    this.func(this.parameters);
+                    return new this.func(this.parameters);
                 } else {
-                    this.func();
+                    return new this.func();
                 }
             }
         }
-        class gospel_page { // extends page {
+        class Gospel_page extends Page {
             constructor() {
-                console.log("gospel_page constructor")
+                console.log("gospel_page");
+                let menu = `
+██████╗ ██╗ ██████╗██╗  ██╗     █████╗                                          
+██╔══██╗██║██╔════╝██║ ██╔╝    ██╔══██╗                                         
+██████╔╝██║██║     █████╔╝     ███████║                                         
+██╔═══╝ ██║██║     ██╔═██╗     ██╔══██║                                         
+██║     ██║╚██████╗██║  ██╗    ██║  ██║                                         
+╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝                                         
+                                                                                
+ ██████╗ ██████╗ ██╗     ██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
+██╔════╝██╔═══██╗██║     ██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║     ██║   ██║██║     ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
+██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
+╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║`;
+                let menu_options = [
+                    new Menu_option("Back", Main_menu)
+                ];
+                super(menu, menu_options);
             }
         }
-        class online_content_page { // extends page {
+        class Online_content_page extends Page {
             constructor() {
-                console.log("online_content_page constructor")
+                console.log("online_content_page");
+                let menu = `
+ ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗               
+██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝               
+██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗                 
+██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝                 
+╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗               
+ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝               
+                                                               
+ ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗
+██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝
+██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║   
+██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║   
+╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║   
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝`
+                let menu_options = [
+                    new Menu_option("Back", Main_menu)
+                ];
+                super(menu, menu_options);
             }
         }
-        class main_menu extends page {
+        class Main_menu extends Page {
             constructor() {
+                console.log("main_menu");
                 let main_menu = `
 ███████╗██████╗ ███████╗███████╗██████╗       ██████╗ ███████╗ █████╗ ██████╗ 
 ██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗      ██╔══██╗██╔════╝██╔══██╗██╔══██╗
@@ -119,17 +164,17 @@
 ╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝       ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
                                                        Created by Steven Blanco`;
                let menu_options = [
-                   new menu_option("Read Gospel Library", gospel_page),
-                   new menu_option("Online Content", online_content_page),
+                   new Menu_option("Read Gospel Library", Gospel_page),
+                   new Menu_option("Online Content", Online_content_page),
                ];
                super(main_menu, menu_options);
             }
         }
         function main() {
-            mm = new main_menu();
+            new Main_menu();
         }
         // Initialize the menu when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', () => main());
+        document.addEventListener('DOMContentLoaded', main);
     </script>
 </body>
 </html>
