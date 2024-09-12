@@ -276,9 +276,16 @@ function openProgram(
   windowCount++;
   const currentWindowID = customId || windowCount;
   let window = createWindow(currentWindowID, 0, 0);
-
   const buttonCount = noResizeMatch ? 2 : 3;
-  let header = createHeader(currentWindowID, programName, buttonCount);
+
+  let header;
+  if (withFile) {
+    const directories = withFile.split("/");
+    const fileName = directories.pop();
+    header = createHeader(currentWindowID, fileName, buttonCount);
+  } else {
+    header = createHeader(currentWindowID, programName, buttonCount);
+  }
   window.appendChild(header);
 
   const closeButton = createCloseButton(currentWindowID);
