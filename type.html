@@ -35,6 +35,7 @@
     <input type="text" id="userInput" placeholder="Enter your choice">
     <button id="submitButton">Submit</button>
     <script>
+        var the_dumb_man = "'The Dumb Man' by Sherwood Anderson There is a story - I cannot tell it - I have no words. The story is almost forgotten but sometimes I remember. The story concerns three men in a house in a street. If I could say the words I would sing the story. I would whisper it into the ears of women, of mothers. I would run through the streets saying it over and over. My tongue would be torn loose--it would rattle against my teeth. The three men are in a room in the house. One is young and dandified. He continually laughs. There is a second man who has a long white beard. He is consumed with doubt but occasionally his doubt leaves him and he sleeps. A third man there is who has wicked eyes and who moves nervously about the room rubbing his hands together. The three men are waiting - waiting. Upstairs in the house there is a woman standing with her back to a wall, in half darkness by a window. That is the foundation of my story and everything I will ever know is distilled in it. I remember that a fourth man came to the house, a white silent man. Everything was as silent as the sea at night. His feet on the stone floor of the room where the three men were made no sound. The man with the wicked eyes became like a boiling liquid - he ran back and forth like a caged animal. The old grey man was infected by his nervousness - he kept pulling at his beard. The fourth man, the white one, went upstairs to the woman. There she was - waiting. How silent the house was - how loudly all the clocks in the neighbourhood ticked. The woman upstairs craved love. That must have been the story. She hungered for love with her whole being. She wanted to create in love. When the white silent man came into her presence she sprang forward. Her lips were parted. There was a smile on her lips. The white one said nothing. In his eyes there was no rebuke, no question. His eyes were as impersonal as stars. Down stairs the wicked one whined and ran back and forth like a little lost hungry dog. The grey one tried to follow him about but presently grew tired and lay down on the floor to sleep. He never awoke again. The dandified fellow lay on the floor too. He laughed and played with his tiny black moustache. I have no words to tell what happened in my story. I cannot tell the story. The white silent one may have been Death. The waiting eager woman may have been Life. Both the old grey bearded man and the wicked one puzzle me. I think and think but cannot understand them. Most of the time however I do not think of them at all. I keep thinking about the dandified man who laughed all through my story. If I could understand him I could understand everything. I could run through the world telling a wonderful story. I would no longer be dumb. Why was I not given words? Why am I dumb? I have a wonderful story to tell, but know no way to tell it.";
         class Page {
             constructor(menu_name) {
                 console.log("page");
@@ -93,6 +94,7 @@
                 this.inputElement.removeEventListener('keyup', this.keyupHandler);
                 this.outputElement.textContent = '';
                 this.inputElement.textContent = '';
+                this.menuElement.textContent = '';
             }
         }
         class Menu_option {
@@ -112,80 +114,57 @@
                 }
             }
         }
-        class Gospel_page extends Page {
-            constructor() {
-                console.log("gospel_page");
+        class Read_page extends Page {
+            constructor(text_variable) {
+                console.log("Read_page");
                 let menu = `
-██████╗ ██╗ ██████╗██╗  ██╗     █████╗                                          
-██╔══██╗██║██╔════╝██║ ██╔╝    ██╔══██╗                                         
-██████╔╝██║██║     █████╔╝     ███████║                                         
-██╔═══╝ ██║██║     ██╔═██╗     ██╔══██║                                         
-██║     ██║╚██████╗██║  ██╗    ██║  ██║                                         
-╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝                                         
-                                                                                
- ██████╗ ██████╗ ██╗     ██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
-██╔════╝██╔═══██╗██║     ██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
-██║     ██║   ██║██║     ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
-██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
-╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║`;
-                let menu_options = [
-                    new Menu_option("Back", Main_menu)
-                ];
+██████╗ ███████╗ █████╗ ██████╗ ██╗
+██╔══██╗██╔════╝██╔══██╗██╔══██╗██║
+██████╔╝█████╗  ███████║██║  ██║██║
+██╔══██╗██╔══╝  ██╔══██║██║  ██║╚═╝
+██║  ██║███████╗██║  ██║██████╔╝██╗
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝`;
                 super(menu);
-                super.display_options(menu_options);
+                this.num_lines = 10;
+                this.lines = [];
+                this.text_variable = text_variable
+                this.sleep_time = 500;
+                this.display();
             }
-        }
-        class Online_content_page extends Page {
-            constructor() {
-                console.log("online_content_page");
-                let menu = `
- ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗               
-██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝               
-██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗                 
-██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝                 
-╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗               
- ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝               
-                                                               
- ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗
-██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝
-██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║   
-██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║   
-╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║   
- ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝`;
-                super(menu);
-                let menu_options = [
-                    new Menu_option("Back", Main_menu),
-                    new Menu_option("Online Library", Online_library_page),
-                    new Menu_option("Add New Content by URL", this.add_by_url),
-                ];
-                super.display_options(menu_options);
+            async display() {
+                let wordArray = this.text_variable.split(" ");
+                let line = "";
+                for (let word of wordArray) {
+                    if ((line + word).length < 55) {
+                        line += word + " ";
+                    } else {
+                        this.lines.push(line);
+                        console.log(this.lines);
+                        await this.displayLines();
+                        line = word + " ";
+                    }
+                }
+                if (line) {
+                    await this.displayLines(line);
+                }
             }
-            add_by_url() {
-
-            }
-        }
-        class Online_library_page extends Page {
-            constructor() {
-                console.log("Online_library_page ");
-                let menu = `
-███████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗    
-██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝    
-██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗      
-██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝      
-╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗    
- ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝    
-                                                    
-██╗     ██╗██████╗ ██████╗  █████╗ ██████╗ ██╗   ██╗
-██║     ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
-██║     ██║██████╔╝██████╔╝███████║██████╔╝ ╚████╔╝ 
-██║     ██║██╔══██╗██╔══██╗██╔══██║██╔══██╗  ╚██╔╝  
-███████╗██║██████╔╝██║  ██║██║  ██║██║  ██║   ██║   
-╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝`;
-                let menu_options = [
-                    new Menu_option("Back", Online_content_page)
-                ];
-                super(menu);
-                super.display_options(menu_options);
+            displayLines() {
+                return new Promise(resolve => {
+                    this.outputElement.innerHTML = "";
+                    let lines_to_display = this.lines.slice(-this.num_lines);
+                    for (let i = 0; i < lines_to_display.length; i++) {
+                        let p = document.createElement('p');
+                        p.textContent = lines_to_display[i];
+                        this.outputElement.appendChild(p);
+                    }
+                    for (let i = 0; i < this.num_lines - lines_to_display.length; i++) {
+                        let p = document.createElement("p");
+                        p.textContent = "\u00A0"; 
+                        p.style.minHeight = "1em";
+                        this.outputElement.appendChild(p);
+                    }
+                    setTimeout(resolve, this.sleep_time);
+                });
             }
         }
         class Main_menu extends Page {
@@ -200,8 +179,7 @@
 ╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝       ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
                                                        Created by Steven Blanco`;
                let menu_options = [
-                   new Menu_option("Read Gospel Library", Gospel_page),
-                   new Menu_option("Online Content", Online_content_page),
+                    new Menu_option("The Dumb Man by Sherwood Anderson", Read_page, the_dumb_man)
                ];
                super(main_menu);
                super.display_options(menu_options);
@@ -212,6 +190,7 @@
         }
         // Initialize the menu when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', main);
+
     </script>
 </body>
 </html>
