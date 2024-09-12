@@ -61,7 +61,7 @@
     function openFile() {
       window.top.postMessage("OPWD:[", "*");
     }
-
+    let programId = "";
     window.addEventListener("message", function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -93,6 +93,8 @@
               fileContent = "Creating new files in notepad coming soon.";
             }
             document.getElementById('mainTextarea').value = fileContent;
+        } else if (e.data.startsWith("ID:[")) {
+          programId = e.data.substring(4);
         }
     });
 

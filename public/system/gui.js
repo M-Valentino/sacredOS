@@ -261,7 +261,13 @@ function createAlert(text) {
   window.appendChild(okButton);
 }
 
-function openProgram(programName, data, dontToggleMenu, withFile, customId=null) {
+function openProgram(
+  programName,
+  data,
+  dontToggleMenu,
+  withFile,
+  customId = null
+) {
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
 
   if (dontToggleMenu) {
@@ -355,8 +361,10 @@ function openProgram(programName, data, dontToggleMenu, withFile, customId=null)
       bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     });
   };
+  iframe.onload = function () {
+    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}`, "*");
+  };
   window.appendChild(iframe);
-
   createMenuBarButton(currentWindowID, programName);
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
