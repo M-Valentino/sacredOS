@@ -319,7 +319,17 @@ window.onmessage = function (e) {
 
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
-    } else if (e.data.startsWith("RND:[")) {
+    } else if (e.data.startsWith("UHI:[")) {
+      const rightBracketIndex = e.data.indexOf("]");
+      const windowId = e.data.substring(5, rightBracketIndex);
+      const headerId = "hed" + windowId.substring(3);
+      const newHeaderName = e.data.substring(rightBracketIndex + 1);
+      const header = document.getElementById(headerId);
+      let title = header.querySelector(".menuHeaderTitle");
+      title.textContent = newHeaderName;
+      return;
+    }
+     else if (e.data.startsWith("RND:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
       const filePath = e.data.slice(5, rightBracketIndex);
