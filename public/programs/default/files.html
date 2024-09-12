@@ -176,7 +176,8 @@
     <div id="bottomDialogContent">
       <hr>
       <div class="flexRowReverse">
-        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere" onclick="cancelOpenOrSaveFile()">Cancel</button>
+        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere"
+          onclick="cancelOpenOrSaveFile()">Cancel</button>
         <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
         <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
         <input id="fileNameInputBottomDialog" type="text" class="w-100" />
@@ -535,6 +536,19 @@
       }
     });
 
+    document.getElementById("topLevelObjects").addEventListener("click", function (event) {
+      if (event.target === this) {
+        removeDashedBorders();
+      }
+    });
+
+    function removeDashedBorders() {
+      let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+      prevSelectedButtons.forEach(bttn => {
+        bttn.classList.replace("oSButtonDashed", "oSButton");
+      });
+    }
+
     let fileForOpeningFromDialog;
     function displayTopLevelObjects(backupObject) {
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
@@ -557,10 +571,7 @@
             clickTimeout = setTimeout(() => {
               clickCount = 0;
             }, 1000);
-            let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
-            prevSelectedButtons.forEach(bttn => {
-              bttn.classList.replace("oSButtonDashed", "oSButton");
-            });
+            removeDashedBorders();
             button.classList.replace("oSButton", "oSButtonDashed");
             if (mode === MODES.OPEN_FOR_PROGRAM) {
               fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
