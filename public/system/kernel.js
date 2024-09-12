@@ -328,10 +328,13 @@ window.onmessage = function (e) {
       let title = header.querySelector(".menuHeaderTitle");
       title.textContent = newHeaderName;
       return;
-    }
-     else if (e.data.startsWith("RND:[")) {
+    } else if (e.data.startsWith("CLOSE:[")) {
+      const windowId = e.data.substring(7);
+      const menuBarId = "men" + windowId.substring(3);
+      closeProgram(windowId, menuBarId);
+      return;
+    } else if (e.data.startsWith("RND:[")) {
       const rightBracketIndex = e.data.indexOf("]");
-
       const filePath = e.data.slice(5, rightBracketIndex);
       const directories = filePath.split("/");
       const fileName = directories.pop();
@@ -404,7 +407,13 @@ window.onmessage = function (e) {
         "const initialMode = MODES.OPEN;",
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
-      openProgram("Open File", fileDialogData, false, false, "OpeningFileDialog");
+      openProgram(
+        "Open File",
+        fileDialogData,
+        false,
+        false,
+        "OpeningFileDialog"
+      );
       openingFileFor = e.source;
       return;
     } else if (e.data.startsWith("SFFD:[")) {

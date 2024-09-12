@@ -176,7 +176,7 @@
     <div id="bottomDialogContent">
       <hr>
       <div class="flexRowReverse">
-        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere">Cancel</button>
+        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere" onclick="cancelOpenOrSaveFile()">Cancel</button>
         <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
         <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
         <input id="fileNameInputBottomDialog" type="text" class="w-100" />
@@ -671,8 +671,15 @@
       window.top.postMessage(`SFFD:[${fileForOpeningFromDialog}`, "*");
     }
 
+    function cancelOpenOrSaveFile() {
+      window.top.postMessage(`CLOSE:[${programId}`, "*");
+    }
+
+    let programId = "";
     window.addEventListener("message", function (e) {
-      if (e.data.startsWith("AF:")) {
+      if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("AF:")) {
         const jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
