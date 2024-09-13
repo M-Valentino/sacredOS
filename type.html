@@ -119,27 +119,29 @@
             constructor(text_variable) {
                 console.log("Read_page");
                 let menu = `
-██████╗ ███████╗ █████╗ ██████╗ ██╗      
+██████╗ ███████╗ █████╗ ██████╗ ██╗      current speed: ${(localStorage.getItem('readingSpeed') / 1000).toFixed(1)} seconds per line
 ██╔══██╗██╔════╝██╔══██╗██╔══██╗██║      
 ██████╔╝█████╗  ███████║██║  ██║██║      
 ██╔══██╗██╔══╝  ██╔══██║██║  ██║╚═╝
 ██║  ██║███████╗██║  ██║██████╔╝██╗
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝`;
-                let menu_options = [
-                    new Menu_option("Back to Main menu", Main_menu)
-                ];
                 super(menu);
+                let menu_options = [
+                    new Menu_option("Back to Main menu", this.stopReading.bind(this))
+                ];
                 super.display_options(menu_options);
                 this.num_lines = 10;
                 this.lines = [];
                 this.text_variable = text_variable
-                this.sleep_time = 50;
+                this.sleep_time = localStorage.getItem('readingSpeed');        
+                this.isReading = true;
                 this.display();
             }
             async display() {
                 let wordArray = this.text_variable.split(" ");
                 let line = "";
                 for (let word of wordArray) {
+                    if (!this.isReading) return;
                     if ((line + word).length < 55) {
                         line += word + " ";
                     } else {
@@ -148,12 +150,14 @@
                         line = word + " ";
                     }
                 }
-                if (line) {
+                if (line && this.isReading) {
                     await this.displayLines(line);
                 }
-                let p = document.createElement("p");
-                p.textContent = "Congrats! you have finished this book! Enter 0 to go back to the main menu";
-                this.outputElement.appendChild(p);
+                if (this.isReading) {
+                    let p = document.createElement("p");
+                    p.textContent = "Congrats! you have finished this book! Enter 0 to go back to the main menu";
+                    this.outputElement.appendChild(p);
+                }
             }
             displayLines() {
                 return new Promise(resolve => {
@@ -173,6 +177,11 @@
                     setTimeout(resolve, this.sleep_time);
                 });
             }
+            stopReading() {
+                this.isReading = false;
+                this.cleanup();
+                new Main_menu();
+            }
         }
         class Settings extends Page {
             constructor() {
@@ -187,10 +196,35 @@
                     new Menu_option("Go to main menu", Main_menu)
                 ];
                 super(menu);
-                super.display_options(menu_options)
+                super.display_options(menu_options);
                 
+                this.createSpeedSetting();
             }
-        }
+
+            createSpeedSetting() {
+                const settingContainer = document.createElement('div');
+                settingContainer.innerHTML = `
+                    <h3>Reading Speed (seconds per line)</h3>
+                    <input type="range" id="speedSlider" min="0.5" max="15" step="0.1" value="${this.sleep_time / 1000}">
+                    <span id="speedValue">${this.sleep_time / 1000}</span> seconds
+                `;
+                this.outputElement.appendChild(settingContainer);
+
+                const slider = document.getElementById('speedSlider');
+                const valueDisplay = document.getElementById('speedValue');
+
+                slider.addEventListener('input', (event) => {
+                    const value = parseFloat(event.target.value);
+                    valueDisplay.textContent = value.toFixed(1);
+                    this.updateSleepTime(value);
+                });
+            }
+
+            updateSleepTime(value) {
+                this.sleep_time = value * 1000; // Convert to milliseconds
+                localStorage.setItem('readingSpeed', this.sleep_time);
+            }
+        }       
         class Main_menu extends Page {
             constructor() {
                 console.log("main_menu");
