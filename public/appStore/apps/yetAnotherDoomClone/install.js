@@ -22,10 +22,7 @@ async function install() {
   const installedCorrectly =
     (await copyData("/appStore/apps/yetAnotherDoomClone/LICENSE.txt")) &&
     (await copyData("/appStore/apps/yetAnotherDoomClone/INFO.txt")) &&
-    (await copyData("/appStore/apps/yetAnotherDoomClone/doomClone.html")) &&
-    (await copyData(
-      "/appStore/apps/yetAnotherDoomClone/javascript-doom-clone-game.js"
-    ));
+    (await copyData("/appStore/apps/yetAnotherDoomClone/doomClone.html"))
 
   if (installedCorrectly) {
     window.top.postMessage("MK:MENU-SC[programs/doomClone/doomClone.html");
