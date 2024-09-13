@@ -243,7 +243,6 @@
       OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
     }
     const initialMode = MODES.OPEN;
-    let mode = initialMode;
     let firstLoad = true;
 
     window.top.postMessage("REQ:SS", "*");
@@ -550,11 +549,11 @@
             }, 1000);
             removeDashedBorders();
             button.classList.replace("oSButton", "oSButtonDashed");
-            if (mode === MODES.OPEN_FOR_PROGRAM) {
+            if (initialMode === MODES.OPEN_FOR_PROGRAM) {
               fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
             }
           } else if (clickCount === 2) {
-            if (mode === MODES.OPEN || mode === MODES.OPEN_FOR_PROGRAM) {
+            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
               handleOpen(key, backupObject);
             }
             clearTimeout(clickTimeout);
