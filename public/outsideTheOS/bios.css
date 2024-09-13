@@ -119,8 +119,7 @@
 }
 
 #powerButton::before {
-  font-family: "Segoe UI", "Noto Sans", Arial, sans-serif;
-  content: '';
+  font-family: "Noto Sans Symbols 2", sans-serif;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -132,7 +131,7 @@
   box-shadow: inset 1px -1px 1px 0 #0000005a, inset -1px 1px 5px 0 #ffffffbf;
   content: '\23FB';
   text-align: center;
-  line-height: 37px;
+  line-height: 45px;
   font-weight: 900;
   font-size: 24px;
 }
