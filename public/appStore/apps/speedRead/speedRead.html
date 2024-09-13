@@ -1,926 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--width="610" height="400" noRS-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-file Python Project</title>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+    <title>Speed_Read</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #menu, #output {
+            margin-bottom: 20px;
+        }
+        button {
+            margin-right: 10px;
+        }
+        #ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            font-size: 12px;
+            line-height: 1.2;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Multi-file Python Project</h1>
-    <button onclick="runPython()">Run Project</button>
-    <pre id="output"></pre>
-
-    <script id="python_code" type="text/python">
-from abc import ABC, abstractmethod
-import re
-import os
-import platform
-import requests
-from bs4 import BeautifulSoup
-import time
-import json
-from pynput import keyboard
-import sys
-import signal
-import platform
-
-
-class page(ABC):
-    def __init__(self):
-        self.clear_console()
-
-    
-    def display_options(self, options):
-        for i in range(len(options)):
-            print(f"{i}) " + str(options[i].get_name()))
-    
-
-    """
-    n: int
-    n is the option number to execute
-    """
-    def handle_input(self, n, options):
-        options[n].action()
-
-
-    """
-    n: int
-    n is the number of options
-    we want an integer between [0, n)
-    """
-    def get_input(self, n, message="please select an option: "):
-        pattern = rf'^(?:[0-9]|[1-9][0-9]*)$'
-        while True:
-            i = input(message)
-            if re.match(pattern, i) and int(i) < n:
-                break
-            else:
-                print(f"Error: Enter an integer between and including 0 and {n-1}")
-        return int(i)
-
-
-    def clear_console(self):
-        if platform.system() == "Windows":
-            os.system('cls')
-        else:
-            os.system('clear')
-
-
-
-"""
-Parent class to the biblical collections (Book of Mormon, Old and New Testament)
-"""
-class collection_page(page):
-    def __init__(self, menu, menu_options, collection_name, book_list, main_menu, previous_menu):
-        super().__init__()
-        print(menu)
-        menu_options = []
-        self.create_options(menu_options, collection_name, book_list, main_menu, previous_menu)
-        super().display_options(menu_options)
-        user_input = super().get_input(len(menu_options))
-        super().handle_input(user_input, menu_options)
-
-    def create_options(self, menu_options, collection_title, book_list, main_menu, previous_menu):
-        menu_options.append(
-            menu_option(
-                "Go to Main Menu",
-                main_menu
-            )
-        )
-        menu_options.append(
-            menu_option(
-                "Go back",
-                previous_menu,
-                main_menu
-            )
-        )
-        for i in range(len(book_list)):
-            menu_options.append(
-                menu_option(
-                    book_list[i],
-                    self.read_book,
-                    [collection_title, book_list[i], main_menu]
-                )
-            )
-
-
-    def read_book(self, arguments):
-        collection_name = arguments[0]
-        book_name = arguments[1]
-        with open(f"texts/gospel_text/{collection_name}.txt", "r") as bom_file:
-            lines = bom_file.read().split("\n")
-            idx = None
-            for i in range(len(lines)):
-                if re.search(arguments[1], lines[i]):
-                    idx = i
-            what_users_reading = collection_name + "_" + book_name
-            read_page(what_users_reading, lines, idx, arguments[2])
-
-
-
-
-class bom_page(collection_page):
-    __BOM_MENU = """
-██████╗  ██████╗  ██████╗ ██╗  ██╗     ██████╗ ███████╗    
-██╔══██╗██╔═══██╗██╔═══██╗██║ ██╔╝    ██╔═══██╗██╔════╝    
-██████╔╝██║   ██║██║   ██║█████╔╝     ██║   ██║█████╗      
-██╔══██╗██║   ██║██║   ██║██╔═██╗     ██║   ██║██╔══╝      
-██████╔╝╚██████╔╝╚██████╔╝██║  ██╗    ╚██████╔╝██║         
-╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝         
-                                                           
-███╗   ███╗ ██████╗ ██████╗ ███╗   ███╗ ██████╗ ███╗   ██╗ 
-████╗ ████║██╔═══██╗██╔══██╗████╗ ████║██╔═══██╗████╗  ██║ 
-██╔████╔██║██║   ██║██████╔╝██╔████╔██║██║   ██║██╔██╗ ██║ 
-██║╚██╔╝██║██║   ██║██╔══██╗██║╚██╔╝██║██║   ██║██║╚██╗██║ 
-██║ ╚═╝ ██║╚██████╔╝██║  ██║██║ ╚═╝ ██║╚██████╔╝██║ ╚████║ 
-╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ 
-"""
-    __book_list = [
-        "THE FIRST BOOK OF NEPHI HIS REIGN AND MINISTRY",
-        "THE SECOND BOOK OF NEPHI",
-        "THE BOOK OF JACOB",
-        "THE BOOK OF ENOS",
-        "THE BOOK OF JAROM",
-        "THE BOOK OF OMNI",
-        "THE WORDS OF MORMON",
-        "THE BOOK OF MOSIAH",
-        "THE BOOK OF ALMA",
-        "THE BOOK OF HELAMAN",
-        "THIRD BOOK OF NEPHI",
-        "FOURTH NEPHI",
-        "THE BOOK OF MORMON",
-        "THE BOOK OF ETHER",
-        "THE BOOK OF MORONI",
-    ]
-
-    __menu_options = None
-
-    def __init__(self, menu_list):
-        super().__init__(self.__BOM_MENU, self.__menu_options, "BookofMormon", self.__book_list, menu_list[0], menu_list[1])
-
-
-
-
-
-class gospel_page(page):
-    __COLLECTION_MENU = """
-██████╗ ██╗ ██████╗██╗  ██╗     █████╗                                          
-██╔══██╗██║██╔════╝██║ ██╔╝    ██╔══██╗                                         
-██████╔╝██║██║     █████╔╝     ███████║                                         
-██╔═══╝ ██║██║     ██╔═██╗     ██╔══██║                                         
-██║     ██║╚██████╗██║  ██╗    ██║  ██║                                         
-╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝                                         
-                                                                                
- ██████╗ ██████╗ ██╗     ██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
-██╔════╝██╔═══██╗██║     ██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
-██║     ██║   ██║██║     ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
-██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
-╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
- ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-    """
-
-    __main_menu = None
-    __menu_options = None
-
-
-    def __init__(self, main_menu):
-        super().__init__()
-        self.__menu_options = []
-        self.__main_menu = main_menu
-        print(self.__COLLECTION_MENU)
-        self.create_options()
-        super().display_options(self.__menu_options)
-        user_input = super().get_input(len(self.__menu_options))
-        super().handle_input(user_input, self.__menu_options)
-
-
-    def create_options(self):
-        self.__menu_options.append(
-            menu_option(
-                "Go to Main Menu",
-                self.__main_menu
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Book of Mormon",
-                bom_page,
-                [self.__main_menu, self.__init__]
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Bible Old Testament",
-                old_testament_page,
-                [self.__main_menu, self.__init__]
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Bible New Testament",
-                new_testament_page,
-                [self.__main_menu, self.__init__]
-            )
-        )
-    
-
-class new_testament_page(collection_page):
-    __NEW_TESTAMENT_MENU = """
-███╗   ██╗███████╗██╗    ██╗    ████████╗███████╗███████╗████████╗ █████╗ ███╗   ███╗███████╗███╗   ██╗████████╗
-████╗  ██║██╔════╝██║    ██║    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
-██╔██╗ ██║█████╗  ██║ █╗ ██║       ██║   █████╗  ███████╗   ██║   ███████║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
-██║╚██╗██║██╔══╝  ██║███╗██║       ██║   ██╔══╝  ╚════██║   ██║   ██╔══██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
-██║ ╚████║███████╗╚███╔███╔╝       ██║   ███████╗███████║   ██║   ██║  ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
-╚═╝  ╚═══╝╚══════╝ ╚══╝╚══╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
-"""
-
-    __book_list = [
-        "The New Testament of the King James Bible",
-        "The Gospel According to Saint Matthew",
-        "The Gospel According to Saint Mark",
-        "The Gospel According to Saint Luke",
-        "The Gospel According to Saint John",
-        "The Acts of the Apostles",
-        "The Epistle of Paul the Apostle to the Romans",
-        "The First Epistle of Paul the Apostle to the Corinthians",
-        "The Second Epistle of Paul the Apostle to the Corinthians",
-        "The Epistle of Paul the Apostle to the Galatians",
-        "The Epistle of Paul the Apostle to the Ephesians",
-        "The Epistle of Paul the Apostle to the Philippians",
-        "The Epistle of Paul the Apostle to the Colossians",
-        "The First Epistle of Paul the Apostle to the Thessalonians",
-        "The Second Epistle of Paul the Apostle to the Thessalonians",
-        "The First Epistle of Paul the Apostle to Timothy",
-        "The Second Epistle of Paul the Apostle to Timothy",
-        "The Epistle of Paul the Apostle to Titus",
-        "The Epistle of Paul the Apostle to Philemon",
-        "The Epistle of Paul the Apostle to the Hebrews",
-        "The General Epistle of James",
-        "The First Epistle General of Peter",
-        "The Second General Epistle of Peter",
-        "The First Epistle General of John",
-        "The Second Epistle General of John",
-        "The Third Epistle General of John",
-        "The General Epistle of Jude",
-        "The Revelation of Saint John the Divine",
-    ]
-
-    __menu_options = None
-
-    def __init__(self, menu_list):
-        super().__init__(self.__NEW_TESTAMENT_MENU, self.__menu_options, "BibleNewTestament", self.__book_list, menu_list[0], menu_list[1])
-
-
-
-
-class old_testament_page(collection_page):
-    __OLD_TESTAMENT_MENU = """
- ██████╗ ██╗     ██████╗     ████████╗███████╗███████╗████████╗ █████╗ ███╗   ███╗███████╗███╗   ██╗████████╗
-██╔═══██╗██║     ██╔══██╗    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
-██║   ██║██║     ██║  ██║       ██║   █████╗  ███████╗   ██║   ███████║██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
-██║   ██║██║     ██║  ██║       ██║   ██╔══╝  ╚════██║   ██║   ██╔══██║██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
-╚██████╔╝███████╗██████╔╝       ██║   ███████╗███████║   ██║   ██║  ██║██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
- ╚═════╝ ╚══════╝╚═════╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
-"""
-    __book_list = [
-        "The First Book of Moses:  Called Genesis",
-        "The Second Book of Moses:  Called Exodus",
-        "The Third Book of Moses:  Called Leviticus",
-        "The Fourth Book of Moses:  Called Numbers",
-        "The Fifth Book of Moses:  Called Deuteronomy",
-        "The Book of Joshua",
-        "The Book of Judges",
-        "The Book of Ruth",
-        "The First Book of Samuel",
-        "The Second Book of Samuel",
-        "The First Book of the Kings",
-        "The Second Book of the Kings",
-        "The First Book of the Chronicles",
-        "The Second Book of the Chronicles",
-        "Ezra",
-        "The Book of Nehemiah",
-        "The Book of Esther",
-        "The Book of Job",
-        "The Book of Psalms",
-        "The Proverbs",
-        "Ecclesiastes",
-        "The Song of Solomon",
-        "The Book of the Prophet Isaiah",
-        "The Book of the Prophet Jeremiah",
-        "The Lamentations of Jeremiah",
-        "The Book of the Prophet Ezekiel",
-        "The Book of Daniel",
-        "Hosea",
-        "Joel",
-        "Amos",
-        "Obadiah",
-        "Jonah",
-        "Micah",
-        "Nahum",
-        "Habakkuk",
-        "Zephaniah",
-        "Haggai",
-        "Zechariah",
-        "Malachi",
-    ]
-
-    __menu_options = None
-
-    def __init__(self, menu_list):
-        super().__init__(self.__OLD_TESTAMENT_MENU, self.__menu_options, "BibleOldTestament", self.__book_list, menu_list[0], menu_list[1])
-
-
-
-class online_content_page(page):
-    __DOWNLOAD_MENU = """
- ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗               
-██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝               
-██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗                 
-██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝                 
-╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗               
- ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝               
-                                                               
- ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗
-██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝
-██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║   
-██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║   
-╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║   
- ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝   
-"""
-
-    __main_menu = None
-    __menu_options = None
-
-    def __init__(self, main_menu):
-        super().__init__()
-        self.__menu_options = []
-        self.__main_menu = main_menu
-        print(self.__DOWNLOAD_MENU)
-        self.create_options()
-        super().display_options(self.__menu_options)
-        user_input = super().get_input(len(self.__menu_options))
-        super().handle_input(user_input, self.__menu_options)
-
-
-    def create_options(self):
-        self.__menu_options.append(
-            menu_option(
-                "Go to Main Menu",
-                self.__main_menu
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Online Library",
-                online_library_page,
-                [self.__init__, self.__main_menu]
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Add New Content by URL",
-                self.add_by_url
-            )
-        )
-
-    def add_by_url(self):
-        while True:
-            try:
-                url = input("Enter a url: ")
-                response = requests.get(url)
-                if response.status_code == 200:
-                    soup = BeautifulSoup(response.content, 'html.parser')
-                else:
-                    raise ValueError("")
-                break
-            except:
-                print("Invalid url")
-        
-        # get title and content removing excessive white space
-        title = soup.h1.get_text().strip()
-        content = ""
-        all_ps = soup.find_all('p')
-        for p in all_ps:
-            content += p.get_text()
-        content = content.replace("\n", "").replace("\r", "")
-        content = re.sub(r" {4,}", " ", content)
-
-        # format content into consistant line lengths
-        formatted_content = ""
-        text_length = 65 
-        new_line = False
-        for i in range(len(content)):
-            formatted_content += content[i]
-            if i % text_length == 0:
-                new_line = True
-            if new_line == True and (content[i] == " " or content[i] == "\t"):
-                formatted_content += "\n"
-                new_line = False
-        
-        # save to file
-        file_name = "texts/uploaded_text/" + title.strip().replace(" ", "_") + ".txt"
-        with open(file_name, "w") as file:
-            file.write(title)
-            file.write(formatted_content)
-        
-        self.__init__(self.__main_menu)
-
-
-class online_library_page(page):
-    __library_menu = """
- ██████╗ ███╗   ██╗██╗     ██╗███╗   ██╗███████╗    
-██╔═══██╗████╗  ██║██║     ██║████╗  ██║██╔════╝    
-██║   ██║██╔██╗ ██║██║     ██║██╔██╗ ██║█████╗      
-██║   ██║██║╚██╗██║██║     ██║██║╚██╗██║██╔══╝      
-╚██████╔╝██║ ╚████║███████╗██║██║ ╚████║███████╗    
- ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝    
-                                                    
-██╗     ██╗██████╗ ██████╗  █████╗ ██████╗ ██╗   ██╗
-██║     ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
-██║     ██║██████╔╝██████╔╝███████║██████╔╝ ╚████╔╝ 
-██║     ██║██╔══██╗██╔══██╗██╔══██║██╔══██╗  ╚██╔╝  
-███████╗██║██████╔╝██║  ██║██║  ██║██║  ██║   ██║   
-╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   
-"""
-    __online_content = None
-    __menu_options = None
-    __main_menu = None
-
-    def __init__(self, args):
-        super().__init__()
-        self.__online_content = args[0]
-        self.__main_menu = args[1]
-        self.__menu_options = []
-        print(self.__library_menu)
-        self.create_options()
-        super().display_options(self.__menu_options)
-        user_input = super().get_input(len(self.__menu_options))
-        super().handle_input(user_input, self.__menu_options)
-
-
-    def create_options(self):
-        self.__menu_options.append(
-            menu_option(
-                "Go back",
-                self.__online_content,
-                self.__main_menu
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Remove content",
-                self.remove_content,
-            )
-        )
-        dir_path = "texts/uploaded_text/"
-        for filename in os.listdir(dir_path):
-            filepath = dir_path + filename
-            self.__menu_options.append(
-                menu_option(
-                    filename,
-                    self.read_book,
-                    [filepath, filename]
-                )
-            )
-
-    
-    def remove_content(self):
-        print("Enter number associated with content to remove")
-        user_input = super().get_input(len(self.__menu_options))
-        if user_input == 1:
-            user_input = 0
-        if user_input == 0:
-            super().handle_input(user_input, self.__menu_options)
-        
-        content_name = self.__menu_options[user_input].get_name()
-        file_path = "texts/uploaded_text/" + content_name
-        try:
-            os.remove(file_path)
-            print("File has been deleted successfully")
-        except FileNotFoundError:
-            print("File does not exist")
-        except PermissionError:
-            print("Permission denied: cannot delete")
-        except Exception as e:
-            print(f"An error occurred while deleting: {str(e)}")
-        time.sleep(2)
-        args = [self.__online_content, self.__main_menu]
-        self.__init__(args)
-
-        
-
-    def read_book(self, args):
-        filepath = args[0]
-        filename = args[1]
-        with open(filepath, "r") as file:
-            lines = file.read().split("\n")
-            idx = 0
-            read_page(filename, lines, idx, self.__main_menu)
-
-
-
-"""
-displays text for the user to read
-"""
-class read_page(page):
-    __READ_MENU = """
-██████╗ ███████╗ █████╗ ██████╗ ██╗         
-██╔══██╗██╔════╝██╔══██╗██╔══██╗██║         ↑ to speed up 
-██████╔╝█████╗  ███████║██║  ██║██║         ↓ to slow down
-██╔══██╗██╔══╝  ██╔══██║██║  ██║╚═╝         Speed: {speed:.2f} seconds
-██║  ██║███████╗██║  ██║██████╔╝██╗         ESC to return to main menu
-╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝
-"""
-
-    def __init__(self, what_users_reading, lines, start_idx, main_menu):
-        super().__init__()
-        self.__what_users_reading = what_users_reading
-        self.__lines = lines
-        self.__curr_idx = start_idx
-        self.__main_menu = main_menu
-        self.__lines_to_display = []
-        self.__SAVE_FILE = "save.json"
-        self.__speed = 5  # default speed
-        self.__listener = None
-        self.__running = False
-
-        self.load_settings()
-        self.start_listener()
-        self.display()
-
-    def start_listener(self):
-        self.__listener = keyboard.Listener(on_press=self.change_speed)
-        self.__listener.start()
-
-    """
-    display the reading page
-    displays self.__READ_MENU
-    displays each line from the text input file, line by line
-        seperated in time by self.__speed
-    """
-    def display(self):
-        self.__running = True
-        finished_book = False
-        while self.__running and self.__curr_idx < len(self.__lines):
-            self.__lines_to_display.append(self.__lines[self.__curr_idx])
-            super().clear_console()
-            print(self.__READ_MENU.format(speed=self.__speed))
-            for line in self.__lines_to_display[-10:]:  # Display last 10 lines
-                print(line)
-            time.sleep(self.__speed)
-            self.__curr_idx += 1
-            if self.__curr_idx == len(self.__lines):
-                finished_book = True
-
-        if finished_book:
-            self.__curr_idx = 0
-        self.cleanup()
-
-    def change_speed(self, key):
-        if key == keyboard.Key.up:
-            self.__speed = max(0.5, self.__speed / 1.1)  # Speed up (lower delay)
-        elif key == keyboard.Key.down:
-            self.__speed = min(10, self.__speed * 1.1)  # Slow down (higher delay)
-        elif key == keyboard.Key.esc:
-            self.__running = False  # Stop the display loop
-
-    """
-    called when exiting read_page
-    """
-    def cleanup(self):
-        self.__listener.stop()
-        self.save_settings()
-        self.flush_input()
-        self.__main_menu()
-
-    def flush_input(self):
-        """Clear the input buffer."""
-        if sys.platform.startswith('win'):
-            self.flush_input_windows()
-        else:  # Unix-like systems (Linux, macOS)
-            self.flush_input_unix()
-
-    def flush_input_windows(self):
-        import msvcrt
-        while msvcrt.kbhit():
-            msvcrt.getch()
-
-    def flush_input_unix(self):
-        import termios
-        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
-
-    def load_settings(self):
-        if os.path.exists(self.__SAVE_FILE):
-            try:
-                with open(self.__SAVE_FILE, "r") as save_file:
-                    data = json.load(save_file)
-                    self.__speed = data["speed"]
-                    idx = data[f"{self.__what_users_reading}_line_number"]
-                if idx == None:
-                    self.save_settings()
-                else:
-                    self.__curr_idx = data[f"{self.__what_users_reading}_line_number"]
-            except:
-                self.save_settings()
-        else:
-            self.create_settings()
-
-    def save_settings(self):
-        updates = {
-            "speed": self.__speed,
-            f"{self.__what_users_reading}_line_number": self.__curr_idx
+    <div id="ascii-art"></div>
+    <div id="menu"></div>
+    <div id="output"></div>
+    <input type="text" id="userInput" placeholder="Enter your choice">
+    <button id="submitButton">Submit</button>
+    <script>
+        var the_dumb_man = "'The Dumb Man' by Sherwood Anderson There is a story - I cannot tell it - I have no words. The story is almost forgotten but sometimes I remember. The story concerns three men in a house in a street. If I could say the words I would sing the story. I would whisper it into the ears of women, of mothers. I would run through the streets saying it over and over. My tongue would be torn loose--it would rattle against my teeth. The three men are in a room in the house. One is young and dandified. He continually laughs. There is a second man who has a long white beard. He is consumed with doubt but occasionally his doubt leaves him and he sleeps. A third man there is who has wicked eyes and who moves nervously about the room rubbing his hands together. The three men are waiting - waiting. Upstairs in the house there is a woman standing with her back to a wall, in half darkness by a window. That is the foundation of my story and everything I will ever know is distilled in it. I remember that a fourth man came to the house, a white silent man. Everything was as silent as the sea at night. His feet on the stone floor of the room where the three men were made no sound. The man with the wicked eyes became like a boiling liquid - he ran back and forth like a caged animal. The old grey man was infected by his nervousness - he kept pulling at his beard. The fourth man, the white one, went upstairs to the woman. There she was - waiting. How silent the house was - how loudly all the clocks in the neighbourhood ticked. The woman upstairs craved love. That must have been the story. She hungered for love with her whole being. She wanted to create in love. When the white silent man came into her presence she sprang forward. Her lips were parted. There was a smile on her lips. The white one said nothing. In his eyes there was no rebuke, no question. His eyes were as impersonal as stars. Down stairs the wicked one whined and ran back and forth like a little lost hungry dog. The grey one tried to follow him about but presently grew tired and lay down on the floor to sleep. He never awoke again. The dandified fellow lay on the floor too. He laughed and played with his tiny black moustache. I have no words to tell what happened in my story. I cannot tell the story. The white silent one may have been Death. The waiting eager woman may have been Life. Both the old grey bearded man and the wicked one puzzle me. I think and think but cannot understand them. Most of the time however I do not think of them at all. I keep thinking about the dandified man who laughed all through my story. If I could understand him I could understand everything. I could run through the world telling a wonderful story. I would no longer be dumb. Why was I not given words? Why am I dumb? I have a wonderful story to tell, but know no way to tell it.";
+        var the_divine_spark = "The Divine Spark By George Ade One Evening at a Converted Rink known as the Grand Opera House, a flock of intrepid Amateurs put on a War Drama. Lila, principal Child of the Egg and Poultry King, played a Daughter of the Southland, with her Hair shaken out and Lamp Black on her Eye-Winkers, so as to look like Maxine. All of her Relations and the other Members of the Pocahontas Bridge Whist and Pleasure Club were in Front, and they gave her a Hand every time she stepped out from behind a Tree. She scored what is known in the Ibsen cult as a Knock-Out. At 11 P. M., she was up on a lonesome Eminence, right between Sara Bernhardt and Julia Marlowe, waiting for a Telegram from C. F. to come on and tackle any Role that was too heavy for Maude Adams. The proud Parents awoke next Morning to discover that Lady Macbeth was boarding with them. When she moved from one Room to another, the Portieres had to be spread the entire length of the Pole, so as to make Room for her Head. A local Haberdasher, who had been plotting to surround her with a new Bungalow and a lot of Mission Furniture, went to call as per Usual and found her away Up Stage, trying to look like Margaret Anglin in the Big Scene. She was too busy to Hold Hands, for she was mapping out a Career which terminated with an Electric Sign on Broadway and the Street jammed with up-town Limousines. So the Gents' Furnisher moved down the Street to a Brick House, the unmarried Inmates of which would begin burning Greek Fire and sending up Balloons every time a Live One slammed the Front Gate.  Lila had the Bacillus Theatricus gnawing in every part of her System. She could see the magnificent Play House crowded from Pit to Dome, just as the Producing Manager sees it every August when the Pipe is drawing freely. She could hear the Leading Man in the Dress Suit say, as he pointed up the Marble Stairway, 'Ah, here comes the Countess Zika now.' And then She would enter trippingly, wearing $900 worth of spangled Raiment, whereupon the Vast Audience would stand up and Cheer. Whilst enjoying this Trance she wore a Yellow Kimono and had her Meals sent to the Room. Father saw that she was Hooked, so he loaded her into a Parlor Car and took her up to a School of Dramatic Art to have her searched for Talent. The Head Crimp of this refined Shake-Down watched her do the Scene in which Ophelia goes Dotty and picks the imaginary Dandelions, and when it was all over and Shakespeare had been reduced to a Pulp, he slapped old Ready Money on the Back and told him his Daughter was a Phenom. She had the Dramatic Instinct and the Fire of Genius and that indefinable Something which enables Eva Tanguay to earn more than the President of the United States. With a couple of hundred Lessons in Correct Breathing, and the Vocal Cords loosened up with a Glove-Stretcher, and a row of Scallops put on the Technique, Mary Anderson would be right back in our midst. So Lila got ready to fill the Vacancy caused by the Retirement of Ellen Terry, while Papa went back to the little Office in one corner of the WareHouse and began to sign Checks. It took many an Egg to have Lila properly Conservatoried. At last she came home with a Diploma showing that she was an Actress.  After that, she merely needed a Play and a Company and a lot of Scenery and a Manager and a Theater and the soft old Public buying of the Scalpers, in order to realize her modest Ambition to become a Real Star. She took her Diploma and the Local Press Notices up to New York to see what she could get on them, and found 10,000 other incipient Modjedskas hitting the worn Trail that led from one Agency to another. Artistic Temperaments were more Abundant than Lamp Posts, and getting an Audience with a Big Gun was just as easy as Opening a Time-Lock with a Hat Pin. She had an offer at the Hippodrome to walk in front of an Elephant, waving a prop Palm, but she spurned it, because she was ready to do Desdemona at a Moment's Notice. As for the Laudatory Article written by a would-be Willie Winter of the wild and wooly West, she couldn't find any one in the neighborhood of 42nd Street who had even heard of the Tank Town in which her Folks were so Prominent. In order to get Experience, she signed up with a No. 4 Company, playing the Part of the deaf-and-dumb lady who crosses the Stage and removes the Tea Things early in the Second Act. When the Troupe went on the Rocks at Mauch Chunk, Penna., the erstwhile Favorite of the Pocahontas Club found herself seated on a Trunk marked 'Theater' standing off a Deputy Sheriff and waiting for an Answer to her Wire. The First Old Woman, who remembered Edwin Booth, came and sat beside her. 'Do not be discouraged, Honey,' said She. 'Go right back and start all over, and possibly sometime Next Year you will again have the blessed Privilege of going up a neglected Alley twice a Day and changing your Clothes in a Barn. Any Girl with your Looks and Family Connections can curl up in a Four-Poster at night and then saunter to the Bath over a soft Rag in the Morning, but only a throbbing Genius can make these Night Jumps in a Day Coach and stop at a Hotel which is operated as an Auxiliary to a first-class Saloon. It will be Hard Sledding for the first 15 or  20 Years, but, by the time you are 45, you may reasonably count on getting 20 Weeks out of every 52, running around in front of a Kinetoscope.' Lila pulled into the Scene of her Early Triumphs with a mere suggestion of No. 2 Grease Paint still lingering behind the Ears. As the Train rolled through the Yards, the Foreman of the Section Gang narrowly escaped being hit in the Head with a tin Make-Up Box hurled from the rear of the Observation Car. Next day she had a strip of Red Carpet spread for the Haberdasher and was learning to Cook in Paper Bags. Whenever she hears of a Good Show coming to Town she invites all of her Friends to come out to the Bungalow and Play Rhum on the Mission Furniture. MORAL: The True Friend of Humanity is one who goes to the Home Talent Benefit for Something and Hisses all Evening.";
+        var the_endless_tale = "The Endless Tale James Baldwin In the Far East there was a great king who had no work to do. Every day, and all day long, he sat on soft cushions and listened to stories. And no matter what the story was about, he never grew tired of hearing it, even though it was very long. 'There is only one fault that I find with your story,' he often said: 'it is too short.' All the story-tellers in the world were invited to his palace; and some of them told tales that were very long indeed. But the king was always sad when a story was ended. At last he sent word into every city and town and country place, offering a prize to any one who should tell him an endless tale. He said,-- 'To the man that will tell me a story which shall last forever, I will give my fairest daughter for his wife; and I will make him my heir, and he shall be king after me.' But this was not all. He added a very hard condition. 'If any man shall try to tell such a story and then fail, he shall have his head cut off.' The king's daughter was very pretty, and there were many young men in that country who were willing to do anything to win her. But none of them wanted to lose their heads, and so only a few tried for the prize. One young man invented a story that lasted three months; but at the end of that time, he could think of nothing more. His fate was a warning to others, and it was a long time before another story-teller was so rash as to try the king's patience. But one day a stranger from the South came into the palace. 'Great king,' he said, 'is it true that you offer a prize to the man who can tell a story that has no end?' 'It is true,' said the king. 'And shall this man have your fairest daughter for his wife, and shall he be your heir?' 'Yes, if he succeeds,' said the king. 'But if he fails, he shall lose his head.' 'Very well, then,' said the stranger. 'I have a pleasant story about locusts which I would like to relate.' 'Tell it,' said the king. 'I will listen to you.' The story-teller began his tale. 'Once upon a time a certain king seized upon all the corn in his country, and stored it away in a strong granary. But a swarm of locusts came over the land and saw where the grain had been put. After searching for many days they found on the east side of the granary a crevice that was just large enough for one locust to pass through at a time. So one locust went in and carried away a grain of corn; then another locust went in and carried away a grain of corn; then another locust went in and carried away a grain of corn.' Day after day, week after week, the man kept on saying, 'Then another locust went in and carried away a grain of corn.' A month passed; a year passed. At the end of two years, the king said,-- 'How much longer will the locusts be going in and carrying away corn?' 'O king!' said the story-teller, 'they have as yet cleared only one cubit; and there are many thousand cubits in the granary.' 'Man, man!' cried the king, 'you will drive me mad. I can listen to it no longer. Take my daughter; be my heir; rule my kingdom. But do not let me hear another word about those horrible locusts!' And so the strange story-teller married the king's daughter. And he lived happily in the land for many years. But his father-in-law, the king, did not care to listen to any more stories.";
+        class Page {
+            constructor(menu_name) {
+                console.log("page");
+                this.menuElement = document.getElementById('menu');
+                this.outputElement = document.getElementById('output');
+                this.inputElement = document.getElementById('userInput');
+                this.submitButton = document.getElementById('submitButton');
+                this.asciiArtElement = document.getElementById('ascii-art');
+                this.user_input = document.getElementById('userInput');
+
+                this.asciiArtElement.textContent = menu_name;
+                this.setupEventListeners();
+            }
+
+            display_options(menu_options) {
+                this.menu_options = menu_options;
+                let str = "";
+                for (let i = 0; i < menu_options.length; i++) {
+                    str += `<p>${i}) ${menu_options[i].name}</p>`;
+                }
+                this.menuElement.innerHTML = str;
+            }
+
+            get_input() {
+                const input = this.inputElement.value;
+                const twoDigitPattern = /^(?:[0-9]|[1-9][0-9])$/;
+                if (!twoDigitPattern.test(input)) {
+                    this.outputElement.textContent = "Please enter a 2 digit number";
+                    this.inputElement.value = '';
+                    return;
+                }
+                let num = parseInt(input);
+                if (num >= this.menu_options.length) {
+                    this.outputElement.textContent = `Please enter a number between and including 0-${this.menu_options.length - 1}`;
+                    this.inputElement.value = '';
+                    return;
+                }
+                this.inputElement.value = '';
+                this.outputElement.value = '';
+                this.cleanup();
+                this.menu_options[num].action();
+            }
+
+            setupEventListeners() {
+                this.submitHandler = () => this.get_input();
+                this.keyupHandler = (event) => {
+                    if (event.key === 'Enter') {
+                        this.get_input();
+                    }
+                };
+                this.submitButton.addEventListener('click', this.submitHandler);
+                this.inputElement.addEventListener('keyup', this.keyupHandler);
+            }
+
+            cleanup() {
+                this.submitButton.removeEventListener('click', this.submitHandler);
+                this.inputElement.removeEventListener('keyup', this.keyupHandler);
+                this.outputElement.textContent = '';
+                this.inputElement.textContent = '';
+                this.menuElement.textContent = '';
+                this.user_input.value = '';
+            }
         }
-        
-        try:
-            # Try to read existing data
-            with open(self.__SAVE_FILE, "r") as save_file:
-                data = json.load(save_file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            # If file doesn't exist or is invalid, start with an empty dict
-            data = {}
-        
-        # Update data
-        data.update(updates)
-        
-        # Write updated data back to file
-        with open(self.__SAVE_FILE, "w") as save_file:
-            json.dump(data, save_file, indent=4)
-
-    def create_settings(self):
-        data = {
-            "speed": self.__speed,
-            f"{self.__what_users_reading}_line_number": self.__curr_idx
+        class Menu_option {
+            constructor(name, func, parameters=null) {
+                this.name = name;
+                this.func = func;
+                this.parameters = parameters;
+            }
+            get_name() {
+                return this.name;
+            }
+            action() {
+                if (this.parameters !== null) {
+                    return new this.func(this.parameters);
+                } else {
+                    return new this.func();
+                }
+            }
         }
-        with open(self.__SAVE_FILE, "w") as save_file:
-            json.dump(data, save_file, indent=4)
+        class Read_page extends Page {
+            constructor(text_variable) {
+                console.log("Read_page");
+                let menu = `██████╗ ███████╗ █████╗ ██████╗ ██╗      current speed: ${(localStorage.getItem('readingSpeed') / 1000).toFixed(1)} seconds per line
+██╔══██╗██╔════╝██╔══██╗██╔══██╗██║      
+██████╔╝█████╗  ███████║██║  ██║██║      
+██╔══██╗██╔══╝  ██╔══██║██║  ██║╚═╝
+██║  ██║███████╗██║  ██║██████╔╝██╗
+╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝`;
+                super(menu);
+                this.menu_options = [
+                    new Menu_option("Back to Main menu", Main_menu)
+                ];
+                super.display_options(this.menu_options);
+                this.num_lines = 5;
+                this.lines = [];
+                this.text_variable = text_variable;
+                this.sleep_time = localStorage.getItem('readingSpeed');        
+                this.isReading = true;
+                this.display();
+            }
 
+            async display() {
+                let wordArray = this.text_variable.split(" ");
+                let line = "";
+                for (let word of wordArray) {
+                    if (!this.isReading) return;
+                    if ((line + word).length < 55) {
+                        line += word + " ";
+                    } else {
+                        this.lines.push(line);
+                        await this.displayLines();
+                        line = word + " ";
+                    }
+                }
+                if (line && this.isReading) {
+                    await this.displayLines(line);
+                }
+                if (this.isReading) {
+                    let p = document.createElement("p");
+                    p.textContent = "Congrats! you have finished this book! Enter 0 to go back to the main menu";
+                    this.outputElement.appendChild(p);
+                }
+            }
 
+            displayLines() {
+                return new Promise(resolve => {
+                    if (!this.isReading) {
+                        resolve();
+                        return;
+                    }
+                    this.outputElement.innerHTML = "";
+                    let lines_to_display = this.lines.slice(-this.num_lines);
+                    for (let i = 0; i < lines_to_display.length; i++) {
+                        let p = document.createElement('p');
+                        p.textContent = lines_to_display[i];
+                        this.outputElement.appendChild(p);
+                    }
+                    for (let i = 0; i < this.num_lines - lines_to_display.length; i++) {
+                        let p = document.createElement("p");
+                        p.textContent = "\u00A0"; 
+                        p.style.minHeight = "1em";
+                        this.outputElement.appendChild(p);
+                    }
+                    setTimeout(resolve, this.sleep_time);
+                });
+            }
 
-"""
-menu_option represents all the data and functionality 
-associated with an option on the menu
-"""
-class menu_option():
-    __name = None
-    __function = None
-    __parameters = None
-    
+            get_input() {
+                const input = this.inputElement.value;
+                if (input === '0') {
+                    this.stopReading();
+                } else {
+                    super.get_input();
+                }
+            }
 
-    def __init__(self, name, function, parameters=None):
-        self.__name = name
-        self.__function = function
-        if parameters != None:
-            self.__parameters = parameters
-
-    
-    def get_name(self):
-        return self.__name
-
-
-    def action(self):
-        if self.__parameters != None:
-            self.__function(self.__parameters)
-        else:
-            self.__function()
-
-
-class settings_page(page):
-    __SETTINGS_MENU = """
-███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+            stopReading() {
+                this.isReading = false;
+                this.cleanup();
+                new Main_menu();
+            }
+        }
+        class Settings extends Page {
+            constructor() {
+                let menu = `███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
 ██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
 ███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
 ╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
 ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
-╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
-"""
-
-    __SAVE_FILE = "save.json"
-    __main_menu = None
-    __menu_options = None
-
-    __speed = 5
-
-
-    def __init__(self, main_menu):
-        super().__init__()
-        self.__menu_options = []
-        self.__main_menu = main_menu
-        print(self.__SETTINGS_MENU)
-        self.load_settings()
-        self.display_settings()
-        self.create_options()
-        super().display_options(self.__menu_options)
-        user_input = super().get_input(len(self.__menu_options))
-        super().handle_input(user_input, self.__menu_options)
-
-
-    def save_settings(self):
-        # Read the existing data
-        if os.path.exists(self.__SAVE_FILE):
-            with open(self.__SAVE_FILE, "r") as save_file:
-                data = json.load(save_file)
-        else:
-            data = {}
-
-        # Update only the speed field
-        data["speed"] = self.__speed
-
-        # Write the updated data back to the file
-        with open(self.__SAVE_FILE, "w") as save_file:
-            json.dump(data, save_file, indent=4)
-        
-        print("Save complete...")
-        time.sleep(1)
-        self.__init__(self.__main_menu)   
-
-
-    def load_settings(self):
-        if os.path.exists(self.__SAVE_FILE):
-            with open(self.__SAVE_FILE, "r") as save_file:
-                self.__speed = json.load(save_file)["speed"]
-        else:
-            data = {
-                "speed": self.__speed,
+╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝`;
+                let menu_options = [
+                    new Menu_option("Go to main menu", Main_menu)
+                ];
+                super(menu);
+                super.display_options(menu_options);
+                
+                this.createSpeedSetting();
             }
-            with open(self.__SAVE_FILE, "w") as save_file:
-                json.dump(data, save_file, indent=4)
-            self.__init__(self.__main_menu)
-       
 
+            createSpeedSetting() {
+                const settingContainer = document.createElement('div');
+                settingContainer.innerHTML = `
+                    <h3>Reading Speed (seconds per line)</h3>
+                    <input type="range" id="speedSlider" min="0.5" max="15" step="0.1" value="${this.sleep_time / 1000}">
+                    <span id="speedValue">${this.sleep_time / 1000}</span> seconds
+                `;
+                this.outputElement.appendChild(settingContainer);
 
-    def display_settings(self):
-        print("Speed: ", self.__speed)
-        print()
+                const slider = document.getElementById('speedSlider');
+                const valueDisplay = document.getElementById('speedValue');
 
+                slider.addEventListener('input', (event) => {
+                    const value = parseFloat(event.target.value);
+                    valueDisplay.textContent = value.toFixed(1);
+                    this.updateSleepTime(value);
+                });
+            }
 
-    def create_options(self):
-        self.__menu_options.append(
-            menu_option(
-                "Go to Main Menu",
-                self.__main_menu
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Change Reading Speed",
-                self.change_speed
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Reset Book Marks",
-                self.reset_book_marks
-            )
-        )
-
-
-    def reset_book_marks(self):
-        data = {
-            "speed": self.__speed,
-        }
-        with open("save.json", "w") as save_file:
-            json.dump(data, save_file, indent=4)
-        print("save complete...")
-        time.sleep(1)
-        self.__init__(self.__main_menu)
-
-
-    def change_speed(self):
-        max_speed = 100
-        self.__speed = super().get_input(max_speed, "new speed: ")
-        self.save_settings()
-        self.__init__(self.__main_menu)
-
-
-"""
-main_menu has all the data asscociated with displaying the main menu
-"""
-class main_menu(page):
-    __MAIN_MENU = """
-███████╗██████╗ ███████╗███████╗██████╗       ██████╗ ███████╗ █████╗ ██████╗ 
+            updateSleepTime(value) {
+                this.sleep_time = value * 1000; // Convert to milliseconds
+                localStorage.setItem('readingSpeed', this.sleep_time);
+            }
+        }       
+        class Main_menu extends Page {
+            constructor() {
+                console.log("main_menu");
+                let main_menu = `███████╗██████╗ ███████╗███████╗██████╗       ██████╗ ███████╗ █████╗ ██████╗ 
 ██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗      ██╔══██╗██╔════╝██╔══██╗██╔══██╗
 ███████╗██████╔╝█████╗  █████╗  ██║  ██║█████╗██████╔╝█████╗  ███████║██║  ██║
 ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║  ██║╚════╝██╔══██╗██╔══╝  ██╔══██║██║  ██║
 ███████║██║     ███████╗███████╗██████╔╝      ██║  ██║███████╗██║  ██║██████╔╝
 ╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝       ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
-                                                       Created by Steven Blanco
-    """
-
-    __menu_options = None
-
-
-    def __init__(self):
-        super().__init__()
-        self.__menu_options = []
-        print(self.__MAIN_MENU)
-        self.create_options()
-        super().display_options(self.__menu_options)
-        user_input = super().get_input(len(self.__menu_options))
-        super().handle_input(user_input, self.__menu_options)
-
-
-    def create_options(self):
-        self.__menu_options.append(
-            menu_option(
-                "Exit",
-                self.exit_program
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Read Gospel Library",
-                gospel_page,
-                self.__init__
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Online Content",
-                online_content_page,
-                self.__init__
-            )
-        )
-        self.__menu_options.append(
-            menu_option(
-                "Settings",
-                settings_page,
-                self.__init__
-            )
-        )
-            
-
-    def exit_program(self):
-        super().clear_console()
-        print("GoodBye!")
-        exit()
-
-
-
-"""
-handles the ctrl-c signal
-"""
-def sigint_handler(sig, frame):
-    if platform.system() == "Windows":
-        os.system('cls')
-    else:
-        os.system('clear')
-    print("GoodBye!")
-    exit(0)
-
-
-"""
-project plans in file todo and specifications.txt
-"""
-def main():
-    signal.signal(signal.SIGINT, sigint_handler)
-    mm = main_menu()
-
-
-if __name__ == "__main__":
-    main()
-    </script>
-
-    <script>
-        async function runPython() {
-            const output = document.getElementById("output");
-            output.textContent = "Running...";
-
-            try {
-                // Load Pyodide
-                let pyodide = await loadPyodide();
-                await pyodide.loadPackage("micropip");
-
-                // Install required packages
-                await pyodide.runPythonAsync(`
-                    import micropip
-                    await micropip.install('pynput')
-                    await micropip.install('beautifulsoup4')
-                    await micropip.install('requests')
-                `);
-
-                // Get the Python code
-                const pythonCode = document.getElementById("python_code").text;
-
-                // Run the Python code
-                let result = await pyodide.runPythonAsync(`
-                    import sys
-                    import io
-
-                    sys.stdout = io.StringIO()
-
-                    ${pythonCode}
-
-                    sys.stdout.getvalue()
-                `);
-
-                output.textContent = result;
-            } catch (error) {
-                output.textContent = `Error: ${error.message}\n`;
-                console.error(error);
+Created by Steven Blanco`;
+               let menu_options = [
+                    new Menu_option("Set Reading Speed", Settings),
+                    new Menu_option("The Dumb Man by Sherwood Anderson", Read_page, the_dumb_man),
+                    new Menu_option("The Divine Spark by George Ade", Read_page, the_divine_spark),
+                    new Menu_option("The Endless Tale by James Baldwin", Read_page, the_endless_tale)
+               ];
+               super(main_menu);
+               super.display_options(menu_options);
             }
         }
-
+        function main() {
+            new Main_menu();
+        }
+        // Initialize the menu when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', main);
     </script>
 </body>
 </html>
