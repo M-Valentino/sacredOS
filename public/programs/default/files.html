@@ -292,12 +292,12 @@
     }
 
     function toggleDeleteMode() {
+      removeDashedBorders();
       if (mode !== MODES.DELETE) {
         document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
         mode = MODES.DELETE;
 
         let documentFiles = document.querySelectorAll(".fileOrDir");
-
         documentFiles.forEach(file => {
           let delIcon = document.createElement('img');
           delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).small;
