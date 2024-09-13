@@ -554,6 +554,7 @@
       const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
       const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
       const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).small;
+      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).small;
       let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -592,16 +593,17 @@
         }, false);
 
         button.appendChild(document.createElement('br'));
+        
         let icon = document.createElement('img');
-
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
         } else if (imgExtensions.some(ext => key.includes(ext))) {
           icon.src = imageImage;
+        } else if (key.indexOf('.html') !== -1) {
+          icon.src = executableImage;
         } else {
           icon.src = documentImage;
         }
-
         button.appendChild(icon);
         displayArea.appendChild(button);
       });
