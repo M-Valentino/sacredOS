@@ -119,6 +119,7 @@
 }
 
 #powerButton::before {
+  font-family: "Segoe UI", "Noto Sans", Arial, sans-serif;
   content: '';
   position: absolute;
   top: 50%;
