@@ -157,7 +157,7 @@
 <body class="program">
   <div class="flexBttnRow">
     <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
-    <button id="delFile" class="oSButton osElemBase mr-8" onclick="toggleDeleteMode()"><span
+    <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
         class="redX">X</span>Delete</button>
     <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
     <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
@@ -239,7 +239,6 @@
   <script>
     let diskBackup = {};
     const MODES = {
-      DELETE: "DELETE",
       OPEN: "OPEN",
       OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
     }
@@ -291,35 +290,12 @@
       document.getElementById("fileDir").value += `${key}/`;
     }
 
-    function toggleDeleteMode() {
-      removeDashedBorders();
-      if (mode !== MODES.DELETE) {
-        document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
-        mode = MODES.DELETE;
-
-        let documentFiles = document.querySelectorAll(".fileOrDir");
-        documentFiles.forEach(file => {
-          let delIcon = document.createElement('img');
-          delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).normal;
-          delIcon.classList = "delIcon";
-          file.appendChild(delIcon); // Append delIcon to each element with the 'document' class
-        });
-
-      } else {
-        document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
-        mode = initialMode;
-        // Remove the delIcon elements when switching back to OPEN mode
-        let delIcons = document.querySelectorAll('.delIcon');
-        delIcons.forEach(icon => {
-          icon.parentNode.removeChild(icon);
-        });
-      }
-    }
-
-    function handleDelete(key) {
-      const path = document.getElementById("fileDir").value.substring(3) + key;
-      window.top.postMessage(`DEL[${path}`, '*');
-      toggleDeleteMode();
+    function markForDeletion() {
+      let documentFiles = document.querySelectorAll(".oSButtonDashed");
+      documentFiles.forEach(file => {
+        const path = document.getElementById("fileDir").value.substring(3) + file.textContent;
+        window.top.postMessage(`DEL[${path}`, '*');
+      });
     }
 
     function closeExistingDialogs() {
@@ -580,8 +556,6 @@
           } else if (clickCount === 2) {
             if (mode === MODES.OPEN || mode === MODES.OPEN_FOR_PROGRAM) {
               handleOpen(key, backupObject);
-            } else if (mode === MODES.DELETE) {
-              handleDelete(key);
             }
             clearTimeout(clickTimeout);
             clickCount = 0;
