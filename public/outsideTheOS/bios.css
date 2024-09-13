@@ -129,7 +129,7 @@
   background: radial-gradient(circle, #f2eecf 0%, #ece7c9 40%, #dfdccc 100%);
   border-radius: 50%;
   box-shadow: inset 1px -1px 1px 0 #0000005a, inset -1px 1px 5px 0 #ffffffbf;
-  content: '⏻';
+  content: '\23FB';
   text-align: center;
   line-height: 37px;
   font-weight: 900;
