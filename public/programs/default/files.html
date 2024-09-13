@@ -473,6 +473,15 @@
         contextMenu.appendChild(setDesktopBG);
       }
 
+      let deleteCtxtBttn = document.createElement("button");
+      deleteCtxtBttn.textContent = "Delete";
+      deleteCtxtBttn.classList.add("oSButton", "osElemBase");
+      deleteCtxtBttn.onclick = function () {
+        window.top.postMessage(`DEL[${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(deleteCtxtBttn);
+
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
         if (!contextMenu.contains(event.target)) {
