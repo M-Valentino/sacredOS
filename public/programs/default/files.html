@@ -300,7 +300,7 @@
         let documentFiles = document.querySelectorAll(".fileOrDir");
         documentFiles.forEach(file => {
           let delIcon = document.createElement('img');
-          delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).small;
+          delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).normal;
           delIcon.classList = "delIcon";
           file.appendChild(delIcon); // Append delIcon to each element with the 'document' class
         });
@@ -551,10 +551,10 @@
 
     let fileForOpeningFromDialog;
     function displayTopLevelObjects(backupObject) {
-      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
-      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
-      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).small;
-      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).small;
+      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).normal;
+      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).normal;
+      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).normal;
+      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).normal;
       let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -593,7 +593,7 @@
         }, false);
 
         button.appendChild(document.createElement('br'));
-        
+
         let icon = document.createElement('img');
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
