@@ -261,18 +261,31 @@ function createAlert(text) {
   window.appendChild(okButton);
 }
 
-function openProgram(programName, data, dontToggleMenu, withFile) {
+function openProgram(
+  programName,
+  data,
+  dontToggleMenu,
+  withFile,
+  customId = null
+) {
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
 
   if (dontToggleMenu) {
     toggleOpenmenu();
   }
   windowCount++;
-  const currentWindowID = windowCount;
+  const currentWindowID = customId || windowCount;
   let window = createWindow(currentWindowID, 0, 0);
-
   const buttonCount = noResizeMatch ? 2 : 3;
-  let header = createHeader(currentWindowID, programName, buttonCount);
+
+  let header;
+  if (withFile) {
+    const directories = withFile.split("/");
+    const fileName = directories.pop();
+    header = createHeader(currentWindowID, fileName, buttonCount);
+  } else {
+    header = createHeader(currentWindowID, programName, buttonCount);
+  }
   window.appendChild(header);
 
   const closeButton = createCloseButton(currentWindowID);
@@ -351,12 +364,12 @@ function openProgram(programName, data, dontToggleMenu, withFile) {
   iframe.style.border = "0";
   iframe.allowFullscreen = true;
   iframe.onload = function () {
+    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}`, "*");
     iframe.contentDocument.body.addEventListener("click", function () {
       bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     });
   };
   window.appendChild(iframe);
-
   createMenuBarButton(currentWindowID, programName);
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);

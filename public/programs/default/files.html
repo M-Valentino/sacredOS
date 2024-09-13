@@ -5,9 +5,25 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --displayBottomDialogActions: none;
+      --displayIfOpenFileMode: none;
+      --dontDisplayIfOpenFileMode: flex;
+    }
+
+    .program {
+      overflow-y: hidden;
+    }
+
     #dirUp {
       width: 32px;
-      margin-left: 8px;
+    }
+
+    #saveFileHere,
+    #openFileHere,
+    #cancelSaveFileHere {
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
     .flexRowLarge {
@@ -18,8 +34,43 @@
       width: 100%;
     }
 
-    #fileDir {
+    .flexRowReverse {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: row-reverse;
       width: 100%;
+    }
+
+    .flexBttnRow {
+      display: var(--dontDisplayIfOpenFileMode);
+      flex-direction: row;
+      overflow-x: hidden;
+      white-space: nowrap;
+    }
+
+    .mr-8 {
+      margin-right: 8px;
+    }
+
+    .ml-8 {
+      margin-left: 8px;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    #topLevelObjects {
+      overflow-y: scroll;
+      height: 100%;
+      padding-bottom: 60px;
+    }
+
+    .flexColBetween {
+      height: calc(100% - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .fileOrDir {
@@ -59,6 +110,18 @@
       display: none;
     }
 
+    #bottomDialogContent {
+      display: var(--displayBottomDialogActions);
+    }
+
+    #fileNameInputBottomDialog {
+      display: var(--displayIfOpenFileMode);
+    }
+
+    #saveFileHere {
+      display: var(--displayIfOpenFileMode);
+    }
+
     .dialog {
       position: absolute;
       top: 50%;
@@ -83,25 +146,44 @@
       flex-direction: column;
       box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.25);
     }
+
+    .fileDialogButtons {
+      float: right;
+      width: fit-content;
+    }
   </style>
 </head>
 
 <body class="program">
-  <button class="oSButton osElemBase" onclick="downloadDisk()">Download Disk Backup</button>
-  <button id="delFile" class="oSButton osElemBase" onclick="toggleDeleteMode()"><span
-      class="redX">X</span>Delete</button>
-  <button class="oSButton osElemBase" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
-  <button class="oSButton osElemBase" onclick="makeNewFolder()"><span class="greenPlus">+</span>New Folder</button>
-  <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
-  <input type="file" id="fileUpload" style="display:none;">
-
+  <div class="flexBttnRow">
+    <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
+    <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
+        class="redX">X</span>Delete</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
+      Folder</button>
+    <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
+    <input type="file" id="fileUpload" style="display:none;">
+  </div>
   <div class="flexRowLarge">
-    <input id="fileDir">
-    <button class="oSButton osElemBase" id="dirUp" onclick="upDir()">↑</button>
+    <input type="text" id="fileDir" class="w-100">
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
-  <div id="topLevelObjects"></div>
+  <div class="flexColBetween">
+    <div id="topLevelObjects"></div>
 
+    <div id="bottomDialogContent">
+      <hr>
+      <div class="flexRowReverse">
+        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere"
+          onclick="cancelOpenOrSaveFile()">Cancel</button>
+        <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
+        <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
+        <input id="fileNameInputBottomDialog" type="text" class="w-100" />
+      </div>
+    </div>
+  </div>
   <!-- hidden dialog div -->
   <div id="newFileDialog" class="dialog windowRidgeBorder">
     <div class="menuHeader">Create New File</div>
@@ -110,7 +192,8 @@
       <input type="text" id="newFileNameInput" class="newInput" placeholder="File name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelNewFile()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFileDialog', 'newFileNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -122,7 +205,8 @@
       <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelNewFolder()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFolderDialog', 'newFolderNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -134,7 +218,8 @@
       <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelRenameFile()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('fileRenameDialog', 'renameFileNameInput')">Cancel</button>
     </div>
   </div>
 
@@ -146,17 +231,18 @@
       <input type="text" id="renameFolderInput" class="newInput" placeholder="New name">
       <br>
       <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFolder()"> OK </button>
-      <button class="oSButton osElemBase" onclick="handleCancelRenameFolder()">Cancel</button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('folderRenameDialog', 'renameFolderInput')">Cancel</button>
     </div>
   </div>
 
   <script>
     let diskBackup = {};
     const MODES = {
-      DELETE: "DELETE",
-      OPEN: "OPEN"
+      OPEN: "OPEN",
+      OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
     }
-    let mode = MODES.OPEN;
+    const initialMode = MODES.OPEN;
     let firstLoad = true;
 
     window.top.postMessage("REQ:SS", "*");
@@ -203,35 +289,12 @@
       document.getElementById("fileDir").value += `${key}/`;
     }
 
-    function toggleDeleteMode() {
-      if (mode !== MODES.DELETE) {
-        document.getElementById("delFile").style.border = "var(--borderWidth) inset var(--secColorDark)";
-        mode = MODES.DELETE;
-
-        let documentFiles = document.querySelectorAll(".fileOrDir");
-
-        documentFiles.forEach(file => {
-          let delIcon = document.createElement('img');
-          delIcon.src = JSON.parse(diskBackup.system.icons["deleteIndicator.json"]).small;
-          delIcon.classList = "delIcon";
-          file.appendChild(delIcon); // Append delIcon to each element with the 'document' class
-        });
-
-      } else {
-        document.getElementById("delFile").style.border = "var(--borderWidth) outset var(--secColorDark)";
-        mode = MODES.OPEN;
-        // Remove the delIcon elements when switching back to OPEN mode
-        let delIcons = document.querySelectorAll('.delIcon');
-        delIcons.forEach(icon => {
-          icon.parentNode.removeChild(icon);
-        });
-      }
-    }
-
-    function handleDelete(key) {
-      const path = document.getElementById("fileDir").value.substring(3) + key;
-      window.top.postMessage(`DEL[${path}`, '*');
-      toggleDeleteMode();
+    function markForDeletion() {
+      let documentFiles = document.querySelectorAll(".oSButtonDashed");
+      documentFiles.forEach(file => {
+        const path = document.getElementById("fileDir").value.substring(3) + file.textContent;
+        window.top.postMessage(`DEL[${path}`, '*');
+      });
     }
 
     function closeExistingDialogs() {
@@ -322,24 +385,9 @@
       renameFolderDialog.style.display = "none";
     }
 
-    function handleCancelNewFile() {
-      newFileDialog.style.display = "none";
-      newFileNameInput.value = "";
-    }
-
-    function handleCancelNewFolder() {
-      document.getElementById("newFolderDialog").style.display = "none";
-      document.getElementById("newFolderNameInput").value = "";
-    }
-
-    function handleCancelRenameFile() {
-      document.getElementById("fileRenameDialog").style.display = "none";
-      document.getElementById("renameFileNameInput").value = "";
-    }
-
-    function handleCancelRenameFolder() {
-      document.getElementById("folderRenameDialog").style.display = "none";
-      document.getElementById("renameFolderInput").value = "";
+    function handleCancelDialog(dialogId, inputId) {
+      document.getElementById(dialogId).style.display = "none";
+      document.getElementById(inputId).value = "";
     }
 
     function removeOldContextMenus() {
@@ -425,6 +473,15 @@
         contextMenu.appendChild(setDesktopBG);
       }
 
+      let deleteCtxtBttn = document.createElement("button");
+      deleteCtxtBttn.textContent = "Delete";
+      deleteCtxtBttn.classList.add("oSButton", "osElemBase");
+      deleteCtxtBttn.onclick = function () {
+        window.top.postMessage(`DEL[${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(deleteCtxtBttn);
+
       // Event listener to remove the context menu on next left click outside of it
       document.addEventListener('click', function handleClick(event) {
         if (!contextMenu.contains(event.target)) {
@@ -463,10 +520,25 @@
       }
     });
 
+    document.getElementById("topLevelObjects").addEventListener("click", function (event) {
+      if (event.target === this) {
+        removeDashedBorders();
+      }
+    });
+
+    function removeDashedBorders() {
+      let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+      prevSelectedButtons.forEach(bttn => {
+        bttn.classList.replace("oSButtonDashed", "oSButton");
+      });
+    }
+
+    let fileForOpeningFromDialog;
     function displayTopLevelObjects(backupObject) {
-      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).small;
-      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).small;
-      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).small;
+      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).normal;
+      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).normal;
+      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).normal;
+      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).normal;
       let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = ''; // Clear existing content
 
@@ -475,28 +547,45 @@
         let button = document.createElement('button');
         button.textContent = key;
         button.classList = "oSButton osElemBase fileOrDir";
+
+        let clickTimeout;
+        let clickCount = 0;
         button.onclick = function () {
-          if (mode === MODES.OPEN) {
-            handleOpen(key, backupObject);
-          } else if (mode === MODES.DELETE) {
-            handleDelete(key);
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimeout = setTimeout(() => {
+              clickCount = 0;
+            }, 1000);
+            removeDashedBorders();
+            button.classList.replace("oSButton", "oSButtonDashed");
+            if (initialMode === MODES.OPEN_FOR_PROGRAM) {
+              fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+            }
+          } else if (clickCount === 2) {
+            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
+              handleOpen(key, backupObject);
+            }
+            clearTimeout(clickTimeout);
+            clickCount = 0;
           }
         };
+
         button.addEventListener('contextmenu', function (e) {
           handleContextMenu(e, key);
         }, false);
 
         button.appendChild(document.createElement('br'));
-        let icon = document.createElement('img');
 
+        let icon = document.createElement('img');
         if (key.indexOf('.') === -1) {
           icon.src = folderImage;
         } else if (imgExtensions.some(ext => key.includes(ext))) {
           icon.src = imageImage;
+        } else if (key.indexOf('.html') !== -1) {
+          icon.src = executableImage;
         } else {
           icon.src = documentImage;
         }
-
         button.appendChild(icon);
         displayArea.appendChild(button);
       });
@@ -573,8 +662,19 @@
       displayTopLevelObjects(currentObject);
     }
 
+    function openFileForSource() {
+      window.top.postMessage(`SFFD:[${fileForOpeningFromDialog}`, "*");
+    }
+
+    function cancelOpenOrSaveFile() {
+      window.top.postMessage(`CLOSE:[${programId}`, "*");
+    }
+
+    let programId = "";
     window.addEventListener("message", function (e) {
-      if (e.data.startsWith("AF:")) {
+      if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("AF:")) {
         const jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);

@@ -1,6 +1,6 @@
 [
   {
-    "name": "Sacred OS v1.6 Update Utility",
+    "name": "Sacred OS v1.7 Update Utility",
     "dir": "/apps/sOSUpdateUtility",
     "icon": "icon.png",
     "description": "This program will update the system files of Sacred OS to the latest version.",
@@ -39,7 +39,7 @@
     "name": "Blue Future",
     "dir": "/apps/blueFuture",
     "icon": "icon.png",
-    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included. This version is updated to be compatible with Sacred OS v1.5",
+    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included. This version is updated to be compatible with Sacred OS v1.7",
     "author": "Mark Valentino",
     "link": "https://github.com/M-Valentino",
     "mode": "Download"

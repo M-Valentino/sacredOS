@@ -25,6 +25,7 @@
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="save()">Save</button>
+  <button class="oSButton osElemBase" onclick="openFile()">Open</button>
   <div id="textareaContainer">
     <textarea id="mainTextarea"></textarea>
   </div>
@@ -46,18 +47,28 @@
       return null; // Return null if no matching comment is found
     }
 
-    const filePath = extractFilePath(); // Extract the file path from a comment
+    let filePath = extractFilePath(); // Extract the file path from a comment
     window.top.postMessage(`REQ:PH[${filePath}]`, "*");
 
     function save() {
-      if (filePath !== null)  {
+      if (filePath !== null) {
         window.top.postMessage(`SF:[${filePath}]${document.getElementById("mainTextarea").value}`, "*");
       } else {
         window.top.postMessage("ALERT:[You currently can't create new files at the moment. It's comming soon.")
       }
     }
 
-    window.onmessage = function (e) {
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
         try {
@@ -69,25 +80,31 @@
           console.error("Error requesting stylesheet:", error);
         }
         return;
-      } else
-        if (e.data.startsWith("PH:")) {
-          const expectedPattern = `PH:[${filePath}]`;
-          if (e.data.startsWith(expectedPattern)) {
-            // Extract file content by removing the initial part of the message
-            let fileContent = e.data.substring(expectedPattern.length);
-            if (fileContent === "undefined") {
-              fileContent = "Creating new files in notepad coming soon.";
-            }
-            // Set the content to the textarea
-            document.getElementById('mainTextarea').value = fileContent;
+      } else if (e.data.startsWith("PH:")) {
+        const expectedPattern = `PH:[${filePath}]`;
+        if (e.data.startsWith(expectedPattern)) {
+          // Extract file content by removing the initial part of the message
+          let fileContent = e.data.substring(expectedPattern.length);
+          if (fileContent === "undefined") {
+            fileContent = "Creating new files in notepad coming soon.";
           }
+          // Set the content to the textarea
+          document.getElementById('mainTextarea').value = fileContent;
         }
-      // else if (e.data.startsWith("PH:")) {
-      //   var string = e.data.substring(3);
-      //   document.getElementById("mainTextarea").value = string;
-      //   return;
-      // }
-    };
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "Creating new files in notepad coming soon.";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+        document.getElementById('mainTextarea').value = fileContent;
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      }
+    });
 
   </script>
 

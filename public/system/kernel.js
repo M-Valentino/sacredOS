@@ -49,7 +49,12 @@ function checkFileExistsAndCreate(directory, fileName) {
   }
 }
 
-function makeFolder(directoryPath, fileContents, folderName, folderContents=null) {
+function makeFolder(
+  directoryPath,
+  fileContents,
+  folderName,
+  folderContents = null
+) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
@@ -235,10 +240,9 @@ function changeBGMode(mode) {
     );
   }
 }
-
+let openingFileFor;
 window.onmessage = function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
-    console.log(e.data);
     if (e.data == "REQ:AF") {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
@@ -293,7 +297,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.6", "*");
+      e.source.postMessage("OSV:1.7", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -315,9 +319,22 @@ window.onmessage = function (e) {
 
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
+    } else if (e.data.startsWith("UHI:[")) {
+      const rightBracketIndex = e.data.indexOf("]");
+      const windowId = e.data.substring(5, rightBracketIndex);
+      const headerId = "hed" + windowId.substring(3);
+      const newHeaderName = e.data.substring(rightBracketIndex + 1);
+      const header = document.getElementById(headerId);
+      let title = header.querySelector(".menuHeaderTitle");
+      title.textContent = newHeaderName;
+      return;
+    } else if (e.data.startsWith("CLOSE:[")) {
+      const windowId = e.data.substring(7);
+      const menuBarId = "men" + windowId.substring(3);
+      closeProgram(windowId, menuBarId);
+      return;
     } else if (e.data.startsWith("RND:[")) {
       const rightBracketIndex = e.data.indexOf("]");
-
       const filePath = e.data.slice(5, rightBracketIndex);
       const directories = filePath.split("/");
       const fileName = directories.pop();
@@ -351,7 +368,7 @@ window.onmessage = function (e) {
         fileContents,
         fileName
       );
-      makeFolder(directoryPath, fileContents, newName, fileOriginalContent)
+      makeFolder(directoryPath, fileContents, newName, fileOriginalContent);
       deleteFile(directoryPath, fileContents, fileName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
@@ -369,6 +386,49 @@ window.onmessage = function (e) {
       } catch (error) {
         console.error("Error parsing message:", error);
       }
+      return;
+    } else if (e.data.startsWith("OPWD:[")) {
+      if (document.getElementById("winOpeningFileDialog")) {
+        window.top.postMessage(
+          "ALERT:[Please open a file from the existing dialog or cancel it"
+        );
+        return;
+      }
+      let fileDialogData = fileContents["programs"]["default"]["files.html"];
+      fileDialogData = fileDialogData.replace(
+        "--displayBottomDialogActions: none;",
+        "--displayBottomDialogActions: initial;"
+      );
+      fileDialogData = fileDialogData.replace(
+        "--dontDisplayIfOpenFileMode: flex;",
+        "--dontDisplayIfOpenFileMode: none;"
+      );
+      fileDialogData = fileDialogData.replace(
+        "const initialMode = MODES.OPEN;",
+        "const initialMode = MODES.OPEN_FOR_PROGRAM;"
+      );
+      openProgram(
+        "Open File",
+        fileDialogData,
+        false,
+        false,
+        "OpeningFileDialog"
+      );
+      openingFileFor = e.source;
+      return;
+    } else if (e.data.startsWith("SFFD:[")) {
+      const filePath = e.data.substring(6);
+      const directories = filePath.split("/");
+      const fileName = directories.pop();
+      const directoryPath = directories.join("/");
+      const fileToReturn = findFileContents(
+        directoryPath,
+        fileContents,
+        fileName
+      );
+      openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
+      openingFileFor = "";
+      closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
       return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
