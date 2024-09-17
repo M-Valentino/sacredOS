@@ -43,5 +43,14 @@
     "author": "Mark Valentino",
     "link": "https://github.com/M-Valentino",
     "mode": "Download"
+  },
+  {
+    "name": "SpeedRead",
+    "dir": "/apps/speedRead",
+    "icon": "icon.png",
+    "description": "A text based application made so that users can increase their reading speed.",
+    "author": "Steven Blanco",
+    "link": "https://github.com/19sblanco/",
+    "mode": "Install"
   }
 ]
