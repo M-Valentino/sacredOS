@@ -32,7 +32,7 @@ body {
 }
 
 .windowRidgeBorder {
-  border: calc(var(--borderWidth)* 2) solid transparent;
+  border: calc(var(--borderWidth)* 3) solid transparent;
 }
 
 input {

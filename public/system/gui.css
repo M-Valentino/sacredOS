@@ -43,7 +43,7 @@ body {
 }
 
 .windowRidgeBorder {
-  border: calc(var(--borderWidth)* 2) ridge var(--secColorDark);
+  border: calc(var(--borderWidth)* 3) ridge var(--secColorDark);
 }
 
 input {
