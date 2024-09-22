@@ -248,7 +248,7 @@
     ////////// End of System Check Code //////////
 
     // These are the file paths for the OS to boot with a fresh install.
-    var fileTable = {
+    const fileTable = {
       system: [
         "gui.css",
         "gui.frag.html",
@@ -302,9 +302,7 @@
     document.getElementById("localStorage").addEventListener("click", function () {
       fileContents = JSON.parse(localStorage.getItem("SacredSession"));
       if (fileContents === null) {
-
         document.getElementById("noLSDialog").style.display = "initial";
-
       } else {
         afterFileContentLoaded();
       }
