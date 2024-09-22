@@ -89,6 +89,7 @@ hr {
 
 .oSButtonDashed {
   border: var(--borderWidth) dashed #000;
+  background-color: transparent;
   cursor: pointer;
 }
 

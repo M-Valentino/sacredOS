@@ -169,14 +169,10 @@
 
     .listButton {
       background-color: transparent;
-      /* TODO: refactor this. This prevents CLS */
+      /* TODO: refactor this. This prevents layout shift when selecting a file or dir */
       border: var(--borderWidth) solid transparent;
       cursor: pointer;
       color: #000
-    }
-
-    .listButton:hover {
-      background-color: var(--secColorLight);
     }
   </style>
 </head>

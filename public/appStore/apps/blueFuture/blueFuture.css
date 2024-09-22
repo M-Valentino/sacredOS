@@ -74,14 +74,12 @@ hr {
 }
 
 .oSButton {
-  font-family: 'Times New Roman', Times, serif;
   border: var(--borderWidth) outset var(--secColorDark);
   border-radius: var(--borderRadius);
   cursor: pointer;
 }
 
 .oSButtonDashed {
-  font-family: 'Times New Roman', Times, serif;
   border: var(--borderWidth) dashed var(--secColorDark);
   border-radius: var(--borderRadius);
   cursor: pointer;
