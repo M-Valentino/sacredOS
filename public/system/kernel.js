@@ -49,45 +49,23 @@ function checkFileExistsAndCreate(directory, fileName) {
   }
 }
 
-function makeFolder(
-  directoryPath,
-  fileContents,
-  folderName,
-  folderContents = null
-) {
+function makeFolder(directoryPath, fileContents, folderName) {
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
-  // If folder to be created is in root dir
-  if (directoryPath === "") {
+  // If current traversed dir or root dir
+  if (directoryPath === "" || directoryPath === "/") {
     if (!fileContents.hasOwnProperty(folderName)) {
-      if (folderContents !== null) {
-        fileContents[folderName] = folderContents;
-      } else {
-        fileContents[folderName] = {};
-      }
+      fileContents[folderName] = {};
+    } else {
+      window.top.postMessage("ALERT:[A folder with that name already exists!");
     }
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
   ) {
-    if (directories.length === 0) {
-      if (!fileContents[currentDirectory].hasOwnProperty(folderName)) {
-        if (folderContents !== null) {
-          fileContents[folderName] = folderContents;
-        } else {
-          fileContents[folderName] = {};
-        }
-      }
-    } else {
-      // Continue recursively for nested directories
-      const nestedDirectoryPath = directories.join("/");
-      makeFolder(
-        nestedDirectoryPath,
-        fileContents[currentDirectory],
-        folderName
-      );
-    }
+    const nestedDirectoryPath = directories.join("/");
+    makeFolder(nestedDirectoryPath, fileContents[currentDirectory], folderName);
   } else {
     window.top.postMessage("ALERT:[Could not create new folder here.");
     return;
@@ -443,7 +421,7 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const folderName = directories.pop();
       const directoryPath = directories.join("/");
-      makeFolder(directoryPath, fileContents, folderName);
+      makeFolder(`${directoryPath}/`, fileContents, folderName);
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
