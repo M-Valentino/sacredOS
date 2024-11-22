@@ -8,14 +8,61 @@
 
 <body>
   <h1>OS Tests</h1>
-  <p>This program is for Sacred OS software developement purposes.
+  <p>This program is for Sacred OS software development purposes.
     <strong>Note: Running tests will create a bunch of folders and files.</strong>
   </p>
   <br />
-  <button>Start Tests</button>
+  <button onclick="startTests()">Start Tests</button>
   <script>
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    window.top.postMessage("MK:D[/test]");
+    let diskBackup;
+    let awaitingAF = true;
+
+    function startTests() {
+      createFolder();
+    }
+
+    async function createFolder() {
+      window.top.postMessage("MK:D[/test]", "*");
+      window.top.postMessage("REQ:AF", "*");
+
+      while (awaitingAF) {
+        await sleep(100);
+      }
+
+      if (diskBackup && diskBackup["test"]) {
+        console.log("passed.")
+      } else {
+        console.log("failed.")
+      }
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("AF:")) {
+        const jsonString = e.data.substring(3);
+        try {
+          diskBackup = JSON.parse(jsonString);
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
+        awaitingAF = false;
+        return;
+      } else if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    });
   </script>
 </body>
 
