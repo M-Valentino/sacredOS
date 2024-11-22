@@ -12,7 +12,7 @@
     <strong>Note: Running tests will create a bunch of folders and files.</strong>
   </p>
   <br />
-  <button onclick="startTests()">Start Tests</button>
+  <button onclick="runTests()">Start Tests</button>
   <script>
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -40,8 +40,10 @@
 
       if (diskBackup && diskBackup["test"]) {
         printPassed(message);
+        return true;
       } else {
         printFailed(message);
+        return false;
       }
     }
 
@@ -57,17 +59,24 @@
 
       if (diskBackup && diskBackup["test"]["2"]) {
         printPassed(message);
+        return true;
       } else {
         printFailed(message);
+        return false;
       }
     }
 
     const testCalls = [__createFolderAtRoot, __createFolderTwoLevelsDeep];
 
-    async function startTests() {
-      for (const test of testCalls) {
-        await test();
+    async function runTests() {
+      let testPoints = testCalls.length;
+      for (const [testNumber, test] of testCalls.entries()) {
+        // if Test fails
+        if(!await test()) {
+          testPoints--;
+        }
       }
+      console.log(`%cPassed ${testPoints} out of ${testCalls.length} tests.`, "color:blue");
     }
 
     window.addEventListener("message", function (e) {
