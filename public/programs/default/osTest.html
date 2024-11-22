@@ -29,13 +29,9 @@
       console.log(`%cFailed: ${message}`, "color:red");
     }
 
-    function startTests() {
-      createFolder();
-    }
-
-    async function createFolder() {
+    async function __createFolderAtRoot() {
       const message = "Can create a folder named 'test' in root directory.";
-      window.top.postMessage("MK:D[/test]", "*");
+      window.top.postMessage("MK:D[test]", "*");
       window.top.postMessage("REQ:AF", "*");
 
       while (awaitingAF) {
@@ -46,6 +42,31 @@
         printPassed(message);
       } else {
         printFailed(message);
+      }
+    }
+
+    async function __createFolderTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a folder named '2' in /test directory.";
+      window.top.postMessage("MK:D[test/2]", "*");
+      window.top.postMessage("REQ:AF", "*");
+
+      while (awaitingAF) {
+        await sleep(100);
+      }
+
+      if (diskBackup && diskBackup["test"]["2"]) {
+        printPassed(message);
+      } else {
+        printFailed(message);
+      }
+    }
+
+    const testCalls = [__createFolderAtRoot, __createFolderTwoLevelsDeep];
+
+    async function startTests() {
+      for (const test of testCalls) {
+        await test();
       }
     }
 
