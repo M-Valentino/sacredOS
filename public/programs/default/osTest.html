@@ -21,11 +21,20 @@
     let diskBackup;
     let awaitingAF = true;
 
+    function printPassed(message) {
+      console.log(`%cPassed: ${message}`, "color:green");
+    }
+
+    function printFailed(message) {
+      console.log(`%cFailed: ${message}`, "color:red");
+    }
+
     function startTests() {
       createFolder();
     }
 
     async function createFolder() {
+      const message = "Can create a folder named 'test' in root directory.";
       window.top.postMessage("MK:D[/test]", "*");
       window.top.postMessage("REQ:AF", "*");
 
@@ -34,9 +43,9 @@
       }
 
       if (diskBackup && diskBackup["test"]) {
-        console.log("passed.")
+        printPassed(message);
       } else {
-        console.log("failed.")
+        printFailed(message);
       }
     }
 
