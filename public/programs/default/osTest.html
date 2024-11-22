@@ -66,13 +66,33 @@
       }
     }
 
-    const testCalls = [__createFolderAtRoot, __createFolderTwoLevelsDeep];
+    async function __createFolderThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a folder named '3' in /test/2 directory.";
+      window.top.postMessage("MK:D[test/2/3]", "*");
+      window.top.postMessage("REQ:AF", "*");
+
+      while (awaitingAF) {
+        await sleep(100);
+      }
+
+      if (diskBackup && diskBackup["test"]["2"]["3"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    // Do NOT reaarange order of tests.
+    const testCalls = [__createFolderAtRoot, __createFolderTwoLevelsDeep, __createFolderThreeLevelsDeep];
 
     async function runTests() {
       let testPoints = testCalls.length;
       for (const [testNumber, test] of testCalls.entries()) {
         // if Test fails
-        if(!await test()) {
+        if (!await test()) {
           testPoints--;
         }
       }
