@@ -50,6 +50,9 @@ function checkFileExistsAndCreate(directory, fileName) {
 }
 
 function makeFolder(directoryPath, fileContents, folderName) {
+  if (folderName === "") {
+    window.top.postMessage("ALERT:[Invalid folder name!");
+  }
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
