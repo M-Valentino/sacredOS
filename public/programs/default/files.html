@@ -665,21 +665,27 @@
       displayTopLevelObjects(currentObject);
     }
 
-    function dirJump(nestedDirectoryPath = document.getElementById("pwd").value.substring(3), traversedDisk = diskBackup) {
+    function dirJump(
+      nestedDirectoryPath = document.getElementById("pwd").value.substring(3),
+      typedPath = document.getElementById("pwd").value.substring(3),
+      traversedDisk = diskBackup,
+    ) {
       const directories = nestedDirectoryPath.split("/");
       const currentDirectory = directories.shift();
 
-      // If current traversed dir or root dir
       if (nestedDirectoryPath === "" || nestedDirectoryPath === "/") {
         displayTopLevelObjects(traversedDisk);
+        pwd = `://${typedPath}${typedPath.slice(-1) !== "/" ? "/" : ""}`;
+        document.getElementById("pwd").value = pwd;
       } else if (
         currentDirectory &&
         traversedDisk.hasOwnProperty(currentDirectory)
       ) {
         const nestedDirectoryPath = directories.join("/");
-        dirJump(nestedDirectoryPath, traversedDisk[currentDirectory]);
+        dirJump(nestedDirectoryPath, typedPath, traversedDisk[currentDirectory]);
       } else {
-        window.top.postMessage("ALERT:[Could not create new folder here.");
+        window.top.postMessage("ALERT:[Invalid Path");
+        document.getElementById("pwd").value = pwd;
         return;
       }
     }
