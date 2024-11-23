@@ -1,4 +1,4 @@
-const appName = "osUpdate1.9.html";
+const appName = "osUpdate1.10.html";
 async function copyData() {
   try {
     const response = await fetch(`/appStore/apps/sOSUpdateUtility/${appName}`);

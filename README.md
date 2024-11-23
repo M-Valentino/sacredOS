@@ -77,6 +77,9 @@ at the top of the HTML file that follows this structure:
 - `width` and `height`: window size in CSS pixel units.
 - `noRS`: stands for "no resize". This disables a maximize button from appearing on the program.
 
+### Running Tests
+To run unit tests on Sacred OS, you go to the running instance of Sacred OS itself, open files.html, and navigate to `://programs/default`. Run `osTest.html`.
+
 ## Deploying
 
 ### Easy Deployment
