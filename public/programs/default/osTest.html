@@ -1,3 +1,4 @@
+<!--width="800" height="800" -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +13,7 @@
     #testResults {
       margin-top: 1rem;
       padding: 1rem;
-      border: 1px solid #ccc;
+      border: 1px solid #000;
       background-color: #f9f9f9;
     }
 
@@ -54,6 +55,8 @@
 
     let diskBackup;
     let awaitingAF = true;
+    let osv;
+    let awaitingOSV = true;
 
     const resultsDiv = document.getElementById("testResultsList");
     const summaryDiv = document.getElementById("testSummary");
@@ -74,6 +77,23 @@
 
     function updateSummary(passed, total) {
       summaryDiv.textContent = `Passed ${passed} out of ${total} tests.`;
+    }
+
+    async function __canGetOsv() {
+      const message = "Can get the current OS version.";
+      window.top.postMessage("REQ:OSV", "*");
+
+      while (awaitingOSV) {
+        await sleep(10);
+      }
+
+      if (/^\d+\.\d+$/.test(osv)) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
     }
 
     async function __createFolderAtRoot() {
@@ -221,6 +241,7 @@
 
     // Do NOT rearrange order of tests.
     const testCalls = [
+      __canGetOsv,
       __createFolderAtRoot,
       __createFolderTwoLevelsDeep,
       __createFolderThreeLevelsDeep,
@@ -271,6 +292,9 @@
           console.error("Error requesting stylesheet:", error);
         }
         return;
+      } else if (e.data.startsWith("OSV:")) {
+        awaitingOSV = false;
+        osv = e.data.substring(4);
       }
     });
   </script>
