@@ -191,7 +191,8 @@
     <input type="file" id="fileUpload" style="display:none;">
   </div>
   <div class="flexRowLarge">
-    <input type="text" id="fileDir" class="w-100">
+    <input type="text" id="pwd" class="w-100">
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="dirJump()">></button>
     <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
@@ -273,12 +274,13 @@
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
 
-    document.getElementById("fileDir").value = "://";
+    let pwd = "://";
+    document.getElementById("pwd").value = pwd;
 
     function openInNotepad(key) {
       const message = {
         action: "openProgram",
-        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["default"]["notepad.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["default"]["notepad.html"], withFile: `${pwd.substring(3)}${key}` }
       };
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
     }
@@ -286,7 +288,7 @@
     function openInImageViewer(key) {
       const message = {
         action: "openProgram",
-        params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${document.getElementById("fileDir").value.substring(3)}${key}` }
+        params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${pwd.substring(3)}${key}` }
       };
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
     }
@@ -311,13 +313,14 @@
         return;
       }
       displayTopLevelObjects(backupObject[key]);
-      document.getElementById("fileDir").value += `${key}/`;
+      pwd += `${key}/`;
+      document.getElementById("pwd").value = pwd;
     }
 
     function markForDeletion() {
       let documentFiles = document.querySelectorAll(".oSButtonDashed");
       documentFiles.forEach(file => {
-        const path = document.getElementById("fileDir").value.substring(3) + file.textContent;
+        const path = pwd.substring(3) + file.textContent;
         window.top.postMessage(`DEL[${path}`, '*');
       });
     }
@@ -355,7 +358,7 @@
 
       if (fileName !== "") {
         // Only proceed if the filename is not empty
-        window.top.postMessage(`MK:F[${document.getElementById("fileDir").value.substring(3)}${fileName}]`, '*');
+        window.top.postMessage(`MK:F[${pwd.substring(3)}${fileName}]`, '*');
       }
 
       // Hide the dialog
@@ -373,7 +376,7 @@
       }
 
       if (folderName !== "") {
-        window.top.postMessage(`MK:D[${document.getElementById("fileDir").value.substring(3)}${folderName}]`, '*');
+        window.top.postMessage(`MK:D[${pwd.substring(3)}${folderName}]`, '*');
       } else {
         window.top.postMessage("ALERT:[Empty folder name!");
       }
@@ -466,7 +469,7 @@
           input.value = key;
           input.select();
 
-          renamingFile = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+          renamingFile = `${pwd.substring(3)}${key}`;
         };
 
         contextMenu.appendChild(fileRenameBttn);
@@ -482,7 +485,7 @@
           input.value = key;
           input.select();
 
-          renamingFolder = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+          renamingFolder = `${pwd.substring(3)}${key}`;
         };
 
         contextMenu.appendChild(folderRenameBttn);
@@ -493,7 +496,7 @@
         setDesktopBG.textContent = "Set as Desktop BG";
         setDesktopBG.classList.add("oSButton", "osElemBase");
         setDesktopBG.onclick = function () {
-          window.top.postMessage(`U:DSKTP-BG[${document.getElementById("fileDir").value.substring(3)}${key}`, "*");
+          window.top.postMessage(`U:DSKTP-BG[${pwd.substring(3)}${key}`, "*");
         };
         contextMenu.appendChild(setDesktopBG);
       }
@@ -502,7 +505,7 @@
       deleteCtxtBttn.textContent = "Delete";
       deleteCtxtBttn.classList.add("oSButton", "osElemBase");
       deleteCtxtBttn.onclick = function () {
-        window.top.postMessage(`DEL[${document.getElementById("fileDir").value.substring(3)}${key}`, '*');
+        window.top.postMessage(`DEL[${pwd.substring(3)}${key}`, '*');
         removeOldContextMenus();
       };
       contextMenu.appendChild(deleteCtxtBttn);
@@ -529,7 +532,7 @@
         const reader = new FileReader();
         reader.onload = async function (e) {
           const uploadedFile = e.target.result;
-          const path = document.getElementById("fileDir").value.substring(3) + filename;
+          const path = pwd.substring(3) + filename;
           window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
         };
         reader.readAsText(file);
@@ -538,7 +541,7 @@
         const reader = new FileReader();
         reader.onload = function (e) {
           const base64File = e.target.result.split(',')[1];  // Strips off the data URL prefix to get pure base64 content
-          const path = document.getElementById("fileDir").value.substring(3) + filename;
+          const path = pwd.substring(3) + filename;
           window.top.postMessage(`SF:[${path}]${base64File}`, "*");
         };
         reader.readAsDataURL(file);
@@ -584,7 +587,7 @@
             removeDashedBorders();
             button.classList.replace("listButton", "oSButtonDashed");
             if (initialMode === MODES.OPEN_FOR_PROGRAM) {
-              fileForOpeningFromDialog = `${document.getElementById("fileDir").value.substring(3)}${key}`;
+              fileForOpeningFromDialog = `${pwd.substring(3)}${key}`;
             }
           } else if (clickCount === 2) {
             if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
@@ -635,7 +638,7 @@
     }
 
     function upDir() {
-      const oldDir = document.getElementById("fileDir").value;
+      const oldDir = pwd;
       if (oldDir === "://") {
         return;
       }
@@ -643,7 +646,8 @@
       if (newDir === ":/") {
         newDir = "://";
       }
-      document.getElementById("fileDir").value = newDir;
+      pwd = newDir;
+      document.getElementById("pwd").value = pwd;
 
       // New logic to navigate the backupObject based on newDir
       const pathParts = newDir.substring(3).split("/").filter(Boolean);
@@ -661,6 +665,32 @@
       displayTopLevelObjects(currentObject);
     }
 
+    function dirJump(
+      nestedDirectoryPath = document.getElementById("pwd").value.substring(3),
+      typedPath = document.getElementById("pwd").value.substring(3),
+      traversedDisk = diskBackup,
+    ) {
+      const directories = nestedDirectoryPath.split("/");
+      const currentDirectory = directories.shift();
+
+      if (nestedDirectoryPath === "") {
+        displayTopLevelObjects(traversedDisk);
+        // If the typed path is empty, we don't want a third slash appended to "://"
+        pwd = `://${typedPath}${(typedPath.slice(-1) !== "/" && typedPath.length > 0) ? "/" : ""}`;
+        document.getElementById("pwd").value = pwd;
+      } else if (
+        currentDirectory &&
+        traversedDisk.hasOwnProperty(currentDirectory)
+      ) {
+        const nestedDirectoryPath = directories.join("/");
+        dirJump(nestedDirectoryPath, typedPath, traversedDisk[currentDirectory]);
+      } else {
+        window.top.postMessage("ALERT:[Invalid Path");
+        document.getElementById("pwd").value = pwd;
+        return;
+      }
+    }
+
     function downloadDisk() {
       // Ensure diskBackup is a string that contains valid JSON before initiating download
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
@@ -675,7 +705,7 @@
     }
 
     function displayCurrentDirectory() {
-      const currentDir = document.getElementById("fileDir").value.substring(3);
+      const currentDir = pwd.substring(3);
       const pathParts = currentDir.split("/").filter(Boolean);
       let currentObject = diskBackup;
       for (const part of pathParts) {
@@ -707,11 +737,10 @@
         try {
           diskBackup = JSON.parse(jsonString);
           if (firstLoad) {
-            document.getElementById("fileDir").value = "://";
+            pwd = "://";
             firstLoad = false;
           }
           displayCurrentDirectory(); // Display the current directory recursively
-          console.log(diskBackup);
         } catch (error) {
           console.error("Error parsing JSON data:", error);
         }

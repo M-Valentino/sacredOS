@@ -52,6 +52,7 @@ function checkFileExistsAndCreate(directory, fileName) {
 function makeFolder(directoryPath, fileContents, folderName) {
   if (folderName === "") {
     window.top.postMessage("ALERT:[Invalid folder name!");
+    return;
   }
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
@@ -76,6 +77,10 @@ function makeFolder(directoryPath, fileContents, folderName) {
 }
 
 function makeFile(directoryPath, fileContents, fileName) {
+  if (fileName === "") {
+    window.top.postMessage("ALERT:[Invalid file name!");
+    return;
+  }
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 
@@ -278,7 +283,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.9", "*");
+      e.source.postMessage("OSV:10", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
