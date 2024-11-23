@@ -191,7 +191,7 @@
     <input type="file" id="fileUpload" style="display:none;">
   </div>
   <div class="flexRowLarge">
-    <input type="text" id="fileDir" class="w-100">
+    <input type="text" id="pwd" class="w-100">
     <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
@@ -274,7 +274,7 @@
     window.top.postMessage("REQ:AF", "*");
 
     let pwd = "://";
-    document.getElementById("fileDir").value = pwd;
+    document.getElementById("pwd").value = pwd;
 
     function openInNotepad(key) {
       const message = {
@@ -313,7 +313,7 @@
       }
       displayTopLevelObjects(backupObject[key]);
       pwd += `${key}/`;
-      document.getElementById("fileDir").value = pwd;
+      document.getElementById("pwd").value = pwd;
     }
 
     function markForDeletion() {
@@ -646,7 +646,7 @@
         newDir = "://";
       }
       pwd = newDir;
-      document.getElementById("fileDir").value = pwd;
+      document.getElementById("pwd").value = pwd;
 
       // New logic to navigate the backupObject based on newDir
       const pathParts = newDir.substring(3).split("/").filter(Boolean);
