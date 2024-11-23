@@ -8,6 +8,26 @@
     main {
       margin: 1rem;
     }
+
+    #testResults {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+
+    .test-result.passed {
+      color: green;
+    }
+
+    .test-result.failed {
+      color: red;
+    }
+
+    .summary {
+      color: blue;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -19,6 +39,11 @@
     </p>
     <br />
     <button onclick="runTests()" class="oSButton osElemBase">Start Tests</button>
+    <div id="testResults">
+      <h2>Test Results</h2>
+      <ul id="testResultsList"></ul>
+      <p id="testSummary" class="summary"></p>
+    </div>
   </main>
   <script>
     window.top.postMessage("REQ:SS", "*");
@@ -30,12 +55,25 @@
     let diskBackup;
     let awaitingAF = true;
 
+    const resultsDiv = document.getElementById("testResultsList");
+    const summaryDiv = document.getElementById("testSummary");
+
     function printPassed(message) {
-      console.log(`%cPassed: ${message}`, "color:green");
+      const listItem = document.createElement("li");
+      listItem.className = "test-result passed";
+      listItem.textContent = `Passed: ${message}`;
+      resultsDiv.appendChild(listItem);
     }
 
     function printFailed(message) {
-      console.log(`%cFailed: ${message}`, "color:red");
+      const listItem = document.createElement("li");
+      listItem.className = "test-result failed";
+      listItem.textContent = `Failed: ${message}`;
+      resultsDiv.appendChild(listItem);
+    }
+
+    function updateSummary(passed, total) {
+      summaryDiv.textContent = `Passed ${passed} out of ${total} tests.`;
     }
 
     async function __createFolderAtRoot() {
@@ -133,17 +171,26 @@
       __createFolderTwoLevelsDeep,
       __createFolderThreeLevelsDeep,
       __createFileAtRoot,
-      __createFileTwoLevelsDeep];
+      __createFileTwoLevelsDeep
+    ];
 
     async function runTests() {
+      // Clears previous results
+      resultsDiv.innerHTML = "";
+      summaryDiv.textContent = "";
+
       let testPoints = testCalls.length;
-      for (const [testNumber, test] of testCalls.entries()) {
-        // if Test fails
-        if (!await test()) {
+      let passedTests = 0;
+
+      for (const test of testCalls) {
+        if (await test()) {
+          passedTests++;
+        } else {
           testPoints--;
         }
       }
-      console.log(`%cPassed ${testPoints} out of ${testCalls.length} tests.`, "color:blue");
+
+      updateSummary(passedTests, testCalls.length);
     }
 
     window.addEventListener("message", function (e) {
