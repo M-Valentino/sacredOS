@@ -87,7 +87,7 @@
         await sleep(10);
       }
 
-      if (/^\d+\.\d+$/.test(osv)) {
+      if (/^\d+(\.\d+)*$/) {
         printPassed(message);
         return true;
       } else {
