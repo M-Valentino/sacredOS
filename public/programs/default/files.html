@@ -192,6 +192,7 @@
   </div>
   <div class="flexRowLarge">
     <input type="text" id="pwd" class="w-100">
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="dirJump()">></button>
     <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
   </div>
   <hr>
@@ -662,6 +663,25 @@
       }
 
       displayTopLevelObjects(currentObject);
+    }
+
+    function dirJump(nestedDirectoryPath = document.getElementById("pwd").value.substring(3), traversedDisk = diskBackup) {
+      const directories = nestedDirectoryPath.split("/");
+      const currentDirectory = directories.shift();
+
+      // If current traversed dir or root dir
+      if (nestedDirectoryPath === "" || nestedDirectoryPath === "/") {
+        displayTopLevelObjects(traversedDisk);
+      } else if (
+        currentDirectory &&
+        traversedDisk.hasOwnProperty(currentDirectory)
+      ) {
+        const nestedDirectoryPath = directories.join("/");
+        dirJump(nestedDirectoryPath, traversedDisk[currentDirectory]);
+      } else {
+        window.top.postMessage("ALERT:[Could not create new folder here.");
+        return;
+      }
     }
 
     function downloadDisk() {
