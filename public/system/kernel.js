@@ -77,6 +77,10 @@ function makeFolder(directoryPath, fileContents, folderName) {
 }
 
 function makeFile(directoryPath, fileContents, fileName) {
+  if (fileName === "") {
+    window.top.postMessage("ALERT:[Invalid file name!");
+    return;
+  }
   const directories = directoryPath.split("/");
   const currentDirectory = directories.shift();
 

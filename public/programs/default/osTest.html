@@ -201,6 +201,24 @@
       }
     }
 
+    async function __createFileWithEmptyName() {
+      awaitingAF = true;
+      const message = "It should not be possible to create a file named ''.";
+      window.top.postMessage("MK:F[]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !("" in diskBackup)) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
     // Do NOT rearrange order of tests.
     const testCalls = [
       __createFolderAtRoot,
@@ -210,7 +228,7 @@
       __createFileAtRoot,
       __createFileTwoLevelsDeep,
       __createFileThreeLevelsDeep,
-
+      __createFileWithEmptyName
     ];
 
     async function runTests() {
