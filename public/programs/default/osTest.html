@@ -4,16 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    main {
+      margin: 1rem;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>OS Tests</h1>
-  <p>This program is for Sacred OS software development purposes.
-    <strong>Note: Running tests will create a bunch of folders and files.</strong>
-  </p>
-  <br />
-  <button onclick="runTests()">Start Tests</button>
+  <main>
+    <h1>OS Tests</h1>
+    <p>This program is for Sacred OS software development purposes.
+      <strong>Note: Running tests will create a bunch of folders and files.</strong>
+    </p>
+    <br />
+    <button onclick="runTests()" class="oSButton osElemBase">Start Tests</button>
+  </main>
   <script>
+    window.top.postMessage("REQ:SS", "*");
+
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -123,7 +132,7 @@
       __createFolderAtRoot,
       __createFolderTwoLevelsDeep,
       __createFolderThreeLevelsDeep,
-      __createFileAtRoot, 
+      __createFileAtRoot,
       __createFileTwoLevelsDeep];
 
     async function runTests() {
