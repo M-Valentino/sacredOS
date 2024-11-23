@@ -673,7 +673,7 @@
       const directories = nestedDirectoryPath.split("/");
       const currentDirectory = directories.shift();
 
-      if (nestedDirectoryPath === "" || nestedDirectoryPath === "/") {
+      if (nestedDirectoryPath === "") {
         displayTopLevelObjects(traversedDisk);
         pwd = `://${typedPath}${typedPath.slice(-1) !== "/" ? "/" : ""}`;
         document.getElementById("pwd").value = pwd;
