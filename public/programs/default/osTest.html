@@ -32,7 +32,6 @@
     async function __createFolderAtRoot() {
       const message = "Can create a folder named 'test' in root directory.";
       window.top.postMessage("MK:D[test]", "*");
-      window.top.postMessage("REQ:AF", "*");
 
       while (awaitingAF) {
         await sleep(100);
@@ -51,7 +50,6 @@
       awaitingAF = true;
       const message = "Can create a folder named '2' in /test directory.";
       window.top.postMessage("MK:D[test/2]", "*");
-      window.top.postMessage("REQ:AF", "*");
 
       while (awaitingAF) {
         await sleep(100);
@@ -70,7 +68,6 @@
       awaitingAF = true;
       const message = "Can create a folder named '3' in /test/2 directory.";
       window.top.postMessage("MK:D[test/2/3]", "*");
-      window.top.postMessage("REQ:AF", "*");
 
       while (awaitingAF) {
         await sleep(100);
@@ -85,8 +82,49 @@
       }
     }
 
-    // Do NOT reaarange order of tests.
-    const testCalls = [__createFolderAtRoot, __createFolderTwoLevelsDeep, __createFolderThreeLevelsDeep];
+    async function __createFileAtRoot() {
+      awaitingAF = true;
+      const message = "Can create a file named 'test.txt' in root directory.";
+      window.top.postMessage("MK:F[test.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(100);
+      }
+
+      if (diskBackup && "test.txt" in diskBackup) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a file named '2.txt' in /test/ directory.";
+      window.top.postMessage("MK:F[test/2.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(100);
+      }
+
+      if (diskBackup && "2.txt" in diskBackup["test"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    // Do NOT rearrange order of tests.
+    const testCalls = [
+      __createFolderAtRoot,
+      __createFolderTwoLevelsDeep,
+      __createFolderThreeLevelsDeep,
+      __createFileAtRoot, 
+      __createFileTwoLevelsDeep];
 
     async function runTests() {
       let testPoints = testCalls.length;
