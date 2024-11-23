@@ -675,7 +675,8 @@
 
       if (nestedDirectoryPath === "") {
         displayTopLevelObjects(traversedDisk);
-        pwd = `://${typedPath}${typedPath.slice(-1) !== "/" ? "/" : ""}`;
+        // If the typed path is empty, we don't want a third slash appended to "://"
+        pwd = `://${typedPath}${(typedPath.slice(-1) !== "/" && typedPath.length > 0) ? "/" : ""}`;
         document.getElementById("pwd").value = pwd;
       } else if (
         currentDirectory &&
