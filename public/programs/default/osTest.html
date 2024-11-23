@@ -81,7 +81,7 @@
       window.top.postMessage("MK:D[test]", "*");
 
       while (awaitingAF) {
-        await sleep(100);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]) {
@@ -99,7 +99,7 @@
       window.top.postMessage("MK:D[test/2]", "*");
 
       while (awaitingAF) {
-        await sleep(100);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]["2"]) {
@@ -117,10 +117,28 @@
       window.top.postMessage("MK:D[test/2/3]", "*");
 
       while (awaitingAF) {
-        await sleep(100);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]["2"]["3"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFolderEmptyName() {
+      awaitingAF = true;
+      const message = "It should not be possible to create a folder named ''.";
+      window.top.postMessage("MK:D[/]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !diskBackup[""]) {
         printPassed(message);
         return true;
       } else {
@@ -135,7 +153,7 @@
       window.top.postMessage("MK:F[test.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(100);
+        await sleep(10);
       }
 
       if (diskBackup && "test.txt" in diskBackup) {
@@ -153,10 +171,28 @@
       window.top.postMessage("MK:F[test/2.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(100);
+        await sleep(10);
       }
 
       if (diskBackup && "2.txt" in diskBackup["test"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a file named '3.txt' in /test/2/ directory.";
+      window.top.postMessage("MK:F[test/2/3.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && "3.txt" in diskBackup["test"]["2"]) {
         printPassed(message);
         return true;
       } else {
@@ -170,8 +206,11 @@
       __createFolderAtRoot,
       __createFolderTwoLevelsDeep,
       __createFolderThreeLevelsDeep,
+      __createFolderEmptyName,
       __createFileAtRoot,
-      __createFileTwoLevelsDeep
+      __createFileTwoLevelsDeep,
+      __createFileThreeLevelsDeep,
+
     ];
 
     async function runTests() {
