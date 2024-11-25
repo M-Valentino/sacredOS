@@ -248,7 +248,7 @@
         await sleep(10);
       }
 
-      if (diskBackup && diskBackup["renamed"]) {
+      if (diskBackup && diskBackup["renamed"] && "2.txt" in diskBackup["renamed"]) {
         printPassed(message);
         return true;
       } else {
