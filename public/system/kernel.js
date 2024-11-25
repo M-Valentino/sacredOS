@@ -283,7 +283,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:10", "*");
+      e.source.postMessage("OSV:1.11", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -292,8 +292,6 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-
-      // Extract the data content, which starts immediately after the right bracket
       const fileContent = e.data.substring(rightBracketIndex + 1);
 
       saveFileContentsRecursive(
