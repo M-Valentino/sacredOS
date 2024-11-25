@@ -242,7 +242,7 @@
     async function __renameFolderAtRoot() {
       awaitingAF = true;
       const message = "Can rename test/ to renamed/.";
-      window.top.postMessage("RNF:[test/]renamed", "*");
+      window.top.postMessage("RND:[test]renamed", "*");
 
       while (awaitingAF) {
         await sleep(10);
@@ -260,7 +260,7 @@
     async function __renameFolderTwoLevelsDeep() {
       awaitingAF = true;
       const message = "Can rename renamed/2/ to renamed/renamed2/.";
-      window.top.postMessage("RNF:[renamed/2/]renamed2", "*");
+      window.top.postMessage("RND:[renamed/2]renamed2", "*");
 
       while (awaitingAF) {
         await sleep(10);
