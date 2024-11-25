@@ -84,7 +84,7 @@
       window.top.postMessage("REQ:OSV", "*");
 
       while (awaitingOSV) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (/^\d+(\.\d+)*$/.test(osv)) {
@@ -101,7 +101,7 @@
       window.top.postMessage("MK:D[test]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]) {
@@ -119,7 +119,7 @@
       window.top.postMessage("MK:D[test/2]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]["2"]) {
@@ -137,7 +137,7 @@
       window.top.postMessage("MK:D[test/2/3]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["test"]["2"]["3"]) {
@@ -155,7 +155,7 @@
       window.top.postMessage("MK:D[/]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && !diskBackup[""]) {
@@ -173,7 +173,7 @@
       window.top.postMessage("MK:F[test.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && "test.txt" in diskBackup) {
@@ -187,11 +187,11 @@
 
     async function __createFileTwoLevelsDeep() {
       awaitingAF = true;
-      const message = "Can create a file named '2.txt' in /test/ directory.";
+      const message = "Can create a file named '2.txt' in test/ directory.";
       window.top.postMessage("MK:F[test/2.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && "2.txt" in diskBackup["test"]) {
@@ -205,11 +205,11 @@
 
     async function __createFileThreeLevelsDeep() {
       awaitingAF = true;
-      const message = "Can create a file named '3.txt' in /test/2/ directory.";
+      const message = "Can create a file named '3.txt' in test/2/ directory.";
       window.top.postMessage("MK:F[test/2/3.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && "3.txt" in diskBackup["test"]["2"]) {
@@ -227,7 +227,7 @@
       window.top.postMessage("MK:F[]", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && !("" in diskBackup)) {
@@ -241,14 +241,32 @@
 
     async function __renameFolderAtRoot() {
       awaitingAF = true;
-      const message = "Can rename /test/ to /renamed/.";
-      window.top.postMessage("RNF:[test]renamed", "*");
+      const message = "Can rename test/ to renamed/.";
+      window.top.postMessage("RNF:[test/]renamed", "*");
 
       while (awaitingAF) {
-        await sleep(1);
+        await sleep(10);
       }
 
       if (diskBackup && diskBackup["renamed"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can rename renamed/2/ to renamed/renamed2/.";
+      window.top.postMessage("RNF:[renamed/2/]renamed2", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["renamed"]["renamed2"]) {
         printPassed(message);
         return true;
       } else {
@@ -268,7 +286,8 @@
       __createFileTwoLevelsDeep,
       __createFileThreeLevelsDeep,
       __createFileWithEmptyName,
-      __renameFolderAtRoot
+      __renameFolderAtRoot,
+      __renameFolderTwoLevelsDeep
     ];
 
     async function runTests() {
