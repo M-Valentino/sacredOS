@@ -327,6 +327,11 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
 
       const newName = e.data.substring(rightBracketIndex + 1);
+      if (newName === "" || newName.includes(".")) {
+        window.top.postMessage("ALERT:[Invalid folder name!");
+        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+        return;
+      }
       const fileOriginalContent = findFileContents(
         directoryPath,
         fileContents,

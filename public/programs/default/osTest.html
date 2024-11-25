@@ -297,6 +297,24 @@
       }
     }
 
+    async function __renameFolderEmptyString() {
+      awaitingAF = true;
+      const message = "It should not be possible to rename folder renamed/ to the empty string";
+      window.top.postMessage("RND:[renamed]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !diskBackup[""]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
     // Do NOT rearrange order of tests.
     const testCalls = [
       __canGetOsv,
@@ -310,7 +328,8 @@
       __createFileWithEmptyName,
       __renameFolderAtRoot,
       __renameFolderTwoLevelsDeep,
-      __renameFolderThreeLevelsDeep
+      __renameFolderThreeLevelsDeep,
+      __renameFolderEmptyString
     ];
 
     async function runTests() {
