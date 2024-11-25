@@ -84,7 +84,7 @@
       window.top.postMessage("REQ:OSV", "*");
 
       while (awaitingOSV) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (/^\d+(\.\d+)*$/.test(osv)) {
@@ -101,7 +101,7 @@
       window.top.postMessage("MK:D[test]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && diskBackup["test"]) {
@@ -119,7 +119,7 @@
       window.top.postMessage("MK:D[test/2]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && diskBackup["test"]["2"]) {
@@ -137,7 +137,7 @@
       window.top.postMessage("MK:D[test/2/3]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && diskBackup["test"]["2"]["3"]) {
@@ -155,7 +155,7 @@
       window.top.postMessage("MK:D[/]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && !diskBackup[""]) {
@@ -173,7 +173,7 @@
       window.top.postMessage("MK:F[test.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && "test.txt" in diskBackup) {
@@ -191,7 +191,7 @@
       window.top.postMessage("MK:F[test/2.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && "2.txt" in diskBackup["test"]) {
@@ -209,7 +209,7 @@
       window.top.postMessage("MK:F[test/2/3.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && "3.txt" in diskBackup["test"]["2"]) {
@@ -227,10 +227,28 @@
       window.top.postMessage("MK:F[]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(1);
       }
 
       if (diskBackup && !("" in diskBackup)) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderAtRoot() {
+      awaitingAF = true;
+      const message = "Can rename /test/ to /renamed/.";
+      window.top.postMessage("RNF:[test]renamed", "*");
+
+      while (awaitingAF) {
+        await sleep(1);
+      }
+
+      if (diskBackup && diskBackup["renamed"]) {
         printPassed(message);
         return true;
       } else {
@@ -249,7 +267,8 @@
       __createFileAtRoot,
       __createFileTwoLevelsDeep,
       __createFileThreeLevelsDeep,
-      __createFileWithEmptyName
+      __createFileWithEmptyName,
+      __renameFolderAtRoot
     ];
 
     async function runTests() {
