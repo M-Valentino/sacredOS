@@ -301,7 +301,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.11", "*");
+      e.source.postMessage("OSV:1.12", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -475,7 +475,7 @@ window.onmessage = function (e) {
         fileName,
         dataToSave
       );
-      
+
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       closeProgram("winSaveFileAsDialog", "menSaveFileAsDialog");
       return;
