@@ -405,6 +405,35 @@ window.onmessage = function (e) {
       );
       openingFileFor = e.source;
       return;
+    } else if (e.data.startsWith("SANF:[")) {
+      if (document.getElementById("winOpeningFileDialog")) {
+        window.top.postMessage(
+          "ALERT:[Please open a file from the existing dialog or cancel it"
+        );
+        return;
+      }
+      let fileDialogData = fileContents["programs"]["default"]["files.html"];
+      fileDialogData = fileDialogData.replace(
+        "--displayBottomDialogActions: none;",
+        "--displayBottomDialogActions: initial;"
+      );
+      fileDialogData = fileDialogData.replace(
+        "--displayIfOpenFileMode: none;",
+        "--dontDisplayIfOpenFileMode: initial;"
+      );
+      fileDialogData = fileDialogData.replace(
+        "const initialMode = MODES.OPEN;",
+        "const initialMode = MODES.OPEN_FOR_PROGRAM;"
+      );
+      openProgram(
+        "Open File",
+        fileDialogData,
+        false,
+        false,
+        "OpeningFileDialog"
+      );
+      openingFileFor = e.source;
+      return;
     } else if (e.data.startsWith("SFFD:[")) {
       const filePath = e.data.substring(6);
       const directories = filePath.split("/");

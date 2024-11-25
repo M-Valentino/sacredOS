@@ -25,6 +25,7 @@
 
 <body class="program">
   <button class="oSButton osElemBase" onclick="save()">Save</button>
+  <button class="oSButton osElemBase" onclick="saveAsNewFile()">Save As</button>
   <button class="oSButton osElemBase" onclick="openFile()">Open</button>
   <div id="textareaContainer">
     <textarea id="mainTextarea"></textarea>
@@ -60,6 +61,10 @@
 
     function openFile() {
       window.top.postMessage("OPWD:[", "*");
+    }
+
+    function saveAsNewFile() {
+      window.top.postMessage("SANF:[", "*");
     }
 
     function getFileName(filePath) {
