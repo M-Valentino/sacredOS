@@ -728,6 +728,11 @@
     }
 
     function saveFileHere() {
+      let nameOfFileToSave = document.getElementById("fileNameInputBottomDialog").value;
+      if (!nameOfFileToSave.includes(".")) {
+        window.top.postMessage("ALERT:[File must contain an extension!");
+        return;
+      }
       window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`,"*");
     }
 
