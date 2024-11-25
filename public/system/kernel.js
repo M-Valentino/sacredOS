@@ -226,6 +226,23 @@ function changeBGMode(mode) {
     );
   }
 }
+
+function existingDialogIsOpen(){
+  if (document.getElementById("winSaveFileAsDialog")) {
+    window.top.postMessage(
+      "ALERT:[Please save the file from the existing dialog or cancel it."
+    );
+    return true;
+  } else if (document.getElementById("winOpeningFileDialog")) {
+    window.top.postMessage(
+      "ALERT:[Please open a file from the existing dialog or cancel it."
+    );
+    return true;
+  }
+  return false;
+}
+
+
 let openingFileFor;
 let dataToSave;
 window.onmessage = function (e) {
@@ -378,10 +395,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data.startsWith("OPWD:[")) {
-      if (document.getElementById("winOpeningFileDialog")) {
-        window.top.postMessage(
-          "ALERT:[Please open a file from the existing dialog or cancel it"
-        );
+      if (existingDialogIsOpen()) {
         return;
       }
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
@@ -407,16 +421,12 @@ window.onmessage = function (e) {
       openingFileFor = e.source;
       return;
     } else if (e.data.startsWith("SANF:[")) {
-      if (document.getElementById("winOpeningFileDialog")) {
-        window.top.postMessage(
-          "ALERT:[Please open a file from the existing dialog or cancel it"
-        );
+      if (existingDialogIsOpen()) {
         return;
       }
 
       dataToSave = e.data.substring(6);
       console.log(dataToSave)
-
 
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
@@ -436,9 +446,8 @@ window.onmessage = function (e) {
         fileDialogData,
         false,
         false,
-        "OpeningFileDialog"
+        "SaveFileAsDialog"
       );
-      openingFileFor = e.source;
       return;
     } else if (e.data.startsWith("OFFD:[")) {
       const filePath = e.data.substring(6);
@@ -459,7 +468,6 @@ window.onmessage = function (e) {
       const filePath = e.data.slice(6, rightBracketIndex);
       const directories = filePath.split("/");
       const fileName = e.data.substring(rightBracketIndex + 1);
-      console.log(fileName)
       const directoryPath = directories.join("/");
       saveFileContentsRecursive(
         directoryPath,
@@ -467,8 +475,9 @@ window.onmessage = function (e) {
         fileName,
         dataToSave
       );
+      
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
-      closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
+      closeProgram("winSaveFileAsDialog", "menSaveFileAsDialog");
       return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);
