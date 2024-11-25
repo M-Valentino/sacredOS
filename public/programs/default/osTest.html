@@ -241,7 +241,7 @@
 
     async function __renameFolderAtRoot() {
       awaitingAF = true;
-      const message = "Can rename test/ to renamed/.";
+      const message = "Can rename folder test/ to renamed/ and preserve folder data.";
       window.top.postMessage("RND:[test]renamed", "*");
 
       while (awaitingAF) {
@@ -259,14 +259,15 @@
 
     async function __renameFolderTwoLevelsDeep() {
       awaitingAF = true;
-      const message = "Can rename renamed/2/ to renamed/renamed2/.";
+      const message = "Can rename renamed/2/ to renamed/renamed2/ and preserve folder data.";
       window.top.postMessage("RND:[renamed/2]renamed2", "*");
 
       while (awaitingAF) {
         await sleep(10);
       }
 
-      if (diskBackup && diskBackup["renamed"]["renamed2"]) {
+      if (diskBackup && diskBackup["renamed"]["renamed2"] &&
+        "3.txt" in diskBackup["renamed"]["renamed2"]) {
         printPassed(message);
         return true;
       } else {
