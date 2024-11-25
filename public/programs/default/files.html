@@ -208,7 +208,7 @@
         <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere"
           onclick="cancelOpenOrSaveFile()">Cancel</button>
         <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
-        <button class="oSButton osElemBase ml-8" id="saveFileHere">Save</button>
+        <button class="oSButton osElemBase ml-8" id="saveFileHere" onclick="saveFileHere()">Save</button>
         <input id="fileNameInputBottomDialog" type="text" class="w-100" />
       </div>
     </div>
@@ -724,7 +724,11 @@
     }
 
     function openFileForSource() {
-      window.top.postMessage(`SFFD:[${fileForOpeningFromDialog}`, "*");
+      window.top.postMessage(`OFFD:[${fileForOpeningFromDialog}`, "*");
+    }
+
+    function saveFileHere() {
+      window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`,"*");
     }
 
     function cancelOpenOrSaveFile() {

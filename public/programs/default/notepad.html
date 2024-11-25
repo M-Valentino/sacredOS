@@ -64,7 +64,7 @@
     }
 
     function saveAsNewFile() {
-      window.top.postMessage("SANF:[", "*");
+      window.top.postMessage(`SANF:[${document.getElementById("mainTextarea").value}`, "*");
     }
 
     function getFileName(filePath) {

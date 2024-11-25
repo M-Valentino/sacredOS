@@ -227,6 +227,7 @@ function changeBGMode(mode) {
   }
 }
 let openingFileFor;
+let dataToSave;
 window.onmessage = function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
     if (e.data == "REQ:AF") {
@@ -412,6 +413,11 @@ window.onmessage = function (e) {
         );
         return;
       }
+
+      dataToSave = e.data.substring(6);
+      console.log(dataToSave)
+
+
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
         "--displayBottomDialogActions: none;",
@@ -434,7 +440,7 @@ window.onmessage = function (e) {
       );
       openingFileFor = e.source;
       return;
-    } else if (e.data.startsWith("SFFD:[")) {
+    } else if (e.data.startsWith("OFFD:[")) {
       const filePath = e.data.substring(6);
       const directories = filePath.split("/");
       const fileName = directories.pop();
@@ -446,6 +452,22 @@ window.onmessage = function (e) {
       );
       openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
       openingFileFor = "";
+      closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
+      return;
+    } else if (e.data.startsWith("SFFD:[")){
+      const rightBracketIndex = e.data.indexOf("]");
+      const filePath = e.data.slice(6, rightBracketIndex);
+      const directories = filePath.split("/");
+      const fileName = e.data.substring(rightBracketIndex + 1);
+      console.log(fileName)
+      const directoryPath = directories.join("/");
+      saveFileContentsRecursive(
+        directoryPath,
+        fileContents,
+        fileName,
+        dataToSave
+      );
+      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
       return;
     } else if (e.data.startsWith("MK:F[")) {
