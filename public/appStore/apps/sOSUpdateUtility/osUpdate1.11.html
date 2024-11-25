@@ -171,6 +171,7 @@
 
     async function updateSystem(systemFiles) {
       deleteSysFiles(systemFiles);
+      window.top.postMessage("MK:MENU-SC[programs/default/notepad.html");
       return copyData(systemFiles);
     }
 
