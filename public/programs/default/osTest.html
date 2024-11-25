@@ -135,6 +135,8 @@
       awaitingAF = true;
       const message = "Can create a folder named '3' in /test/2 directory.";
       window.top.postMessage("MK:D[test/2/3]", "*");
+      // For a test that happens later
+      window.top.postMessage("MK:F[test/2/3/a.txt]", "*");
 
       while (awaitingAF) {
         await sleep(10);
@@ -207,7 +209,7 @@
       awaitingAF = true;
       const message = "Can create a file named '3.txt' in test/2/ directory.";
       window.top.postMessage("MK:F[test/2/3.txt]", "*");
-
+      
       while (awaitingAF) {
         await sleep(10);
       }
@@ -276,6 +278,25 @@
       }
     }
 
+    async function __renameFolderThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can rename renamed/renamed2/3/ to renamed/renamed2/3/rn3 and preserve folder data.";
+      window.top.postMessage("RND:[renamed/renamed2/3]rn3", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["renamed"]["renamed2"]["rn3"] &&
+        "a.txt" in diskBackup["renamed"]["renamed2"]["rn3"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
     // Do NOT rearrange order of tests.
     const testCalls = [
       __canGetOsv,
@@ -288,7 +309,8 @@
       __createFileThreeLevelsDeep,
       __createFileWithEmptyName,
       __renameFolderAtRoot,
-      __renameFolderTwoLevelsDeep
+      __renameFolderTwoLevelsDeep,
+      __renameFolderThreeLevelsDeep
     ];
 
     async function runTests() {
