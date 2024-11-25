@@ -27,6 +27,15 @@
     "mode": "Install"
   },
   {
+    "name": "2048 Game",
+    "dir": "/apps/2048game",
+    "icon": "icon.png",
+    "description": "Play the classic 2048 puzzle game, where you merge matching tiles to reach the elusive 2048 tile and beyond, testing your strategy and planning skills with every move!",
+    "author": "Ania Kubow",
+    "link": "https://github.com/kubowania/2048",
+    "mode": "Install"
+  },
+  {
     "name": "Canvas Bird",
     "dir": "/apps/canvasBird",
     "icon": "icon.png",
