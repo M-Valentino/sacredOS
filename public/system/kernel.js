@@ -432,7 +432,7 @@ window.onmessage = function (e) {
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
       openProgram(
-        "Open File",
+        "Save File",
         fileDialogData,
         false,
         false,
