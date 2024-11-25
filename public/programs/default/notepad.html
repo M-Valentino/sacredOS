@@ -91,7 +91,7 @@
           // Extract file content by removing the initial part of the message
           let fileContent = e.data.substring(expectedPattern.length);
           if (fileContent === "undefined") {
-            fileContent = "Creating new files in notepad coming soon.";
+            fileContent = "";
           }
           // Set the content to the textarea
           document.getElementById('mainTextarea').value = fileContent;
@@ -101,7 +101,7 @@
         filePath = e.data.substring(6, rightBracketIndex);
         let fileContent = e.data.substring(rightBracketIndex + 1);
         if (fileContent === "undefined") {
-          fileContent = "Creating new files in notepad coming soon.";
+          fileContent = "";
         } else {
           window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
         }
