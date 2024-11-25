@@ -728,6 +728,9 @@ function updateClock() {
   if (isPM) {
     h -= 12;
   }
+  if (h === 0 && is12HourTime) {
+    h = 12;
+  }
   let m = today.getMinutes();
   let s = today.getSeconds();
   m = checkTime(m);
