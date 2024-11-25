@@ -7,8 +7,8 @@
   <style>
     :root {
       --displayBottomDialogActions: none;
+      --displayIfSaveFileAsMode: none;
       --displayIfOpenFileMode: none;
-      --dontDisplayIfOpenFileMode: flex;
     }
 
     .program {
@@ -42,7 +42,6 @@
     }
 
     .flexBttnRow {
-      display: var(--dontDisplayIfOpenFileMode);
       flex-direction: row;
       overflow-x: hidden;
       white-space: nowrap;
@@ -125,10 +124,14 @@
     }
 
     #fileNameInputBottomDialog {
-      display: var(--displayIfOpenFileMode);
+      display: var(--displayIfSaveFileAsMode);
     }
 
     #saveFileHere {
+      display: var(--displayIfSaveFileAsMode);
+    }
+
+    #openFileHere {
       display: var(--displayIfOpenFileMode);
     }
 

@@ -389,8 +389,8 @@ window.onmessage = function (e) {
         "--displayBottomDialogActions: initial;"
       );
       fileDialogData = fileDialogData.replace(
-        "--dontDisplayIfOpenFileMode: flex;",
-        "--dontDisplayIfOpenFileMode: none;"
+        "--displayIfOpenFileMode: none;",
+        "--displayIfOpenFileMode: initial;"
       );
       fileDialogData = fileDialogData.replace(
         "const initialMode = MODES.OPEN;",
@@ -418,8 +418,8 @@ window.onmessage = function (e) {
         "--displayBottomDialogActions: initial;"
       );
       fileDialogData = fileDialogData.replace(
-        "--displayIfOpenFileMode: none;",
-        "--dontDisplayIfOpenFileMode: initial;"
+        "--displayIfSaveFileAsMode: none;",
+        "--displayIfSaveFileAsMode: initial;"
       );
       fileDialogData = fileDialogData.replace(
         "const initialMode = MODES.OPEN;",
