@@ -17,7 +17,7 @@ function findFileContents(directoryPath, fileContents, fileName) {
   const currentDirectory = directories.shift();
   // If file is in root dir
   if (directoryPath === "") {
-    return fileContents[fileName];
+    return structuredClone(fileContents[fileName]);
   } else if (
     currentDirectory &&
     fileContents.hasOwnProperty(currentDirectory)
@@ -25,7 +25,7 @@ function findFileContents(directoryPath, fileContents, fileName) {
     if (directories.length === 0) {
       // Reached the final directory, check for the file
       if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
-        return fileContents[currentDirectory][fileName];
+        return structuredClone(fileContents[currentDirectory][fileName]);
       }
     } else {
       // Continue recursively for nested directories
