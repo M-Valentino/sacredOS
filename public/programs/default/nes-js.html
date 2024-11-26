@@ -877,17 +877,6 @@
               return this.cpu.dumpRAM();
             },
 
-            dumpRom: function () {
-              var buffer = '';
-              buffer += this.rom.dumpHeader();
-              buffer += '\n';
-              buffer += this.rom.dump();
-              buffer += '\n';
-              buffer += this.cpu.disassembleROM();
-              buffer += '\n';
-              return buffer;
-            },
-
             dumpPpu: function () {
               return this.ppu.dump();
             },
@@ -6720,7 +6709,6 @@
 
 
     function init() {
-      document.getElementById('dumpROMButton').disabled = true;
       document.getElementById('dumpRegButton').disabled = true;
       document.getElementById('dumpRAMButton').disabled = true;
       document.getElementById('dumpVRAMButton').disabled = true;
@@ -6732,7 +6720,6 @@
 
 
     function ROMloaded() {
-      document.getElementById('dumpROMButton').disabled = true;
       document.getElementById('dumpRegButton').disabled = true;
       document.getElementById('dumpRAMButton').disabled = true;
       document.getElementById('dumpVRAMButton').disabled = true;
@@ -6744,7 +6731,6 @@
 
 
     function NESran() {
-      document.getElementById('dumpROMButton').disabled = true;
       document.getElementById('dumpRegButton').disabled = true;
       document.getElementById('dumpRAMButton').disabled = true;
       document.getElementById('dumpVRAMButton').disabled = true;
@@ -6756,7 +6742,6 @@
 
 
     function NESstopped() {
-      document.getElementById('dumpROMButton').disabled = false;
       document.getElementById('dumpRegButton').disabled = false;
       document.getElementById('dumpRAMButton').disabled = false;
       document.getElementById('dumpVRAMButton').disabled = false;
@@ -6838,12 +6823,6 @@
     }
 
     // push button handlers
-
-
-    function pushDumpROM() {
-      putMessage(nes.dumpRom());
-    }
-
 
     function pushDumpReg() {
       putMessage(nes.dumpCpu());
@@ -6950,7 +6929,7 @@
   <button onclick="openRom()">Open Rom</button>
   <p>
     <canvas id="mainCanvas" width="256" height="240"
-      style="border:1px solid black; width:512px; height:480px;"></canvas>
+      style="border:1px solid black; width:512px; height:480px; image-rendering: pixelated;"></canvas>
     <span id="fps"></span> fps
   </p>
 
@@ -6996,7 +6975,6 @@
 
   <p>
   <div>
-    <button id="dumpROMButton" onclick="pushDumpROM()">dump ROM</button>
     <button id="dumpRegButton" onclick="pushDumpReg()">dump CPU/PPU reg</button>
     <button id="dumpRAMButton" onclick="pushDumpRAM()">dump CPU RAM</button>
     <button id="dumpVRAMButton" onclick="pushDumpVRAM()">dump PPU VRAM</button>
