@@ -111,7 +111,7 @@
       } else if (e.data.startsWith("NSP:[")) {
         if (filePath === null) {
           filePath = e.data.substring(5);
-          console.log(filePath)
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
         }
       }
     });
