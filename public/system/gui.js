@@ -26,7 +26,7 @@ function loadFont() {
     `$1${fontDataUrl};`
   );
 
-  const styleSheet = document.styleSheets[0]; // Assuming you want to update the first stylesheet
+  const styleSheet = document.styleSheets[0];
   const ruleIndex = [...styleSheet.cssRules].findIndex((rule) =>
     rule.cssText.includes(`font-family: "${fontFamily}"`)
   );
