@@ -25,14 +25,110 @@
     h2 {
       margin-top: 0;
     }
+
+    input {
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 
 <body class="program">
-
+  <input id="searchBar" type="text" placeholder="Search apps..." /><button onclick="search()"
+    class="oSButton osElemBase">Search</button>
+  <div id="appStoreContainer"></div>
 
   <script>
     window.top.postMessage("REQ:SS", "*");
+    let appData = [];
+
+    async function getAppStoreData(fileURL) {
+      try {
+        const time = new Date().getTime();
+        const response = await fetch(`${fileURL}?t=${time}`);
+        if (response.ok) {
+          appData = await response.json();
+          populateAppStore(appData); // Populate with all apps on load
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+    function populateAppStore(data) {
+      const container = document.getElementById('appStoreContainer');
+      container.innerHTML = ''; // Clear existing content
+
+      data.forEach((app) => {
+        const appSection = document.createElement('div');
+        appSection.classList.add('appSection');
+        container.appendChild(appSection);
+
+        const appTitle = document.createElement('h2');
+        appTitle.textContent = app.name;
+        appSection.appendChild(appTitle);
+
+        const flexContainer = document.createElement('div');
+        flexContainer.classList.add('flexRow');
+        appSection.appendChild(flexContainer);
+
+        const appImage = document.createElement('img');
+        appImage.src = `/appStore${app.dir}/${app.icon}`;
+        appImage.width = 64;
+        appImage.height = 64;
+        flexContainer.appendChild(appImage);
+
+        const appDesc = document.createElement('p');
+        appDesc.textContent = app.description;
+        appDesc.classList.add('ml-16');
+        flexContainer.appendChild(appDesc);
+
+        const flexContainer2 = document.createElement('div');
+        flexContainer2.classList.add('flexRow');
+        appSection.appendChild(flexContainer2);
+
+        const appAuthor = document.createElement('div');
+        appAuthor.innerHTML = `<b>Author</b>: <a href="${app.link}" target="_blank" rel="noopener noreferrer">${app.author}</a>`;
+        flexContainer2.appendChild(appAuthor);
+
+        const button = document.createElement('button');
+        button.textContent = `${app.mode} ${app.name}`;
+        button.classList.add('oSButton', 'osElemBase', 'ml-16');
+        button.onclick = () => {
+          runInstallScript(`/appStore/${app.dir}/install.js`);
+        };
+        flexContainer2.appendChild(button);
+      });
+    }
+
+    function search() {
+      const searchString = document.getElementById('searchBar').value.toLowerCase();
+      const filteredData = appData.filter((app) =>
+        app.name.toLowerCase().includes(searchString) ||
+        app.description.toLowerCase().includes(searchString) ||
+        app.author.toLowerCase().includes(searchString)
+      );
+      populateAppStore(filteredData);
+    }
+
+    async function runInstallScript(fileURL) {
+      try {
+        const time = new Date().getTime();
+        const response = await fetch(`${fileURL}?t=${time}`);
+        if (response.ok) {
+          const content = await response.text();
+          eval(content);
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+    getAppStoreData('/appStore/appStoreData.json');
+
     window.onmessage = function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -47,91 +143,6 @@
         return;
       }
     };
-
-    function populateAppStore(content) {
-      console.log(JSON.parse(content));
-      const appData = JSON.parse(content);
-
-      appData.map((app) => {
-        let appSection = document.createElement('div');
-        appSection.classList.add("appSection");
-        document.body.appendChild(appSection);
-
-        let appTitle = document.createElement('h2');
-        appTitle.textContent = app.name;
-        appSection.appendChild(appTitle);
-
-        let container = document.createElement('div');
-        container.classList.add("flexRow");
-        appSection.appendChild(container);
-
-        let appImage = document.createElement('img');
-        appImage.src = `/appStore${app.dir}/${app.icon}`;
-        appImage.width = 64;
-        appImage.height = 64;
-        container.appendChild(appImage);
-
-        let appDesc = document.createElement('p');
-        appDesc.textContent = app.description;
-        appDesc.classList.add("ml-16");
-        container.appendChild(appDesc);
-
-        let container2 = document.createElement('div');
-        container2.classList.add("flexRow");
-        appSection.appendChild(container2);
-
-        let appAuthor = document.createElement('div');
-        appAuthor.innerHTML = `<b>Author</b>: <a href="${app.link}" target="_blank" rel="noopener noreferrer">${app.author}</a>`;
-
-        container2.appendChild(appAuthor);
-
-        let button = document.createElement('button');
-        button.textContent = `${app.mode} ${app.name}`;
-        button.classList.add("oSButton", "osElemBase", "ml-16");
-        button.onclick = function () {
-          runInstallScript(`/appStore/${app.dir}/install.js`);
-
-        };
-        container2.appendChild(button);
-      })
-
-    }
-
-    async function runInstallScript(fileURL) {
-      try {
-        let time = new Date().getTime();
-        // Hack to disable loading from cached files
-        const response = await fetch(`${fileURL}?t=${time}`);
-        if (response.ok) {
-          const content = await response.text();
-          eval(content);
-        } else {
-          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
-        }
-      } catch (err) {
-        console.error(`Error fetching file ${fileURL}: ${err}`);
-      }
-    }
-
-    async function getAppStoreData(fileURL) {
-      try {
-        let time = new Date().getTime();
-        // Hack to disable loading from cached files
-        const response = await fetch(`${fileURL}?t=${time}`);
-        if (response.ok) {
-          const content = await response.text();
-          populateAppStore(content);
-        } else {
-          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
-        }
-      } catch (err) {
-        console.error(`Error fetching file ${fileURL}: ${err}`);
-      }
-    }
-
-
-    getAppStoreData("/appStore/appStoreData.json");
-
   </script>
 </body>
 
