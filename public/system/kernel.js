@@ -244,6 +244,7 @@ function existingDialogIsOpen(){
 
 
 let openingFileFor;
+let savingFileFor;
 let dataToSave;
 window.onmessage = function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
@@ -426,6 +427,7 @@ window.onmessage = function (e) {
       }
 
       dataToSave = e.data.substring(6);
+      savingFileFor = e.source;
       console.log(dataToSave)
 
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
@@ -478,6 +480,7 @@ window.onmessage = function (e) {
 
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       closeProgram("winSaveFileAsDialog", "menSaveFileAsDialog");
+      savingFileFor.postMessage(`NSP:[${filePath}${fileName}`);
       return;
     } else if (e.data.startsWith("MK:F[")) {
       const filePath = e.data.slice(5, -1);

@@ -55,7 +55,7 @@
       if (filePath !== null) {
         window.top.postMessage(`SF:[${filePath}]${document.getElementById("mainTextarea").value}`, "*");
       } else {
-        window.top.postMessage("ALERT:[You currently can't create new files at the moment. It's comming soon.")
+        saveAsNewFile();
       }
     }
 
@@ -108,6 +108,11 @@
         document.getElementById('mainTextarea').value = fileContent;
       } else if (e.data.startsWith("ID:[")) {
         programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          console.log(filePath)
+        }
       }
     });
 
