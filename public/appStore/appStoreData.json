@@ -9,6 +9,15 @@
     "mode": "Install"
   },
   {
+    "name": "Radius Raid",
+    "dir": "/apps/radiusRaid",
+    "icon": "icon.png",
+    "description": "Radius Raid is a space-themed shoot 'em up where you fend off relentless enemies determined to destroy you. The game has 13 enemy types and 5 powerful upgrades.",
+    "author": "Jack Rugile",
+    "link": "https://github.com/jackrugile/radius-raid-js13k",
+    "mode": "Install"
+  },
+  {
     "name": "Yet Another Doom Clone",
     "dir": "/apps/yetAnotherDoomClone",
     "icon": "icon.png",
