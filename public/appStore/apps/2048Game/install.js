@@ -1,6 +1,6 @@
 async function copyData() {
   try {
-    const response = await fetch("/appStore/apps/2048game/2048game.html");
+    const response = await fetch("/appStore/apps/2048Game/2048game.html");
     if (response.ok) {
       const content = await response.text();
       window.top.postMessage(`SF:[programs/2048game.html]${content}`, "*");
