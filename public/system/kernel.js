@@ -302,7 +302,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.12", "*");
+      e.source.postMessage("OSV:1.13", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
