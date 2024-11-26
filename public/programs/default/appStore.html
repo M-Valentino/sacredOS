@@ -38,7 +38,7 @@
 
 <body class="program">
   <input id="searchBar" type="text" placeholder="Search apps..." /><button onclick="search()"
-    class="oSButton osElemBase ml-8">Search</button>
+    class="oSButton osElemBase ml-8">Search</button><button class="oSButton osElemBase ml-8" onclick="showAll()">Show All Apps</button>
   <div id="appStoreContainer"></div>
 
   <script>
@@ -114,6 +114,11 @@
         app.author.toLowerCase().includes(searchString)
       );
       populateAppStore(filteredData);
+    }
+
+    function showAll() {
+      document.getElementById('searchBar').value = "";
+      populateAppStore(appData);
     }
 
     async function runInstallScript(fileURL) {
