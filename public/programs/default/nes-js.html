@@ -77,13 +77,13 @@
     })
       /************************************************************************/
       ([
-/* 0 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 0 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function () { return Register8bit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Register16bit; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Utility_js__ = __webpack_require__(1);
+          __webpack_require__.d(__webpack_exports__, "b", function () { return Register8bit; });
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Register16bit; });
+          var __WEBPACK_IMPORTED_MODULE_0__Utility_js__ = __webpack_require__(1);
 
 
 
@@ -92,9 +92,7 @@
            * Specific register for CPU and PPU are implemented in each class.
            */
 
-          /**
-           *
-           */
+
           function Register(type) {
             this.data = new type(1);  // Uint8Array or Uint16Array
             this.data[0] = 0;
@@ -106,131 +104,95 @@
           Object.assign(Register.prototype, {
             isRegister: true,
 
-            /**
-             *
-             */
+
             getWidth: function () {
               return this.data.byteLength * 8;
             },
 
-            /**
-             *
-             */
+
             load: function () {
               return this.data[0];
             },
 
-            /**
-             *
-             */
+
             loadBit: function (pos) {
               return (this.data[0] >> pos) & 1;
             },
 
-            /**
-             *
-             */
+
             loadBits: function (offset, size) {
               return (this.data[0] >> offset) & ((1 << size) - 1);
             },
 
-            /**
-             *
-             */
+
             store: function (value) {
               this.data[0] = value;
             },
 
-            /**
-             *
-             */
+
             storeBit: function (pos, value) {
               value = value & 1;  // just in case
               this.data[0] = this.data[0] & ~(1 << pos) | (value << pos);
             },
 
-            /**
-             *
-             */
+
             storeBits: function (offset, size, value) {
               var mask = (1 << size) - 1;
               value = value & mask;  // just in case
               this.data[0] = this.data[0] & ~(mask << offset) | (value << offset);
             },
 
-            /**
-             *
-             */
+
             clear: function () {
               this.data[0] = 0;
             },
 
-            /**
-             *
-             */
+
             setBit: function (pos) {
               this.storeBit(pos, 1);
             },
 
-            /**
-             *
-             */
+
             clearBit: function (pos) {
               this.storeBit(pos, 0);
             },
 
-            /**
-             *
-             */
+
             isBitSet: function (pos) {
               return this.loadBit(pos) === 1;
             },
 
-            /**
-             *
-             */
+
             increment: function () {
               this.data[0]++;
             },
 
-            /**
-             *
-             */
+
             incrementBy2: function () {
               this.data[0] += 2;
             },
 
-            /**
-             *
-             */
+
             add: function (value) {
               this.data[0] += value;
             },
 
-            /**
-             *
-             */
+
             decrement: function () {
               this.data[0]--;
             },
 
-            /**
-             *
-             */
+
             decrementBy2: function () {
               this.data[0] -= 2;
             },
 
-            /**
-             *
-             */
+
             sub: function (value) {
               this.data[0] -= value;
             },
 
-            /**
-             *
-             */
+
             shift: function (value) {
               value = value & 1;  // just in case
               var carry = this.loadBit(this.getWidth() - 1);
@@ -240,9 +202,7 @@
 
           });
 
-          /**
-           *
-           */
+
           function Register8bit() {
             Register.call(this, Register.TYPE_8BIT);
           }
@@ -251,9 +211,7 @@
             isRegister8bit: true
           });
 
-          /**
-           *
-           */
+
           function Register16bit() {
             Register.call(this, Register.TYPE_16BIT);
             this.bytes = new Uint8Array(this.data.buffer);
@@ -262,30 +220,22 @@
           Register16bit.prototype = Object.assign(Object.create(Register.prototype), {
             isRegister16bit: true,
 
-            /**
-             *
-             */
+
             loadHigherByte: function () {
               return this.bytes[1];
             },
 
-            /**
-             *
-             */
+
             loadLowerByte: function () {
               return this.bytes[0];
             },
 
-            /**
-             *
-             */
+
             storeHigherByte: function (value) {
               this.bytes[1] = value;
             },
 
-            /**
-             *
-             */
+
             storeLowerByte: function (value) {
               this.bytes[0] = value;
             }
@@ -294,20 +244,18 @@
 
 
 
-          /***/
+
         }),
-/* 1 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 1 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Utility; });
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Utility; });
           function Utility() {
 
           }
 
-          /**
-           *
-           */
+
           Utility.convertDecToHexString = function (num, width, noPrefix) {
             var str = num.toString(16);
 
@@ -334,14 +282,14 @@
 
 
 
-          /***/
+
         }),
-/* 2 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 2 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Memory; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Utility_js__ = __webpack_require__(1);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Memory; });
+          var __WEBPACK_IMPORTED_MODULE_0__Utility_js__ = __webpack_require__(1);
 
 
 
@@ -359,73 +307,53 @@
           Object.assign(Memory.prototype, {
             isMemory: true,
 
-            /**
-             *
-             */
+
             clear: function () {
               for (var i = 0, il = this.getCapacity(); i < il; i++)
                 this.storeWithoutMapping(i, 0);
             },
 
-            /**
-             *
-             */
+
             getCapacity: function () {
               return this.data.byteLength;
             },
 
-            /**
-             *
-             */
+
             load: function (address) {
               return this.data[address];
             },
 
-            /**
-             *
-             */
+
             loadWithoutMapping: function (address) {
               return this.data[address];
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               this.data[address] = value;
             },
 
-            /**
-             *
-             */
+
             storeWithoutMapping: function (address, value) {
               this.data[address] = value;
             },
 
-            /**
-             *
-             */
+
             _loadForDump: function (address) {
               return this.loadWithoutMapping(address);
             },
 
-            /**
-             *
-             */
+
             _getStartDumpAddress: function () {
               return 0;
             },
 
-            /**
-             *
-             */
+
             _getEndDumpAddress: function () {
               return this.getCapacity();
             },
 
-            /**
-             *
-             */
+
             _checkNext16BytesIsZero: function (offset) {
               if (offset + 0x10 >= this._getEndDumpAddress())
                 return false;
@@ -442,14 +370,14 @@
 
 
 
-          /***/
+
         }),
-/* 3 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 3 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Joypad; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Joypad; });
+          var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
 
 
 
@@ -491,9 +419,7 @@
 
             //
 
-            /**
-             *
-             */
+
             getButtonsNum: function () {
               var num = 0;
               for (var key in Joypad.BUTTONS) {
@@ -504,25 +430,19 @@
 
             //
 
-            /**
-             *
-             */
+
             pressButton: function (type) {
               this.buttons[type] = true;
             },
 
-            /**
-             *
-             */
+
             releaseButton: function (type) {
               this.buttons[type] = false;
             },
 
             //
 
-            /**
-             *
-             */
+
             loadRegister: function () {
               var button = this.latch === 1 ? 0 : this.currentButton++;
 
@@ -533,9 +453,7 @@
               return value;
             },
 
-            /**
-             *
-             */
+
             storeRegister: function (value) {
               this.register.store(value);
 
@@ -552,18 +470,18 @@
 
 
 
-          /***/
+
         }),
-/* 4 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 4 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
           Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_Nes_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__src_Rom_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__src_Audio_js__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__src_Display_js__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__src_Joypad_js__ = __webpack_require__(3);
+          var __WEBPACK_IMPORTED_MODULE_0__src_Nes_js__ = __webpack_require__(5);
+          var __WEBPACK_IMPORTED_MODULE_1__src_Rom_js__ = __webpack_require__(9);
+          var __WEBPACK_IMPORTED_MODULE_2__src_Audio_js__ = __webpack_require__(11);
+          var __WEBPACK_IMPORTED_MODULE_3__src_Display_js__ = __webpack_require__(12);
+          var __WEBPACK_IMPORTED_MODULE_4__src_Joypad_js__ = __webpack_require__(3);
 
 
 
@@ -582,25 +500,23 @@
             window.NesJs = NesJs;
 
 
-          /***/
+
         }),
-/* 5 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 5 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Nes; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cpu_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ppu_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Apu_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Joypad_js__ = __webpack_require__(3);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Nes; });
+          var __WEBPACK_IMPORTED_MODULE_0__Cpu_js__ = __webpack_require__(6);
+          var __WEBPACK_IMPORTED_MODULE_1__Ppu_js__ = __webpack_require__(7);
+          var __WEBPACK_IMPORTED_MODULE_2__Apu_js__ = __webpack_require__(8);
+          var __WEBPACK_IMPORTED_MODULE_3__Joypad_js__ = __webpack_require__(3);
 
 
 
 
 
-          /**
-           *
-           */
+
           function Nes() {
             this.ppu = new __WEBPACK_IMPORTED_MODULE_1__Ppu_js__["a" /* Ppu */]();
             this.cpu = new __WEBPACK_IMPORTED_MODULE_0__Cpu_js__["a" /* Cpu */]();
@@ -686,33 +602,25 @@
 
             //
 
-            /**
-             *
-             */
+
             setRom: function (rom) {
               this.rom = rom;
               this.cpu.setRom(rom);
               this.ppu.setRom(rom);
             },
 
-            /**
-             *
-             */
+
             setDisplay: function (display) {
               this.ppu.setDisplay(display);
             },
 
-            /**
-             *
-             */
+
             setAudio: function (audio) {
               this.apu.setAudio(audio);
               this.audioEnabled = true;
             },
 
-            /**
-             *
-             */
+
             bootup: function () {
               this.cpu.bootup();
               this.ppu.bootup();
@@ -720,33 +628,25 @@
               this.state = this.STATES.RUN;
             },
 
-            /**
-             *
-             */
+
             reset: function () {
               this.cpu.reset();
               this.ppu.reset();
               this.apu.reset();
             },
 
-            /**
-             *
-             */
+
             stop: function () {
               this.state = this.STATES.STOP;
             },
 
-            /**
-             *
-             */
+
             resume: function () {
               this.state = this.STATES.RUN;
               this.run();
             },
 
-            /**
-             *
-             */
+
             run: function () {
               this.measureFps();
 
@@ -759,9 +659,7 @@
                 requestAnimationFrame(this.runFunc);
             },
 
-            /**
-             *
-             */
+
             runCycle: function () {
               this.cpu.runCycle();
               this.ppu.runCycle();
@@ -772,9 +670,7 @@
                 this.apu.runCycle();
             },
 
-            /**
-             *
-             */
+
             runStep: function () {
               if (this.state !== this.STATES.STOP)
                 return;
@@ -824,16 +720,16 @@
 
 
 
-          /***/
+
         }),
-/* 6 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 6 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Cpu; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Memory_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Cpu; });
+          var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
+          var __WEBPACK_IMPORTED_MODULE_1__Memory_js__ = __webpack_require__(2);
+          var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
 
 
 
@@ -1278,37 +1174,27 @@
 
             // set methods
 
-            /**
-             *
-             */
+
             setPpu: function (ppu) {
               this.ppu = ppu;
             },
 
-            /**
-             *
-             */
+
             setApu: function (apu) {
               this.apu = apu;
             },
 
-            /**
-             *
-             */
+
             setJoypad1: function (pad1) {
               this.pad1 = pad1;
             },
 
-            /**
-             *
-             */
+
             setJoypad2: function (pad2) {
               this.pad2 = pad2;
             },
 
-            /**
-             *
-             */
+
             setRom: function (rom) {
               this.rom = rom;
             },
@@ -1343,9 +1229,7 @@
               this.interrupt(this.INTERRUPTS.RESET);
             },
 
-            /**
-             *
-             */
+
             runCycle: function () {
               if (this.isStall() !== true) {
                 var opc = this.fetch();
@@ -1358,16 +1242,12 @@
               this.stallCycle--;
             },
 
-            /**
-             *
-             */
+
             isStall: function () {
               return this.stallCycle > 0;
             },
 
-            /**
-             *
-             */
+
             interrupt: function (type) {
               if (type === this.INTERRUPTS.IRQ && this.p.isI() === true)
                 return;
@@ -1388,9 +1268,7 @@
 
             // load/store methods
 
-            /**
-             *
-             */
+
             load: function (address) {
               address = address & 0xFFFF;  // just in case
 
@@ -1439,9 +1317,7 @@
                 return this.rom.load(address);
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               address = address & 0xFFFF;  // just in case
 
@@ -1494,32 +1370,24 @@
 
             // load/store methods
 
-            /**
-             *
-             */
+
             load2Bytes: function (address) {
               return this.load(address) | (this.load(address + 1) << 8);
             },
 
-            /**
-             *
-             */
+
             load2BytesFromZeropage: function (address) {
               return this.ram.load(address & 0xff) | (this.ram.load((address + 1) & 0xff) << 8);
             },
 
-            /**
-             *
-             */
+
             load2BytesInPage: function (address) {
               var addr1 = address;
               var addr2 = (address & 0xff00) | ((address + 1) & 0xff);
               return this.load(addr1) | (this.load(addr2) << 8);
             },
 
-            /**
-             *
-             */
+
             store2Bytes: function (address, value) {
               this.store(address, value);
               this.store(address + 1, value >> 8);
@@ -1527,34 +1395,26 @@
 
             // processing methods
 
-            /**
-             *
-             */
+
             fetch: function () {
               var opc = this.load(this.pc.load());
               this.pc.increment();
               return opc;
             },
 
-            /**
-             *
-             */
+
             decode: function (opc) {
               return this.OPS[opc];
             },
 
-            /**
-             *
-             */
+
             jumpToInterruptHandler: function (type) {
               this.pc.store(this.load2Bytes(this.INTERRUPT_HANDLER_ADDRESSES[type]));
             },
 
             //
 
-            /**
-             *
-             */
+
             loadWithAddressingMode: function (op) {
               if (op.mode.id === this.ADDRESSINGS.ACCUMULATOR.id)
                 return this.a.load();
@@ -1673,9 +1533,7 @@
               return address;
             },
 
-            /**
-             *
-             */
+
             updateN: function (value) {
               if ((value & 0x80) === 0)
                 this.p.clearN();
@@ -1683,9 +1541,7 @@
                 this.p.setN();
             },
 
-            /**
-             *
-             */
+
             updateZ: function (value) {
               if ((value & 0xff) === 0)
                 this.p.setZ();
@@ -1693,9 +1549,7 @@
                 this.p.clearZ();
             },
 
-            /**
-             *
-             */
+
             updateC: function (value) {
               if ((value & 0x100) === 0)
                 this.p.clearC();
@@ -2215,9 +2069,7 @@
             },
           });
 
-          /**
-           *
-           */
+
           function CpuStatusRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -2339,16 +2191,16 @@
 
 
 
-          /***/
+
         }),
-/* 7 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 7 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Ppu; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Memory_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Ppu; });
+          var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
+          var __WEBPACK_IMPORTED_MODULE_1__Memory_js__ = __webpack_require__(2);
+          var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
 
 
 
@@ -2516,23 +2368,17 @@
 
             // set methods
 
-            /**
-             *
-             */
+
             setCpu: function (cpu) {
               this.cpu = cpu;
             },
 
-            /**
-             *
-             */
+
             setRom: function (rom) {
               this.rom = rom;
             },
 
-            /**
-             *
-             */
+
             setDisplay: function (display) {
               this.display = display;
             },
@@ -2546,16 +2392,12 @@
               this.ppustatus.store(0x80);
             },
 
-            /**
-             *
-             */
+
             reset: function () {
 
             },
 
-            /**
-             *
-             */
+
             runCycle: function () {
               this.renderPixel();
               this.shiftRegisters();
@@ -2704,9 +2546,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             load: function (address) {
               address = address & 0x3FFF;  // just in case
 
@@ -2750,9 +2590,7 @@
               return this.vRam.load(address);
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               address = address & 0x3FFF;  // just in case
 
@@ -2854,9 +2692,7 @@
 
             // rendering
 
-            /**
-             *
-             */
+
             renderPixel: function () {
               // Note: this comparison order is for performance.
               if (this.cycle >= 257 || this.scanLine >= 240 || this.cycle === 0)
@@ -2911,9 +2747,7 @@
               this.display.renderPixel(x, y, c);
             },
 
-            /**
-             *
-             */
+
             getBackgroundPixel: function () {
               var offset = 15 - this.fineXScroll;
 
@@ -2933,9 +2767,7 @@
 
             //
 
-            /**
-             *
-             */
+
             shiftRegisters: function () {
               if (this.scanLine >= 240 && this.scanLine <= 260)
                 return;
@@ -2951,9 +2783,7 @@
 
             // fetch
 
-            /**
-             *
-             */
+
             fetch: function () {
               if (this.scanLine >= 240 && this.scanLine <= 260)
                 return;
@@ -3001,9 +2831,7 @@
               this.nameTableLatch = this.load(0x2000 | (this.currentVRamAddress & 0x0FFF));
             },
 
-            /**
-             *
-             */
+
             fetchAttributeTable: function () {
               var v = this.currentVRamAddress;
               var address = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
@@ -3027,9 +2855,7 @@
               this.attributeTableLowLatch = lowBit === 1 ? 0xff : 0;
             },
 
-            /**
-             *
-             */
+
             fetchPatternTableLow: function () {
               var fineY = (this.currentVRamAddress >> 12) & 0x7;
               var index = this.ppuctrl.getBackgroundPatternTableNum() * 0x1000 +
@@ -3038,9 +2864,7 @@
               this.patternTableLowLatch = this.load(index);
             },
 
-            /**
-             *
-             */
+
             fetchPatternTableHigh: function () {
               var fineY = (this.currentVRamAddress >> 12) & 0x7;
               var index = this.ppuctrl.getBackgroundPatternTableNum() * 0x1000 +
@@ -3051,9 +2875,7 @@
 
             //
 
-            /**
-             *
-             */
+
             updateFlags: function () {
               if (this.cycle === 1) {
                 if (this.scanLine === 241) {
@@ -3086,9 +2908,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             countUpScrollCounters: function () {
               if (this.ppumask.isBackgroundVisible() === false && this.ppumask.isSpritesVisible() === false)
                 return;
@@ -3169,9 +2989,7 @@
 
             //
 
-            /**
-             *
-             */
+
             incrementVRamAddress: function () {
               this.currentVRamAddress += this.ppuctrl.isIncrementAddressSet() ? 32 : 1;
               this.currentVRamAddress &= 0x7FFF;
@@ -3211,9 +3029,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             processSpritePixels: function () {
               var ay = this.scanLine - 1;
 
@@ -3262,9 +3078,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             getPatternTableElement: function (index, x, y, ySize) {
               var ax = x % 8;
               var a, b;
@@ -3284,9 +3098,7 @@
               return ((a >> (7 - ax)) & 1) | (((b >> (7 - ax)) & 1) << 1);
             },
 
-            /**
-             *
-             */
+
             _checkNext16BytesIsZero: function (offset) {
               if (offset + 0x10 >= 0x10000)
                 return false;
@@ -3299,9 +3111,7 @@
             },
           });
 
-          /**
-           *
-           */
+
           function PpuControlRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -3323,52 +3133,38 @@
 
             //
 
-            /**
-             *
-             */
+
             isIncrementAddressSet: function () {
               return this.isBitSet(this.INCREMENT_ADDRESS_BIT);
             },
 
-            /**
-             *
-             */
+
             enabledNmi: function () {
               return this.isBitSet(this.NMI_VBLANK_BIT);
             },
 
-            /**
-             *
-             */
+
             isSpriteSize16: function () {
               return this.isBitSet(this.SPRITES_SIZE_BIT);
             },
 
-            /**
-             *
-             */
+
             getBackgroundPatternTableNum: function () {
               return this.loadBit(this.BACKGROUND_PATTERN_TABLE_BIT);
             },
 
-            /**
-             *
-             */
+
             getSpritesPatternTableNum: function () {
               return this.loadBit(this.SPRITES_PATTERN_TABLE_BIT);
             },
 
-            /**
-             *
-             */
+
             getNameTableAddress: function () {
               return this.loadBits(this.NAME_TABLE_ADDRESS_BIT, this.NAME_TABLE_ADDRESS_BITS_WIDTH);
             }
           });
 
-          /**
-           *
-           */
+
           function PpuMaskRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -3389,66 +3185,48 @@
 
             //
 
-            /**
-             *
-             */
+
             isGreyscale: function () {
               return this.isBitSet(this.GREYSCALE_BIT);
             },
 
-            /**
-             *
-             */
+
             isLeftMostBackgroundVisible: function () {
               return this.isBitSet(this.LEFTMOST_BACKGROUND_VISIBLE_BIT);
             },
 
-            /**
-             *
-             */
+
             isLeftMostSpritesVisible: function () {
               return this.isBitSet(this.LEFTMOST_SPRITES_VISIBLE_BIT);
             },
 
-            /**
-             *
-             */
+
             isBackgroundVisible: function () {
               return this.isBitSet(this.BACKGROUND_VISIBLE_BIT);
             },
 
-            /**
-             *
-             */
+
             isSpritesVisible: function () {
               return this.isBitSet(this.SPRITES_VISIBLE_BIT);
             },
 
-            /**
-             *
-             */
+
             emphasisRed: function () {
               return this.isBitSet(this.EMPHASIZE_RED_BIT);
             },
 
-            /**
-             *
-             */
+
             emphasisGreen: function () {
               return this.isBitSet(this.EMPHASIZE_GREEN_BIT);
             },
 
-            /**
-             *
-             */
+
             emphasisBlue: function () {
               return this.isBitSet(this.EMPHASIZE_BLUE_BIT);
             }
           });
 
-          /**
-           *
-           */
+
           function PpuStatusRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -3464,52 +3242,38 @@
 
             //
 
-            /**
-             *
-             */
+
             setVBlank: function () {
               this.setBit(this.VBLANK_BIT);
             },
 
-            /**
-             *
-             */
+
             clearVBlank: function () {
               this.clearBit(this.VBLANK_BIT);
             },
 
-            /**
-             *
-             */
+
             setZeroHit: function () {
               this.setBit(this.SPRITE_ZERO_HIT_BIT);
             },
 
-            /**
-             *
-             */
+
             clearZeroHit: function () {
               this.clearBit(this.SPRITE_ZERO_HIT_BIT);
             },
 
-            /**
-             *
-             */
+
             setOverflow: function () {
               this.setBit(this.SPRITE_OVERFLOW_BIT);
             },
 
-            /**
-             *
-             */
+
             clearOverflow: function () {
               this.clearBit(this.SPRITE_OVERFLOW_BIT);
             }
           });
 
-          /**
-           *
-           */
+
           function SpritesManager(memory) {
             this.sprites = [];
             this.init(memory);
@@ -3518,40 +3282,30 @@
           Object.assign(SpritesManager.prototype, {
             isSpritesManager: true,
 
-            /**
-             *
-             */
+
             init: function (memory) {
               for (var i = 0, il = memory.getCapacity() / 4; i < il; i++) {
                 this.sprites.push(new Sprite(i, i, memory));
               }
             },
 
-            /**
-             *
-             */
+
             getNum: function () {
               return this.sprites.length;
             },
 
-            /**
-             *
-             */
+
             get: function (index) {
               return this.sprites[index];
             },
 
-            /**
-             *
-             */
+
             copy: function (index, sprite) {
               this.sprites[index].copy(sprite);
             }
           });
 
-          /**
-           *
-           */
+
           function Sprite(index, id, memory) {
             this.index = index;
             this.id = id;
@@ -3563,79 +3317,57 @@
 
             //
 
-            /**
-             *
-             */
+
             getId: function () {
               return this.id;
             },
 
-            /**
-             *
-             */
+
             setId: function (id) {
               this.id = id;
             },
 
-            /**
-             *
-             */
+
             getByte0: function () {
               return this.memory.load(this.index * 4 + 0);
             },
 
-            /**
-             *
-             */
+
             getByte1: function () {
               return this.memory.load(this.index * 4 + 1);
             },
 
-            /**
-             *
-             */
+
             getByte2: function () {
               return this.memory.load(this.index * 4 + 2);
             },
 
-            /**
-             *
-             */
+
             getByte3: function () {
               return this.memory.load(this.index * 4 + 3);
             },
 
-            /**
-             *
-             */
+
             setByte0: function (value) {
               this.memory.store(this.index * 4 + 0, value);
             },
 
-            /**
-             *
-             */
+
             setByte1: function (value) {
               this.memory.store(this.index * 4 + 1, value);
             },
 
-            /**
-             *
-             */
+
             setByte2: function (value) {
               this.memory.store(this.index * 4 + 2, value);
             },
 
-            /**
-             *
-             */
+
             setByte3: function (value) {
               this.memory.store(this.index * 4 + 3, value);
             },
 
-            /**
-             *
-             */
+
             copy: function (sprite) {
               this.setId(sprite.getId());
               this.setByte0(sprite.getByte0());
@@ -3644,80 +3376,58 @@
               this.setByte3(sprite.getByte3());
             },
 
-            /**
-             *
-             */
+
             isEmpty: function () {
               return this.getByte0() === 0xFF && this.getByte1() === 0xFF &&
                 this.getByte2() === 0xFF && this.getByte3() === 0xFF;
             },
 
-            /**
-             *
-             */
+
             isVisible: function () {
               return this.getByte0() < 0xEF;
             },
 
-            /**
-             *
-             */
+
             getYPosition: function () {
               return this.getByte0() - 1;
             },
 
-            /**
-             *
-             */
+
             getXPosition: function () {
               return this.getByte3();
             },
 
-            /**
-             *
-             */
+
             getTileIndex: function () {
               return this.getByte1();
             },
 
-            /**
-             *
-             */
+
             getTileIndexForSize16: function () {
               return ((this.getByte1() & 1) * 0x1000) + (this.getByte1() >> 1) * 0x20;
             },
 
-            /**
-             *
-             */
+
             getPalletNum: function () {
               return this.getByte2() & 0x3;
             },
 
-            /**
-             *
-             */
+
             getPriority: function () {
               return (this.getByte2() >> 5) & 1;
             },
 
-            /**
-             *
-             */
+
             doFlipHorizontally: function () {
               return ((this.getByte2() >> 6) & 1) ? true : false;
             },
 
-            /**
-             *
-             */
+
             doFlipVertically: function () {
               return ((this.getByte2() >> 7) & 1) ? true : false;
             },
 
-            /**
-             *
-             */
+
             on: function (y, length) {
               return (y >= this.getYPosition()) && (y < this.getYPosition() + length);
             }
@@ -3727,14 +3437,14 @@
 
 
 
-          /***/
+
         }),
-/* 8 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 8 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Apu; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Apu; });
+          var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
 
 
 
@@ -3785,16 +3495,12 @@
 
             // public methods
 
-            /**
-             *
-             */
+
             setCpu: function (cpu) {
               this.cpu = cpu;
             },
 
-            /**
-             *
-             */
+
             setAudio: function (audio) {
               this.audio = audio;
 
@@ -3803,16 +3509,12 @@
               this.samplePeriod = (1789773 / this.audio.getSampleRate()) | 0;
             },
 
-            /**
-             *
-             */
+
             bootup: function () {
               this.status.store(0x00);
             },
 
-            /**
-             *
-             */
+
             reset: function () {
 
             },
@@ -3918,9 +3620,7 @@
 
             // load/store CPU memory address mapped register methods called by CPU
 
-            /**
-             *
-             */
+
             loadRegister: function (address) {
               switch (address) {
                 case 0x4015:
@@ -3957,9 +3657,7 @@
               return 0;
             },
 
-            /**
-             *
-             */
+
             storeRegister: function (address, value) {
               switch (address) {
                 case 0x4000:
@@ -4042,9 +3740,7 @@
 
             // private method
 
-            /**
-             *
-             */
+
             sample: function () {
 
               // Calculates the audio output within the range of 0.0 to 1.0.
@@ -4069,9 +3765,7 @@
             },
           });
 
-          /**
-           *
-           */
+
           function ApuUnit(apu) {
             this.apu = apu;
           }
@@ -4167,9 +3861,7 @@
 
             //
 
-            /**
-             *
-             */
+
             storeRegister: function (address, value) {
               switch (address) {
                 case 0x4000:
@@ -4219,9 +3911,7 @@
 
             //
 
-            /**
-             *
-             */
+
             setEnable: function (enabled) {
               this.enabled = enabled;
 
@@ -4231,95 +3921,69 @@
                 this.lengthCounter = 0;
             },
 
-            /**
-             *
-             */
+
             getDuty: function () {
               return this.register0.loadBits(6, 2);
             },
 
-            /**
-             *
-             */
+
             enabledEnvelopeLoop: function () {
               return this.register0.isBitSet(5);
             },
 
-            /**
-             *
-             */
+
             disabledEnvelope: function () {
               return this.register0.isBitSet(4);
             },
 
-            /**
-             *
-             */
+
             getEnvelopePeriod: function () {
               return this.register0.loadBits(0, 4);
             },
 
-            /**
-             *
-             */
+
             enabledSweep: function () {
               return this.register1.isBitSet(7);
             },
 
-            /**
-             *
-             */
+
             getSweepPeriod: function () {
               return this.register1.loadBits(4, 3);
             },
 
-            /**
-             *
-             */
+
             negatedSweep: function () {
               return this.register1.isBitSet(3);
             },
 
-            /**
-             *
-             */
+
             getSweepShiftAmount: function () {
               return this.register1.loadBits(0, 3);
             },
 
-            /**
-             *
-             */
+
             getTimerLow: function () {
               return this.register2.load();
             },
 
-            /**
-             *
-             */
+
             getTimerHigh: function () {
               return this.register3.loadBits(0, 3);
             },
 
-            /**
-             *
-             */
+
             getTimer: function () {
               return ((this.getTimerHigh() << 8) | this.getTimerLow());
             },
 
-            /**
-             *
-             */
+
             getLengthCounterIndex: function () {
               return this.register3.loadBits(3, 5);
             },
 
             //
 
-            /**
-             *
-             */
+
             driveTimer: function () {
               if (this.timerCounter > 0) {
                 this.timerCounter--;
@@ -4334,17 +3998,13 @@
               }
             },
 
-            /**
-             *
-             */
+
             driveLength: function () {
               if (this.disabledEnvelope() === false && this.lengthCounter > 0)
                 this.lengthCounter--;
             },
 
-            /**
-             *
-             */
+
             driveEnvelope: function () {
               if (this.envelopeStartFlag === true) {
                 this.envelopeCounter = this.getEnvelopePeriod();
@@ -4365,9 +4025,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             driveSweep: function () {
               if (this.sweepCounter === 0 && this.enabledSweep() === true &&
                 this.getSweepShiftAmount() !== 0 &&
@@ -4395,9 +4053,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             output: function () {
               if (this.lengthCounter === 0 || this.timerPeriod < 8 || this.timerPeriod > 0x7FF ||
                 this.DUTY_TABLE[this.getDuty()][this.timerSequence] === 0)
@@ -4476,9 +4132,7 @@
 
             //
 
-            /**
-             *
-             */
+
             storeRegister: function (address, value) {
               switch (address) {
                 case 0x4008:
@@ -4514,9 +4168,7 @@
 
             //
 
-            /**
-             *
-             */
+
             setEnable: function (enabled) {
               this.enabled = enabled;
 
@@ -4526,53 +4178,39 @@
                 this.lengthCounter = 0;
             },
 
-            /**
-             *
-             */
+
             getLinearCounter: function () {
               return this.register0.loadBits(0, 7);
             },
 
-            /**
-             *
-             */
+
             disabledLengthCounter: function () {
               return this.register0.isBitSet(7);
             },
 
-            /**
-             *
-             */
+
             getLengthCounterIndex: function () {
               return this.register3.loadBits(3, 5);
             },
 
-            /**
-             *
-             */
+
             getTimerLow: function () {
               return this.register2.load();
             },
 
-            /**
-             *
-             */
+
             getTimerHigh: function () {
               return this.register3.loadBits(0, 3);
             },
 
-            /**
-             *
-             */
+
             getTimer: function () {
               return (this.getTimerHigh() << 8) | this.getTimerLow();
             },
 
             //
 
-            /**
-             *
-             */
+
             driveTimer: function () {
               if (this.timerCounter > 0) {
                 this.timerCounter--;
@@ -4593,9 +4231,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             driveLinear: function () {
               if (this.linearReloadFlag === true)
                 this.linearCounter = this.getLinearCounter();
@@ -4606,17 +4242,13 @@
                 this.linearReloadFlag = false;
             },
 
-            /**
-             *
-             */
+
             driveLength: function () {
               if (this.disabledLengthCounter() === false && this.lengthCounter > 0)
                 this.lengthCounter--;
             },
 
-            /**
-             *
-             */
+
             output: function () {
               if (this.enabled === false || this.lengthCounter === 0 ||
                 this.linearCounter === 0 || this.getTimer() < 2)
@@ -4700,9 +4332,7 @@
 
             //
 
-            /**
-             *
-             */
+
             storeRegister: function (address, value) {
               switch (address) {
                 case 0x400C:
@@ -4737,9 +4367,7 @@
 
             //
 
-            /**
-             *
-             */
+
             setEnable: function (enabled) {
               this.enabled = enabled;
 
@@ -4749,53 +4377,39 @@
                 this.lengthCounter = 0;
             },
 
-            /**
-             *
-             */
+
             disabledLengthCounter: function () {
               return this.register0.isBitSet(5);
             },
 
-            /**
-             *
-             */
+
             disabledEnvelope: function () {
               return this.register0.isBitSet(4);
             },
 
-            /**
-             *
-             */
+
             getEnvelopePeriod: function () {
               return this.register0.loadBits(0, 4);
             },
 
-            /**
-             *
-             */
+
             isRandom: function () {
               return this.register2.isBitSet(7);
             },
 
-            /**
-             *
-             */
+
             getTimerIndex: function () {
               return this.register2.loadBits(0, 4);
             },
 
-            /**
-             *
-             */
+
             getLengthCounterIndex: function () {
               return this.register3.loadBits(3, 5);
             },
 
             //
 
-            /**
-             *
-             */
+
             driveTimer: function () {
               if (this.timerCounter > 0) {
                 this.timerCounter--;
@@ -4812,9 +4426,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             driveEnvelope: function () {
               if (this.envelopeStartFlag === true) {
                 this.envelopeCounter = this.getEnvelopePeriod();
@@ -4835,17 +4447,13 @@
               }
             },
 
-            /**
-             *
-             */
+
             driveLength: function () {
               if (this.disabledLengthCounter() === false && this.lengthCounter > 0)
                 this.lengthCounter--;
             },
 
-            /**
-             *
-             */
+
             output: function () {
               if (this.lengthCounter === 0 || (this.shiftRegister & 1) === 1)
                 return 0;
@@ -4930,9 +4538,7 @@
 
             //
 
-            /**
-             *
-             */
+
             storeRegister: function (address, value) {
               switch (address) {
                 case 0x4010:
@@ -4963,9 +4569,7 @@
 
             //
 
-            /**
-             *
-             */
+
             setEnable: function (enabled) {
               this.enabled = enabled;
 
@@ -4980,62 +4584,46 @@
               }
             },
 
-            /**
-             *
-             */
+
             start: function () {
               this.deltaCounter = this.getDeltaCounter();
               this.addressCounter = this.getSampleAddress() * 0x40 + 0xC000;
               this.remainingBytesCounter = this.getSampleLength() * 0x10 + 1;
             },
 
-            /**
-             *
-             */
+
             enabledIrq: function () {
               return this.register0.isBitSet(7);
             },
 
-            /**
-             *
-             */
+
             isLoop: function () {
               return this.register0.isBitSet(6);
             },
 
-            /**
-             *
-             */
+
             getTimerIndex: function () {
               return this.register0.loadBits(0, 4);
             },
 
-            /**
-             *
-             */
+
             getDeltaCounter: function () {
               return this.register1.loadBits(0, 7);
             },
 
-            /**
-             *
-             */
+
             getSampleAddress: function () {
               return this.register2.load();
             },
 
-            /**
-             *
-             */
+
             getSampleLength: function () {
               return this.register3.load();
             },
 
             //
 
-            /**
-             *
-             */
+
             driveTimer: function () {
               if (this.timerCounter > 0) {
                 this.timerCounter--;
@@ -5103,9 +4691,7 @@
               }
             },
 
-            /**
-             *
-             */
+
             output: function () {
 
               // Seems like we should ignore enable bit set via 0x4015
@@ -5123,9 +4709,7 @@
             }
           });
 
-          /**
-           *
-           */
+
           function ApuStatusRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -5142,9 +4726,7 @@
             ENABLE_PULSE1_BIT: 0
           });
 
-          /**
-           *
-           */
+
           function ApuFrameRegister() {
             __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].call(this);
           }
@@ -5159,16 +4741,12 @@
 
             //
 
-            /**
-             *
-             */
+
             isFiveStepMode: function () {
               return this.isBitSet(this.MODE_BIT);
             },
 
-            /**
-             *
-             */
+
             disabledIrq: function () {
               return this.isBitSet(this.IRQ_BIT);
             }
@@ -5178,16 +4756,16 @@
 
 
 
-          /***/
+
         }),
-/* 9 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 9 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Rom; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Memory_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Mapper_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Rom; });
+          var __WEBPACK_IMPORTED_MODULE_0__Memory_js__ = __webpack_require__(2);
+          var __WEBPACK_IMPORTED_MODULE_1__Mapper_js__ = __webpack_require__(10);
+          var __WEBPACK_IMPORTED_MODULE_2__Utility_js__ = __webpack_require__(1);
 
 
 
@@ -5267,55 +4845,38 @@
 
             //
 
-            /**
-             *
-             */
+
             isNes: function () {
               return this.header.isNes();
             },
 
-            /**
-             *
-             */
+
             getHeaderSize: function () {
               return this.header.getSize();
             },
 
-            /**
-             *
-             */
+
             hasChrRom: function () {
               return this.header.hasChrRom();
             },
 
-            /**
-             *
-             */
+
             getMirroringType: function () {
               return this.mapper.getMirroringType();
             },
 
 
-
-
-            /**
-             *
-             */
             _getStartDumpAddress: function () {
               return this.getHeaderSize();
             },
 
-            /**
-             *
-             */
+
             _getEndDumpAddress: function () {
               return this.getCapacity();
             }
           });
 
-          /**
-           *
-           */
+
           function RomHeader(rom) {
             this.rom = rom;
           }
@@ -5380,16 +4941,12 @@
 
             //
 
-            /**
-             *
-             */
+
             getSize: function () {
               return this.size;
             },
 
-            /**
-             *
-             */
+
             isNes: function () {
               if (this.getSignature() !== this.VALID_SIGNATURE)
                 return false;
@@ -5402,16 +4959,12 @@
 
             //
 
-            /**
-             *
-             */
+
             load: function (address) {
               return this.rom.loadWithoutMapping(address);
             },
 
-            /**
-             *
-             */
+
             getSignature: function () {
               var str = '';
 
@@ -5421,58 +4974,42 @@
               return str;
             },
 
-            /**
-             *
-             */
+
             getMagicNumber: function () {
               return this.load(this.MAGIC_NUMBER_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             getPRGROMBanksNum: function () {
               return this.load(this.PRG_ROM_BANKS_NUM_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             getCHRROMBanksNum: function () {
               return this.load(this.CHR_ROM_BANKS_NUM_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             hasChrRom: function () {
               return this.getCHRROMBanksNum() > 0;
             },
 
-            /**
-             *
-             */
+
             getControlByte1: function () {
               return this.load(this.CONTROL_BYTE1_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             getControlByte2: function () {
               return this.load(this.CONTROL_BYTE2_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             getRAMBanksNum: function () {
               return this.load(this.RAM_BANKS_NUM_ADDRESS);
             },
 
-            /**
-             *
-             */
+
             getUnusedField: function () {
               var value = 0;
 
@@ -5484,63 +5021,47 @@
 
             //
 
-            /**
-             *
-             */
+
             extractBits: function (value, offset, size) {
               return (value >> offset) & ((1 << size) - 1);
             },
 
-            /**
-             *
-             */
+
             getMirroringType: function () {
               return this.extractBits(this.getControlByte1(),
                 this.MIRRORING_TYPE_BIT, this.MIRRORING_TYPE_BITS_WIDTH);
             },
 
-            /**
-             *
-             */
+
             getMirroringTypeAsStrings: function () {
               return (this.getMirroringType() === this.MIRRORING_TYPE_HORIZONTAL)
                 ? 'horizontal' : 'vertical';
             },
 
-            /**
-             *
-             */
+
             isHorizontalMirroring: function () {
               return this.getMirroringType() === this.MIRRORING_TYPE_HORIZONTAL;
             },
 
-            /**
-             *
-             */
+
             getBatteryBackedRAM: function () {
               return this.extractBits(this.getControlByte1(),
                 this.BATTERY_BACKED_RAM_BIT, this.BATTERY_BACKED_RAM_BITS_WIDTH);
             },
 
-            /**
-             *
-             */
+
             getTrainer512Bytes: function () {
               return this.extractBits(this.getControlByte1(),
                 this.TRAINER_512BYTES_BIT, this.TRAINER_512BYTES_BITS_WIDTH);
             },
 
-            /**
-             *
-             */
+
             getFourScreenMirroring: function () {
               return this.extractBits(this.getControlByte1(),
                 this.FOUR_SCREEN_MIRRORING_BIT, this.FOUR_SCREEN_MIRRORING_BITS_WIDTH);
             },
 
-            /**
-             *
-             */
+
             getMapperNum: function () {
               var lowerBits = this.extractBits(this.getControlByte1(),
                 this.MAPPER_LOWER_BIT, this.MAPPER_LOWER_BITS_WIDTH);
@@ -5551,13 +5072,13 @@
           });
 
         }),
-/* 10 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 10 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* unused harmony export Mapper */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return MapperFactory; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
+          /* unused harmony export Mapper */
+          __webpack_require__.d(__webpack_exports__, "a", function () { return MapperFactory; });
+          var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
 
 
           function MapperFactory() {
@@ -5580,25 +5101,19 @@
 
             // public methods
 
-            /**
-             *
-             */
+
             create: function (number, rom) {
               return new (this.getMapperParam(number)).class(rom);
             },
 
-            /**
-             *
-             */
+
             getName: function (number) {
               return this.getMapperParam(number).name;
             },
 
             // private method
 
-            /**
-             *
-             */
+
             getMapperParam: function (number) {
               if (this.MAPPERS[number] === undefined)
                 throw new Error('unsupport No.' + number + ' Mapper');
@@ -5607,9 +5122,7 @@
             }
           });
 
-          /**
-           *
-           */
+
           function Mapper(rom) {
             this.rom = rom;
             this.prgBankNum = rom.header.getPRGROMBanksNum();
@@ -5641,18 +5154,14 @@
             store: function (address, value) {
             },
 
-            /**
-             *
-             */
+
             getMirroringType: function () {
               return this.rom.header.isHorizontalMirroring() === true
                 ? this.rom.MIRRORINGS.HORIZONTAL : this.rom.MIRRORINGS.VERTICAL;
             }
           });
 
-          /**
-           *
-           */
+
           function NROMMapper(rom) {
             Mapper.call(this, rom);
           }
@@ -5660,9 +5169,7 @@
           NROMMapper.prototype = Object.assign(Object.create(Mapper.prototype), {
             isNROMMapper: true,
 
-            /**
-             *
-             */
+
             map: function (address) {
               // 0x8000 - 0xBFFF: First 16 KB of ROM
               // 0xC000 - 0xFFFF: Last 16 KB of ROM (NROM-256) or
@@ -5675,9 +5182,7 @@
             }
           });
 
-          /**
-           *
-           */
+
           function MMC1Mapper(rom) {
             Mapper.call(this, rom);
 
@@ -5696,9 +5201,7 @@
           MMC1Mapper.prototype = Object.assign(Object.create(Mapper.prototype), {
             isMMC1Mapper: true,
 
-            /**
-             *
-             */
+
             map: function (address) {
               var bank = 0;
               var offset = address & 0x3FFF;
@@ -5734,9 +5237,7 @@
               return bank * 0x4000 + offset;
             },
 
-            /**
-             *
-             */
+
             mapForChrRom: function (address) {
               var bank;
               var offset = address & 0x0FFF;
@@ -5757,9 +5258,7 @@
               return bank * 0x1000 + offset;
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               if (value & 0x80) {
                 this.registerWriteCount = 0;
@@ -5816,9 +5315,7 @@
             }
           });
 
-          /**
-           *
-           */
+
           function UNROMMapper(rom) {
             Mapper.call(this, rom);
             this.reg = new __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */]();
@@ -5827,26 +5324,20 @@
           UNROMMapper.prototype = Object.assign(Object.create(Mapper.prototype), {
             isUNROMMapper: true,
 
-            /**
-             *
-             */
+
             map: function (address) {
               var bank = (address < 0xC000) ? this.reg.load() : this.prgBankNum - 1;
               var offset = address & 0x3FFF;
               return 0x4000 * bank + offset;
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               this.reg.store(value & 0xF);
             }
           });
 
-          /**
-           *
-           */
+
           function CNROMMapper(rom) {
             Mapper.call(this, rom);
             this.reg = new __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */]();
@@ -5855,24 +5346,18 @@
           CNROMMapper.prototype = Object.assign(Object.create(Mapper.prototype), {
             isCNROMMapper: true,
 
-            /**
-             *
-             */
+
             mapForChrRom: function (address) {
               return this.reg.load() * 0x2000 + (address & 0x1FFF);
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               this.reg.store(value & 0xF);
             }
           });
 
-          /**
-           *
-           */
+
           function MMC3Mapper(rom) {
             Mapper.call(this, rom);
 
@@ -5903,9 +5388,7 @@
           MMC3Mapper.prototype = Object.assign(Object.create(Mapper.prototype), {
             isMMC3Mapper: true,
 
-            /**
-             *
-             */
+
             map: function (address) {
               address = address & 0xFFFF;  // just in case
 
@@ -5925,9 +5408,7 @@
               return bank * 0x2000 + offset;
             },
 
-            /**
-             *
-             */
+
             mapForChrRom: function (address) {
               address = address & 0x1FFF;  // just in case
 
@@ -5975,9 +5456,7 @@
               return bank * 0x400 + offset;
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               address = address & 0xFFFF;  // just in case
 
@@ -6046,16 +5525,12 @@
               }
             },
 
-            /**
-             *
-             */
+
             getMirroringType: function () {
               return this.register2.isBitSet(0) === true ? this.rom.MIRRORINGS.HORIZONTAL : this.rom.MIRRORINGS.VERTICAL;
             },
 
-            /**
-             *
-             */
+
             driveIrqCounter: function (cpu) {
               if (this.irqCounterReload === true) {
                 this.irqCounter = this.register4.load();
@@ -6075,9 +5550,7 @@
             }
           });
 
-          /**
-           *
-           */
+
           function Mapper76(rom) {
             Mapper.call(this, rom);
             this.addrReg = new __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */]();
@@ -6092,9 +5565,7 @@
           Mapper76.prototype = Object.assign(Object.create(Mapper.prototype), {
             isMapper76: true,
 
-            /**
-             *
-             */
+
             map: function (address) {
               var bank;
               var offset = address & 0x1FFF;
@@ -6120,9 +5591,7 @@
               return bank * 0x2000 + offset;
             },
 
-            /**
-             *
-             */
+
             mapForChrRom: function (address) {
               var bank;
               var offset = address & 0x7FF;
@@ -6148,9 +5617,7 @@
               return bank * 0x800 + offset;
             },
 
-            /**
-             *
-             */
+
             store: function (address, value) {
               switch (address & 0xE001) {
                 case 0x8000:
@@ -6200,13 +5667,13 @@
 
 
 
-          /***/
+
         }),
-/* 11 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 11 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Audio; });
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Audio; });
           /**
            * Handling audio output with Web Audio.
            */
@@ -6242,16 +5709,12 @@
           Object.assign(Audio.prototype, {
             isAudio: true,
 
-            /**
-             *
-             */
+
             getSampleRate: function () {
               return this.sampleRate;
             },
 
-            /**
-             *
-             */
+
             onAudioProcess: function (e) {
               var data = e.outputBuffer.getChannelData(0);
 
@@ -6266,9 +5729,7 @@
               this.bufferIndex = 0;
             },
 
-            /**
-             *
-             */
+
             push: function (data) {
               if (this.bufferIndex >= this.bufferLength)
                 return;
@@ -6281,16 +5742,14 @@
 
 
 
-          /***/
+
         }),
-/* 12 */
-/***/ (function (module, __webpack_exports__, __webpack_require__) {
+        /* 12 */
+        (function (module, __webpack_exports__, __webpack_require__) {
 
           "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function () { return Display; });
-          /**
-           *
-           */
+          __webpack_require__.d(__webpack_exports__, "a", function () { return Display; });
+
           function Display(canvas) {
             this.ctx = canvas.getContext('2d');
 
@@ -6304,17 +5763,13 @@
           Object.assign(Display.prototype, {
             isDisplay: true,
 
-            /**
-             *
-             */
+
             renderPixel: function (x, y, c) {
               var index = y * this.width + x;
               this.uint32[index] = c;
             },
 
-            /**
-             *
-             */
+
             updateScreen: function () {
               this.ctx.putImageData(this.data, 0, 0);
             }
@@ -6324,7 +5779,7 @@
 
 
 
-          /***/
+
         })
       ]);
   </script>
