@@ -238,12 +238,6 @@
               return carry;
             },
 
-            /**
-             *
-             */
-            dump: function () {
-              return __WEBPACK_IMPORTED_MODULE_0__Utility_js__["a" /* Utility */].convertDecToHexString(this.load(), this.getWidth() / 4);
-            }
           });
 
           /**
@@ -406,40 +400,6 @@
              */
             storeWithoutMapping: function (address, value) {
               this.data[address] = value;
-            },
-
-            /**
-             *
-             */
-            dump: function () {
-              var buffer = '';
-              var previousIsZeroLine = false;
-              var offset = this._getStartDumpAddress();
-              var end = this._getEndDumpAddress();
-              for (var i = offset; i < end; i++) {
-                if (i % 0x10 === 0) {
-                  if (previousIsZeroLine) {
-                    var skipZero = false;
-                    while (this._checkNext16BytesIsZero(i + 0x10)) {
-                      i += 0x10;
-                      skipZero = true;
-                    }
-                    if (skipZero)
-                      buffer += '...\n';
-                  }
-                  buffer += __WEBPACK_IMPORTED_MODULE_0__Utility_js__["a" /* Utility */].convertDecToHexString(i - offset, 4) + ' ';
-                  previousIsZeroLine = true;
-                }
-
-                var value = this._loadForDump(i);
-                buffer += __WEBPACK_IMPORTED_MODULE_0__Utility_js__["a" /* Utility */].convertDecToHexString(value, 2, true) + ' ';
-                if (value != 0)
-                  previousIsZeroLine = false;
-
-                if (i % 0x10 === 0xf)
-                  buffer += '\n';
-              }
-              return buffer;
             },
 
             /**
@@ -2253,165 +2213,6 @@
               }
               return buffer;
             },
-
-            // dump methods
-
-            dump: function () {
-              var buffer = '';
-              var opc = this.load(this.pc.load());
-              var op = this.decode(opc);
-
-              buffer += 'p:' + this.p.dump() + ' ';
-              buffer += 'pc:' + this.pc.dump() + '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(opc, 2) + ')' + ' ';
-              buffer += 'sp:' + this.sp.dump() + ' ';
-              buffer += 'a:' + this.a.dump() + ' ';
-              buffer += 'x:' + this.x.dump() + ' ';
-              buffer += 'y:' + this.y.dump() + ' ';
-
-              buffer += op.instruction.name + ' ' +
-                this.dumpMemoryAddressingMode(op,
-                  this,
-                  (this.pc.load() + 1) & 0xffff)
-                + ' ';
-
-              while (buffer.length < 90) {
-                buffer += ' ';
-              }
-
-              buffer += op.mode.name;
-
-              return buffer;
-            },
-
-            dumpRAM: function () {
-              return this.ram.dump();
-            },
-
-            dumpMemoryAddressingMode: function (op, mem, pc) {
-              var buffer = '';
-              var ramDump = (mem instanceof Cpu) ? true : false;
-
-              switch (op.mode) {
-                case this.ADDRESSINGS.IMMEDIATE:
-                  buffer += '#' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(pc, true), 2);
-                  break;
-
-                case this.ADDRESSINGS.RELATIVE:
-                  var value = mem.load(pc, true);
-                  if (value & 0x80) {
-                    value = -(0x100 - value); // make negative native integer.
-                  }
-                  buffer += value.toString(10);
-                  break;
-
-                case this.ADDRESSINGS.ABSOLUTE:
-                  var address = mem.load2Bytes(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 4);
-                  if (ramDump) {
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_ABSOLUTE_X:
-                  var address = mem.load2Bytes(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 4) + ',X ';
-                  if (ramDump) {
-                    address += this.x.load();
-                    address = address & 0xffff;
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_ABSOLUTE_Y:
-                  var address = mem.load2Bytes(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 4) + ',Y ';
-                  if (ramDump) {
-                    address += this.y.load();
-                    address = address & 0xffff;
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.ZERO_PAGE:
-                  var address = mem.load(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 2);
-                  if (ramDump) {
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_ZERO_PAGE_X:
-                  var address = mem.load(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 2) + ',X ';
-                  if (ramDump) {
-                    address += this.x.load();
-                    address = address & 0xff;
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_ZERO_PAGE_Y:
-                  var address = mem.load(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 2) + ',Y ';
-                  if (ramDump) {
-                    address += this.y.load();
-                    address = address & 0xff;
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address, true), 2) + ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDIRECT:
-                  var address = mem.load2Bytes(pc, true);
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 4);
-                  if (ramDump) {
-                    var address2 = mem.load2Bytes(address, true);
-                    buffer += '(';
-                    buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address2, 4);
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address2, true), 2) + ')';
-                    buffer += ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_INDIRECT_X:
-                  var address = mem.load(pc, true);
-                  buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 2) + ',X) ';
-                  if (ramDump) {
-                    address += this.x.load();
-                    address = address & 0xffff;
-                    var address2 = mem.load2Bytes(address, true);
-                    buffer += '(';
-                    buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address2, 4);
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address2, true), 2) + ')';
-                    buffer += ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.INDEXED_INDIRECT_Y:
-                  var address = mem.load(pc, true);
-                  buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address, 2) + '),Y ';
-                  if (ramDump) {
-                    var address2 = mem.load2BytesFromZeropage(address, true);
-                    address2 += this.y.load();
-                    address2 = address2 & 0xffff;
-                    buffer += '(';
-                    buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(address2, 4);
-                    buffer += '(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(mem.load(address2, true), 2) + ')';
-                    buffer += ')';
-                  }
-                  break;
-
-                case this.ADDRESSINGS.ACCUMULATOR:
-                  if (ramDump) {
-                    buffer += 'A(' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.a.load(), 2) + ')';
-                  }
-                  break;
-
-                default:
-                  throw new Error('Cpu: Unkown addressing mode.');
-                  break;
-              }
-              return buffer;
-            }
           });
 
           /**
@@ -6674,8 +6475,8 @@
       }
 
       run(binaryData);
-      putMessage('')
-      putMessage('Loading rom image...')
+      console.log('')
+      console.log('Loading rom image...')
       ROMloaded();
     }
 
@@ -6684,12 +6485,12 @@
       try {
         var rom = new NesJs.Rom(buffer);
       } catch (e) {
-        putMessage('');
-        putMessage(e.toString());
+        console.log('');
+        console.log(e.toString());
         return;
       }
 
-      putMessage('');
+      console.log('');
 
       nes = new NesJs.Nes();
 
@@ -6704,19 +6505,19 @@
       try {
         nes.setAudio(new NesJs.Audio());
       } catch (e) {
-        putMessage('');
-        putMessage('Disables audio because this browser does not seems to support WebAudio.');
+        console.log('');
+        console.log('Disables audio because this browser does not seems to support WebAudio.');
       }
 
       window.onkeydown = function (e) { nes.handleKeyDown(e); };
       window.onkeyup = function (e) { nes.handleKeyUp(e); };
 
-      putMessage('');
+      console.log('');
 
-      putMessage('bootup.');
+      console.log('bootup.');
       nes.bootup();
 
-      putMessage('runs.');
+      console.log('runs.');
       NESran();
       nes.run();
     }
@@ -6724,25 +6525,19 @@
     // put message methods
 
 
-    function putMessage(str) {
-      var area = document.getElementById('dump');
-      area.firstChild.appendData(str + '\n');
-      area.scrollTop = area.scrollHeight;
-    }
-
     // push button handlers
 
 
     function pushStopButton() {
       nes.stop();
-      putMessage('stopped.');
+      console.log('stopped.');
       NESstopped();
     }
 
 
     function pushResumeButton() {
       nes.resume();
-      putMessage('resumed.');
+      console.log('resumed.');
       NESran();
     }
 
@@ -6855,17 +6650,11 @@
     </table>
   </div>
 
-  <p>
   <div>
-    <button id="dumpRegButton" onclick="pushDumpReg()">dump CPU/PPU reg</button>
-    <button id="dumpRAMButton" onclick="pushDumpRAM()">dump CPU RAM</button>
-    <button id="dumpSPRRAMButton" onclick="pushDumpSPRRAM()">dump PPU SPRRAM</button>
     <button id="stopButton" onclick="pushStopButton()">stop</button>
-    <button id="stepButton" onclick="pushStepButton()">step</button>
     <button id="resumeButton" onclick="pushResumeButton()">resume</button>
   </div>
-  <textarea id="dump" cols="128" rows="16" readonly="readonly"> </textarea>
-  </p>
+
 
 </body>
 
