@@ -586,15 +586,6 @@
 
               this.latch = value;
             },
-
-            // dump
-
-            /**
-             *
-             */
-            dump: function () {
-
-            }
           });
 
 
@@ -867,27 +858,6 @@
               };
             }(),
 
-            // dump methods
-
-            dumpCpu: function () {
-              return this.cpu.dump();
-            },
-
-            dumpRam: function () {
-              return this.cpu.dumpRAM();
-            },
-
-            dumpPpu: function () {
-              return this.ppu.dump();
-            },
-
-            dumpVRam: function () {
-              return this.ppu.dumpVRAM();
-            },
-
-            dumpSprRam: function () {
-              return this.ppu.dumpSPRRAM();
-            }
           });
 
 
@@ -3550,41 +3520,7 @@
 
               return buffer;
             },
-
-            /**
-             *
-             */
-            dumpVRAM: function () {
-              var buffer = '';
-              var previousIsZeroLine = false;
-              var offset = 0;
-              var end = 0x10000;
-
-              for (var i = offset; i < end; i++) {
-                if (i % 0x10 == 0) {
-                  if (previousIsZeroLine) {
-                    var skipZero = false;
-                    while (this._checkNext16BytesIsZero(i + 0x10)) {
-                      i += 0x10;
-                      skipZero = true;
-                    }
-                    if (skipZero)
-                      buffer += '...\n';
-                  }
-                  buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(i - offset, 4) + ' ';
-                  previousIsZeroLine = true;
-                }
-
-                var value = this.load(i);
-                buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(value, 2, true) + ' ';
-                if (value != 0)
-                  previousIsZeroLine = false;
-
-                if (i % 0x10 == 0xf)
-                  buffer += '\n';
-              }
-              return buffer;
-            },
+            
 
             /**
              *
@@ -5613,14 +5549,8 @@
               return this.mapper.getMirroringType();
             },
 
-            // dump methods
 
-            /**
-             *
-             */
-            dumpHeader: function () {
-              return this.header.dump();
-            },
+
 
             /**
              *
@@ -6709,45 +6639,25 @@
 
 
     function init() {
-      document.getElementById('dumpRegButton').disabled = true;
-      document.getElementById('dumpRAMButton').disabled = true;
-      document.getElementById('dumpVRAMButton').disabled = true;
-      document.getElementById('dumpSPRRAMButton').disabled = true;
       document.getElementById('stopButton').disabled = true;
-      document.getElementById('stepButton').disabled = true;
       document.getElementById('resumeButton').disabled = true;
     }
 
 
     function ROMloaded() {
-      document.getElementById('dumpRegButton').disabled = true;
-      document.getElementById('dumpRAMButton').disabled = true;
-      document.getElementById('dumpVRAMButton').disabled = true;
-      document.getElementById('dumpSPRRAMButton').disabled = true;
       document.getElementById('stopButton').disabled = true;
-      document.getElementById('stepButton').disabled = true;
       document.getElementById('resumeButton').disabled = true;
     }
 
 
     function NESran() {
-      document.getElementById('dumpRegButton').disabled = true;
-      document.getElementById('dumpRAMButton').disabled = true;
-      document.getElementById('dumpVRAMButton').disabled = true;
-      document.getElementById('dumpSPRRAMButton').disabled = true;
       document.getElementById('stopButton').disabled = false;
-      document.getElementById('stepButton').disabled = true;
       document.getElementById('resumeButton').disabled = true;
     }
 
 
     function NESstopped() {
-      document.getElementById('dumpRegButton').disabled = false;
-      document.getElementById('dumpRAMButton').disabled = false;
-      document.getElementById('dumpVRAMButton').disabled = false;
-      document.getElementById('dumpSPRRAMButton').disabled = false;
       document.getElementById('stopButton').disabled = true;
-      document.getElementById('stepButton').disabled = false;
       document.getElementById('resumeButton').disabled = false;
     }
 
@@ -6780,8 +6690,6 @@
       }
 
       putMessage('');
-      putMessage('Rom Header info');
-      putMessage(rom.header.dump());
 
       nes = new NesJs.Nes();
 
@@ -6824,37 +6732,11 @@
 
     // push button handlers
 
-    function pushDumpReg() {
-      putMessage(nes.dumpCpu());
-      putMessage(nes.dumpPpu());
-    }
-
-
-    function pushDumpRAM() {
-      putMessage(nes.dumpRam());
-    }
-
-
-    function pushDumpVRAM() {
-      putMessage(nes.dumpVRam());
-    }
-
-
-    function pushDumpSPRRAM() {
-      putMessage(nes.dumpSprRam());
-    }
-
 
     function pushStopButton() {
       nes.stop();
       putMessage('stopped.');
       NESstopped();
-    }
-
-
-    function pushStepButton() {
-      nes.runStep();
-      putMessage(nes.dumpCpu());
     }
 
 
@@ -6977,7 +6859,6 @@
   <div>
     <button id="dumpRegButton" onclick="pushDumpReg()">dump CPU/PPU reg</button>
     <button id="dumpRAMButton" onclick="pushDumpRAM()">dump CPU RAM</button>
-    <button id="dumpVRAMButton" onclick="pushDumpVRAM()">dump PPU VRAM</button>
     <button id="dumpSPRRAMButton" onclick="pushDumpSPRRAM()">dump PPU SPRRAM</button>
     <button id="stopButton" onclick="pushStopButton()">stop</button>
     <button id="stepButton" onclick="pushStepButton()">step</button>
