@@ -2,6 +2,11 @@
 <html>
 
 <head>
+  <style>
+    button {
+      min-width: 2.5rem;
+    }
+  </style>
   <script type="text/javascript">
     (function (modules) { // webpackBootstrap
       // The module cache
@@ -5731,11 +5736,10 @@
       ]);
   </script>
   <script type="text/javascript">
+    window.top.postMessage("REQ:SS", "*");
     var nes;
 
     // buttons status update methods
-
-
     function init() {
       document.getElementById('stopButton').disabled = true;
       document.getElementById('resumeButton').disabled = true;
@@ -5900,7 +5904,7 @@
 
 <body onload="init()">
 
-  <button onclick="openRom()">Open Rom</button>
+  <button class="oSButton osElemBase" onclick="openRom()">Open Rom</button>
   <p>
     <canvas id="mainCanvas" width="256" height="240"
       style="border:1px solid black; width:512px; height:480px; image-rendering: pixelated;"></canvas>
@@ -5911,7 +5915,7 @@
     <table>
       <tr>
         <td></td>
-        <td><button id="pad1_4" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.UP)"
+        <td><button class="oSButton osElemBase" id="pad1_4" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.UP)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.UP)">U</button></td>
         <td></td>
         <td></td>
@@ -5920,10 +5924,10 @@
         <td></td>
       </tr>
       <tr>
-        <td><button id="pad1_6" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.LEFT)"
+        <td><button class="oSButton osElemBase" id="pad1_6" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.LEFT)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.LEFT)">L</button></td>
         <td></td>
-        <td><button id="pad1_7" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.RIGHT)"
+        <td><button class="oSButton osElemBase" id="pad1_7" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.RIGHT)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.RIGHT)">R</button></td>
         <td></td>
         <td></td>
@@ -5932,24 +5936,24 @@
       </tr>
       <tr>
         <td></td>
-        <td><button id="pad1_5" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.DOWN)"
+        <td><button class="oSButton osElemBase" id="pad1_5" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.DOWN)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.DOWN)">D</button></td>
         <td></td>
-        <td><button id="pad1_2" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.SELECT)"
+        <td><button class="oSButton osElemBase" id="pad1_2" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.SELECT)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.SELECT)">SELECT</button></td>
-        <td><button id="pad1_3" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.START)"
+        <td><button class="oSButton osElemBase" id="pad1_3" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.START)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.START)">START</button></td>
-        <td><button id="pad1_1" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.B)"
+        <td><button class="oSButton osElemBase" id="pad1_1" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.B)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.B)">B</button></td>
-        <td><button id="pad1_0" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.A)"
+        <td><button class="oSButton osElemBase" id="pad1_0" onmousedown="pressPadButton(NesJs.Joypad.BUTTONS.A)"
             onclick="releasePadButton(NesJs.Joypad.BUTTONS.A)">A</button></td>
       </tr>
     </table>
   </div>
 
   <div>
-    <button id="stopButton" onclick="pushStopButton()">stop</button>
-    <button id="resumeButton" onclick="pushResumeButton()">resume</button>
+    <button class="oSButton osElemBase" id="stopButton" onclick="pushStopButton()">stop</button>
+    <button class="oSButton osElemBase" id="resumeButton" onclick="pushResumeButton()">resume</button>
   </div>
 
 
