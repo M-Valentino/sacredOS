@@ -2334,22 +2334,6 @@
               this.clearBit(this.C_BIT);
             },
 
-            // dump
-
-            dump: function () {
-              var buffer = '';
-              buffer += __WEBPACK_IMPORTED_MODULE_0__Register_js__["b" /* Register8bit */].prototype.dump.call(this);
-              buffer += '(';
-              buffer += this.isN() ? 'N' : '-';
-              buffer += this.isV() ? 'V' : '-';
-              buffer += this.isB() ? 'B' : '-';
-              buffer += this.isD() ? 'D' : '-';
-              buffer += this.isI() ? 'I' : '-';
-              buffer += this.isZ() ? 'Z' : '-';
-              buffer += this.isC() ? 'C' : '-';
-              buffer += ')';
-              return buffer;
-            }
           });
 
 
@@ -3300,29 +3284,6 @@
               return ((a >> (7 - ax)) & 1) | (((b >> (7 - ax)) & 1) << 1);
             },
 
-            // dump methods
-
-            /**
-             *
-             */
-            dump: function () {
-              var buffer = '';
-
-              buffer += 'PPU Ctrl: ' + this.ppuctrl.dump() + '\n';
-              buffer += 'PPU Mask: ' + this.ppumask.dump() + '\n';
-              buffer += 'PPU Status: ' + this.ppustatus.dump() + '\n';
-              buffer += 'OAM Address: ' + this.oamaddr.dump() + '\n';
-              buffer += 'OAM Data: ' + this.oamdata.dump() + '\n';
-              buffer += 'PPU Scroll: ' + this.ppuscroll.dump() + '\n';
-              buffer += 'PPU Addr: ' + this.ppuaddr.dump() + '\n';
-              buffer += 'PPU Data: ' + this.ppudata.dump() + '\n';
-              buffer += 'OAM DMA: ' + this.oamdma.dump() + '\n';
-              buffer += '\n';
-
-              return buffer;
-            },
-            
-
             /**
              *
              */
@@ -3336,13 +3297,6 @@
               }
               return sum == 0;
             },
-
-            /**
-             *
-             */
-            dumpSPRRAM: function () {
-              return this.oamRam.dump();
-            }
           });
 
           /**
@@ -4113,15 +4067,6 @@
 
               this.audio.push(pulseOut + tndOut);
             },
-
-            // dump
-
-            /**
-             *
-             */
-            dump: function () {
-
-            }
           });
 
           /**
@@ -5603,50 +5548,8 @@
                 this.MAPPER_HIGHER_BIT, this.MAPPER_HIGHER_BITS_WIDTH);
               return (higherBits << this.MAPPER_LOWER_BITS_WIDTH) | lowerBits;
             },
-
-            /**
-             *
-             */
-            dump: function () {
-              var buffer = '';
-
-              buffer += '0x ';
-              for (var i = 0; i < this.getSize(); i++) {
-                buffer += __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.load(i), 2, true) + ' ';
-              }
-              buffer += '\n\n';
-
-              buffer += 'Signature: ' + this.getSignature() + '\n';
-              buffer += 'Magic Number: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getMagicNumber(), 2) + '\n';
-              buffer += 'PRG-ROM banks num: ' +
-                __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getPRGROMBanksNum(), 2) + '\n';
-              buffer += 'CHR-ROM banks num: ' +
-                __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getCHRROMBanksNum(), 2) + '\n';
-              buffer += 'Control1: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getControlByte1(), 2) + '\n';
-              buffer += 'Control2: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getControlByte2(), 2) + '\n';
-              buffer += 'RAM banks num: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getRAMBanksNum(), 2) + '\n';
-              buffer += 'Unused field: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getUnusedField(), 14) + '\n';
-              buffer += '\n';
-              buffer += 'In control bytes\n';
-              buffer += 'Mirroring type: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getMirroringType()) +
-                '(' + this.getMirroringTypeAsStrings() + ')\n';
-              buffer += 'Battery-backed RAM: ' +
-                __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getBatteryBackedRAM()) + '\n';
-              buffer += '512-byte trainer: ' +
-                __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getTrainer512Bytes()) + '\n';
-              buffer += 'Four screen mirroring: ' +
-                __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getFourScreenMirroring()) + '\n';
-              buffer += 'Mapper number: ' + __WEBPACK_IMPORTED_MODULE_2__Utility_js__["a" /* Utility */].convertDecToHexString(this.getMapperNum(), 2) +
-                '(' + (new __WEBPACK_IMPORTED_MODULE_1__Mapper_js__["a" /* MapperFactory */]()).getName(this.getMapperNum()) + ')';
-              return buffer;
-            }
           });
 
-
-
-
-
-          /***/
         }),
 /* 10 */
 /***/ (function (module, __webpack_exports__, __webpack_require__) {
@@ -5657,14 +5560,6 @@
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Register_js__ = __webpack_require__(0);
 
 
-
-          /**
-           *
-           */
-
-          /**
-           *
-           */
           function MapperFactory() {
 
           }
