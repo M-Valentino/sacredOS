@@ -22,6 +22,27 @@
       top: 0;
       left: 0;
     }
+
+    #keyMapDialog {
+      padding: 1rem;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: var(--secColor);
+      z-index: 1000;
+      width: fit-content;
+    }
+
+    .mapRow {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .mr-8 {
+      margin-right: 8px;
+    }
   </style>
 
   <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
@@ -160,6 +181,11 @@
     document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
   </script>
   <script>
+
+    function openKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "block";
+    }
+
     window.top.postMessage("REQ:SS", "*");
 
     function openFile() {
@@ -172,7 +198,6 @@
     }
 
     let programId = "";
-
     window.addEventListener("message", function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -221,6 +246,15 @@
 
   <div class="controls">
     <button class="oSButton osElemBase" onclick="openFile()">Open</button>
+    <button class="oSButton osElemBase" onclick="openKeyMapping()">Key Mapping</button>
+  </div>
+  <div id="keyMapDialog">
+    <b>Key Mappings</b>
+    <div class="mapRow">
+      <div class="mr-8">Left:</div>
+      <div id="leftMapped" class="mr-8">Left Arrow Key</div>
+      <button onclick="changeMap('left')">Change</button>
+    </div>
   </div>
   <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
 </body>
