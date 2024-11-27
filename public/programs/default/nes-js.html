@@ -7,16 +7,17 @@
   <title>Embedding Example</title>
 
   <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
-  <script>var SCREEN_WIDTH = 256;
-    var SCREEN_HEIGHT = 240;
-    var FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
+  <script>
+    const SCREEN_WIDTH = 256;
+    const SCREEN_HEIGHT = 240;
+    const FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
 
     var canvas_ctx, image;
     var framebuffer_u8, framebuffer_u32;
 
-    var AUDIO_BUFFERING = 512;
-    var SAMPLE_COUNT = 4 * 1024;
-    var SAMPLE_MASK = SAMPLE_COUNT - 1;
+    const AUDIO_BUFFERING = 512;
+    const SAMPLE_COUNT = 4 * 1024;
+    const SAMPLE_MASK = SAMPLE_COUNT - 1;
     var audio_samples_L = new Float32Array(SAMPLE_COUNT);
     var audio_samples_R = new Float32Array(SAMPLE_COUNT);
     var audio_write_cursor = 0, audio_read_cursor = 0;
@@ -138,7 +139,8 @@
     }
 
     document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
-    document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });</script>
+    document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
+  </script>
   <script>
 
     // window.onload = function () { nes_load_url("nes-canvas", "dpadhero2.nes"); }
@@ -188,9 +190,7 @@
 
 <body>
   <button class="oSButton osElemBase" onclick="openFile()">Open</button>
-  <div style="margin: auto; width: 75%;">
-    <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
-  </div>
+  <canvas id="nes-canvas" width="256" height="240" />
   <p>DPad: Arrow keys<br />Start: Return, Select: Tab<br />A Button: A, B Button: S</p>
 </body>
 
