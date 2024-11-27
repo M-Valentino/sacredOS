@@ -186,6 +186,15 @@
       document.getElementById("keyMapDialog").style.display = "block";
     }
 
+    function changeMap(controllerButton) {
+      const keydownListener = function (event) {
+        const key = event.key;
+        document.getElementById(controllerButton).innerHTML = key;
+        window.removeEventListener('keydown', keydownListener);
+      };
+      window.addEventListener('keydown', keydownListener);
+    }
+
     window.top.postMessage("REQ:SS", "*");
 
     function openFile() {
@@ -252,7 +261,7 @@
     <b>Key Mappings</b>
     <div class="mapRow">
       <div class="mr-8">Left:</div>
-      <div id="leftMapped" class="mr-8">Left Arrow Key</div>
+      <div id="left" class="mr-8">Left Arrow Key</div>
       <button onclick="changeMap('left')">Change</button>
     </div>
   </div>
