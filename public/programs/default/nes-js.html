@@ -1,10 +1,28 @@
+<!--width="668" height="646" -->
 <!DOCTYPE html>
-
 <html>
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Embedding Example</title>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+    }
+
+    .controls {
+      display: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
 
   <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
   <script>
@@ -142,8 +160,8 @@
     document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
   </script>
   <script>
+    window.top.postMessage("REQ:SS", "*");
 
-    // window.onload = function () { nes_load_url("nes-canvas", "dpadhero2.nes"); }
     function openFile() {
       window.top.postMessage("OPWD:[", "*");
     }
@@ -156,7 +174,18 @@
     let programId = "";
 
     window.addEventListener("message", function (e) {
-      if (e.data.startsWith("PHFD:[")) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
         const rightBracketIndex = e.data.indexOf("]");
         filePath = e.data.substring(6, rightBracketIndex);
         let fileContent = e.data.substring(rightBracketIndex + 1);
@@ -189,9 +218,11 @@
 </head>
 
 <body>
-  <button class="oSButton osElemBase" onclick="openFile()">Open</button>
-  <canvas id="nes-canvas" width="256" height="240" />
-  <p>DPad: Arrow keys<br />Start: Return, Select: Tab<br />A Button: A, B Button: S</p>
+
+  <div class="controls">
+    <button class="oSButton osElemBase" onclick="openFile()">Open</button>
+  </div>
+  <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
 </body>
 
 </html>
