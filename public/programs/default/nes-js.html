@@ -172,6 +172,7 @@
         const blob = new Blob([dataArray], { type: "application/octet-stream" });
         const objectUrl = URL.createObjectURL(blob);
         nes_load_url("nes-canvas", objectUrl);
+        URL.revokeObjectURL(objectURL)
       } else if (e.data.startsWith("ID:[")) {
         programId = e.data.substring(4);
       } else if (e.data.startsWith("NSP:[")) {
