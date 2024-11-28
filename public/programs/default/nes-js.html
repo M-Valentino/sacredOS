@@ -101,30 +101,50 @@
       audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
     }
 
+    var customKeyMap = {
+      UP: 38, // Default ArrowUp
+      DOWN: 40, // Default ArrowDown
+      LEFT: 37, // Default ArrowLeft
+      RIGHT: 39, // Default ArrowRight
+      A: 65, // Default 'A' key
+      B: 83, // Default 'S' key
+      SELECT: 9, // Default Tab
+      START: 13, // Default Enter
+    };
+
     function keyboard(callback, event) {
+      console.log(customKeyMap);
       var player = 1;
       switch (event.keyCode) {
-        case 38: // UP
-          callback(player, jsnes.Controller.BUTTON_UP); break;
-        case 40: // Down
-          callback(player, jsnes.Controller.BUTTON_DOWN); break;
-        case 37: // Left
-          callback(player, jsnes.Controller.BUTTON_LEFT); break;
-        case 39: // Right
-          callback(player, jsnes.Controller.BUTTON_RIGHT); break;
-        case 65: // 'a' - qwerty, dvorak
-        case 81: // 'q' - azerty
-          callback(player, jsnes.Controller.BUTTON_A); break;
-        case 83: // 's' - qwerty, azerty
-        case 79: // 'o' - dvorak
-          callback(player, jsnes.Controller.BUTTON_B); break;
-        case 9: // Tab
-          callback(player, jsnes.Controller.BUTTON_SELECT); break;
-        case 13: // Return
-          callback(player, jsnes.Controller.BUTTON_START); break;
-        default: break;
+        case customKeyMap.UP:
+          callback(player, jsnes.Controller.BUTTON_UP);
+          break;
+        case customKeyMap.DOWN:
+          callback(player, jsnes.Controller.BUTTON_DOWN);
+          break;
+        case customKeyMap.LEFT:
+          callback(player, jsnes.Controller.BUTTON_LEFT);
+          break;
+        case customKeyMap.RIGHT:
+          callback(player, jsnes.Controller.BUTTON_RIGHT);
+          break;
+        case customKeyMap.A:
+          callback(player, jsnes.Controller.BUTTON_A);
+          break;
+        case customKeyMap.B:
+          callback(player, jsnes.Controller.BUTTON_B);
+          break;
+        case customKeyMap.SELECT:
+          callback(player, jsnes.Controller.BUTTON_SELECT);
+          break;
+        case customKeyMap.START:
+          callback(player, jsnes.Controller.BUTTON_START);
+          break;
+        default:
+          break;
       }
     }
+
 
     function nes_init(canvas_id) {
       var canvas = document.getElementById(canvas_id);
@@ -179,8 +199,6 @@
 
     document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
     document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
-  </script>
-  <script>
 
     function openKeyMapping() {
       document.getElementById("keyMapDialog").style.display = "block";
@@ -189,6 +207,7 @@
     function changeMap(controllerButton) {
       const keydownListener = function (event) {
         const key = event.key;
+        customKeyMap[controllerButton] = event.keyCode; // Update custom key mapping
         document.getElementById(controllerButton).innerHTML = key;
         window.removeEventListener('keydown', keydownListener);
       };
@@ -260,9 +279,39 @@
   <div id="keyMapDialog">
     <b>Key Mappings</b>
     <div class="mapRow">
+      <div class="mr-8">Up:</div>
+      <div id="up" class="mr-8">ArrowUp</div>
+      <button onclick="changeMap('up')">Change</button>
+    </div>
+    <div class="mapRow">
+      <div class="mr-8">Right:</div>
+      <div id="right" class="mr-8">ArrowRight</div>
+      <button onclick="changeMap('right')">Change</button>
+    </div>
+    <div class="mapRow">
+      <div class="mr-8">Down:</div>
+      <div id="down" class="mr-8">ArrowDown</div>
+      <button onclick="changeMap('down')">Change</button>
+    </div>
+    <div class="mapRow">
       <div class="mr-8">Left:</div>
-      <div id="left" class="mr-8">Left Arrow Key</div>
+      <div id="left" class="mr-8">ArrowLeft</div>
       <button onclick="changeMap('left')">Change</button>
+    </div>
+    <div class="mapRow">
+      <div class="mr-8">A:</div>
+      <div id="a" class="mr-8">A</div>
+      <button onclick="changeMap('a')">Change</button>
+    </div>
+    <div class="mapRow">
+      <div class="mr-8">B:</div>
+      <div id="b" class="mr-8">S</div>
+      <button onclick="changeMap('b')">Change</button>
+    </div>
+    <div class="mapRow">
+      <div class="mr-8">Start:</div>
+      <div id="start" class="mr-8">Enter</div>
+      <button onclick="changeMap('start')">Change</button>
     </div>
   </div>
   <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
