@@ -249,7 +249,7 @@
 
     // These are the file paths for the OS to boot with a fresh install.
     const fileTable = {
-      
+
       system: [
         "gui.css",
         "gui.frag.html",
@@ -284,7 +284,12 @@
             "browser.html",
             "settings.html",
             "osTest.html",
-            "jsNES.html"
+            {
+              jsNES: [
+                "jsNES.html",
+                "LICENSE.txt"
+              ]
+            }
           ]
         }
       ],
