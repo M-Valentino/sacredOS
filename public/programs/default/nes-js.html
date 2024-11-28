@@ -47,6 +47,12 @@
       text-align: center;
       color: #00f;
     }
+
+    .closeBttn {
+      display: block;
+      margin: auto;
+      margin-top: 8px;
+    }
   </style>
 
   <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
@@ -302,7 +308,7 @@
   </div>
   <div id="keyMapDialog">
     <b>Key Mappings</b>
-    <table class="mapTable">
+    <table>
       <tr>
         <td>Up:</td>
         <td id="up" class="currentKey">ArrowUp</td>
@@ -344,7 +350,7 @@
         <td><button class="f-r oSButton osElemBase" onclick="changeMap('select')">Change</button></td>
       </tr>
     </table>
-    <button class="oSButton osElemBase" onclick="closeKeyMapping()">Close</button>
+    <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
   </div>
   <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
 </body>
