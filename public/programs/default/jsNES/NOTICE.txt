@@ -1,0 +1,3 @@
+JSNES was created by Ben Firshman and has been ported to Sacred OS by Make Valentino.
+The following script has been implemented and modified:
+https://github.com/bfirsh/jsnes/blob/master/example/nes-embed.js
