@@ -82,7 +82,14 @@
             "appStore.html",
             "browser.html",
             "settings.html",
-            "osTest.html"
+            "osTest.html",
+            {
+              jsNES: [
+                "jsNES.html",
+                "LICENSE.txt",
+                "NOTICE.txt"
+              ]
+            }
           ]
         }
       ],
@@ -172,6 +179,7 @@
     async function updateSystem(systemFiles) {
       deleteSysFiles(systemFiles);
       window.top.postMessage("MK:MENU-SC[programs/default/notepad.html");
+      window.top.postMessage("MK:MENU-SC[programs/default/jsNES/jsNES.html");
       return copyData(systemFiles);
     }
 
