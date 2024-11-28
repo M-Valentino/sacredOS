@@ -14,7 +14,7 @@
 
 <body>
   <main>
-    <h1>𓍰 Sacred OS v1.13 Update</h1>
+    <h1>𓍰 Sacred OS v1.14 Update</h1>
     <p id="updateText">This file will update all files in the system folder, and all files in the programs/default
       folder. It will
       not
@@ -24,7 +24,7 @@
   </main>
   <script>
     let currentOSversion;
-    const updateVersion = 1.13;
+    const updateVersion = 1.14;
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:OSV", "*");
@@ -82,7 +82,14 @@
             "appStore.html",
             "browser.html",
             "settings.html",
-            "osTest.html"
+            "osTest.html",
+            {
+              jsNES: [
+                "jsNES.html",
+                "LICENSE.txt",
+                "NOTICE.txt"
+              ]
+            }
           ]
         }
       ],
@@ -172,6 +179,7 @@
     async function updateSystem(systemFiles) {
       deleteSysFiles(systemFiles);
       window.top.postMessage("MK:MENU-SC[programs/default/notepad.html");
+      window.top.postMessage("MK:MENU-SC[programs/default/jsNES/jsNES.html");
       return copyData(systemFiles);
     }
 

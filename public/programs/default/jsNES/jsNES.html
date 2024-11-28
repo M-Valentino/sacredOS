@@ -1,0 +1,360 @@
+<!--width="668" height="646" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAA9QTFRFAAAAAAAA+DgAr38A/6NHdMoVFgAAAAV0Uk5TAP////8c0CZSAAAAiklEQVR4nHWO0Q3DMAhEoe4AeIOIdICoeABLZv+ZAlQNVGruA/HEAQfwRw/mimzaEmWsmdSWLp0Fhw5NHLrkSPdTNYcgwpKkhrtct3TKi/dxocfYWs3IZZt/sL3ZDInlS/w94E4EnRAIuzeGCIAUNabYA632MCMh+tQaR/jipzdbnHKzG4r6bQLTCdh6ECWWjImrAAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+    }
+
+    .controls {
+
+      background-color: var(--secColor);
+      display: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #keyMapDialog {
+      padding: 1rem;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: var(--secColor);
+      z-index: 1000;
+      width: fit-content;
+      min-width: 300px;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    .f-r {
+      float: right;
+    }
+
+    .currentKey {
+      text-align: center;
+      color: #00f;
+    }
+
+    .closeBttn {
+      display: block;
+      margin: auto;
+      margin-top: 8px;
+    }
+  </style>
+
+  <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
+  <script>
+    const SCREEN_WIDTH = 256;
+    const SCREEN_HEIGHT = 240;
+    const FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
+
+    var canvas_ctx, image;
+    var framebuffer_u8, framebuffer_u32;
+
+    const AUDIO_BUFFERING = 512;
+    const SAMPLE_COUNT = 4 * 1024;
+    const SAMPLE_MASK = SAMPLE_COUNT - 1;
+    var audio_samples_L = new Float32Array(SAMPLE_COUNT);
+    var audio_samples_R = new Float32Array(SAMPLE_COUNT);
+    var audio_write_cursor = 0, audio_read_cursor = 0;
+
+    var nes = new jsnes.NES({
+      onFrame: function (framebuffer_24) {
+        for (var i = 0; i < FRAMEBUFFER_SIZE; i++) framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
+      },
+      onAudioSample: function (l, r) {
+        audio_samples_L[audio_write_cursor] = l;
+        audio_samples_R[audio_write_cursor] = r;
+        audio_write_cursor = (audio_write_cursor + 1) & SAMPLE_MASK;
+      },
+    });
+
+    function onAnimationFrame() {
+      window.requestAnimationFrame(onAnimationFrame);
+
+      image.data.set(framebuffer_u8);
+      canvas_ctx.putImageData(image, 0, 0);
+    }
+
+    function audio_remain() {
+      return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
+    }
+
+    function audio_callback(event) {
+      var dst = event.outputBuffer;
+      var len = dst.length;
+
+      // Attempt to avoid buffer underruns.
+      if (audio_remain() < AUDIO_BUFFERING) nes.frame();
+
+      var dst_l = dst.getChannelData(0);
+      var dst_r = dst.getChannelData(1);
+      for (var i = 0; i < len; i++) {
+        var src_idx = (audio_read_cursor + i) & SAMPLE_MASK;
+        dst_l[i] = audio_samples_L[src_idx];
+        dst_r[i] = audio_samples_R[src_idx];
+      }
+
+      audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
+    }
+
+    var customKeyMap = {
+      up: 38, // Default ArrowUp
+      down: 40, // Default ArrowDown
+      left: 37, // Default ArrowLeft
+      right: 39, // Default ArrowRight
+      a: 65, // Default 'A' key
+      b: 83, // Default 'S' key
+      select: 9, // Default Tab
+      start: 13, // Default Enter
+    };
+
+    function keyboard(callback, event) {
+      console.log(customKeyMap);
+      var player = 1;
+      switch (event.keyCode) {
+        case customKeyMap.up:
+          callback(player, jsnes.Controller.BUTTON_UP);
+          break;
+        case customKeyMap.down:
+          callback(player, jsnes.Controller.BUTTON_DOWN);
+          break;
+        case customKeyMap.left:
+          callback(player, jsnes.Controller.BUTTON_LEFT);
+          break;
+        case customKeyMap.right:
+          callback(player, jsnes.Controller.BUTTON_RIGHT);
+          break;
+        case customKeyMap.a:
+          callback(player, jsnes.Controller.BUTTON_A);
+          break;
+        case customKeyMap.b:
+          callback(player, jsnes.Controller.BUTTON_B);
+          break;
+        case customKeyMap.select:
+          callback(player, jsnes.Controller.BUTTON_SELECT);
+          break;
+        case customKeyMap.start:
+          callback(player, jsnes.Controller.BUTTON_START);
+          break;
+        default:
+          break;
+      }
+    }
+
+    function nes_init(canvas_id) {
+      var canvas = document.getElementById(canvas_id);
+      canvas_ctx = canvas.getContext("2d");
+      image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      canvas_ctx.fillStyle = "black";
+      canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      // Allocate framebuffer array.
+      var buffer = new ArrayBuffer(image.data.length);
+      framebuffer_u8 = new Uint8ClampedArray(buffer);
+      framebuffer_u32 = new Uint32Array(buffer);
+
+      // Setup audio.
+      var audio_ctx = new window.AudioContext();
+      var script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
+      script_processor.onaudioprocess = audio_callback;
+      script_processor.connect(audio_ctx.destination);
+    }
+
+    function nes_boot(rom_data) {
+      nes.loadROM(rom_data);
+      window.requestAnimationFrame(onAnimationFrame);
+    }
+
+    function nes_load_data(canvas_id, rom_data) {
+      nes_init(canvas_id);
+      nes_boot(rom_data);
+    }
+
+    function nes_load_url(canvas_id, path) {
+      nes_init(canvas_id);
+
+      var req = new XMLHttpRequest();
+      req.open("GET", path);
+      req.overrideMimeType("text/plain; charset=x-user-defined");
+      req.onerror = () => console.log(`Error loading ${path}: ${req.statusText}`);
+
+      req.onload = function () {
+        if (this.status === 200) {
+          nes_boot(this.responseText);
+        } else if (this.status === 0) {
+          // Aborted, so ignore error
+        } else {
+          req.onerror();
+        }
+      };
+
+      req.send();
+    }
+
+    document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
+    document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
+
+    function openKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "block";
+    }
+
+    function closeKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "none";
+    }
+
+    // For preventing multiple buttons from being clicked and having them all be set to the same key at once
+    let isAwaitingNewKey = false;
+
+    function changeMap(controllerButton) {
+      let mappedKeyIndicator = document.getElementById(controllerButton);
+      const keydownListener = function (event) {
+        const key = event.key;
+        // if space key or enter key
+        if (event.keyCode === 32 || event.keyCode === 13) {
+          event.preventDefault();
+        }
+        customKeyMap[controllerButton] = event.keyCode;
+        if (event.keyCode === 32) {
+          mappedKeyIndicator.innerHTML = "Space";
+        } else {
+          mappedKeyIndicator.innerHTML = key;
+        }
+        window.removeEventListener('keydown', keydownListener);
+        isAwaitingNewKey = false;
+      };
+      if (!isAwaitingNewKey) {
+        window.addEventListener('keydown', keydownListener);
+        mappedKeyIndicator.innerHTML = "Press a key";
+        isAwaitingNewKey = true;
+      }
+    }
+
+    window.top.postMessage("REQ:SS", "*");
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+        const binaryString = atob(fileContent);
+        const dataArray = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          dataArray[i] = binaryString.charCodeAt(i);
+        }
+
+        const blob = new Blob([dataArray], { type: "application/octet-stream" });
+        const objectUrl = URL.createObjectURL(blob);
+        nes_load_url("nes-canvas", objectUrl);
+        URL.revokeObjectURL(objectURL)
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+      }
+    });
+
+  </script>
+</head>
+
+<body>
+
+  <div class="controls">
+    <button class="oSButton osElemBase" onclick="openFile()">Open Rom</button>
+    <button class="oSButton osElemBase" onclick="openKeyMapping()">Key Mapping</button>
+  </div>
+  <div id="keyMapDialog">
+    <b>Key Mappings</b>
+    <table>
+      <tr>
+        <td>Up:</td>
+        <td id="up" class="currentKey">ArrowUp</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('up')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Right:</td>
+        <td id="right" class="currentKey">ArrowRight</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('right')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Down:</td>
+        <td id="down" class="currentKey">ArrowDown</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('down')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Left:</td>
+        <td id="left" class="currentKey">ArrowLeft</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('left')">Change</button></td>
+      </tr>
+      <tr>
+        <td>A:</td>
+        <td id="a" class="currentKey">A</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('a')">Change</button></td>
+      </tr>
+      <tr>
+        <td>B:</td>
+        <td id="b" class="currentKey">S</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('b')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Start:</td>
+        <td id="start" class="currentKey">Enter</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('start')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Select:</td>
+        <td id="select" class="currentKey">Tab</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('select')">Change</button></td>
+      </tr>
+    </table>
+    <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
+  </div>
+  <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
+</body>
+
+</html>
