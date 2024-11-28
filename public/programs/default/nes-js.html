@@ -202,14 +202,21 @@
       document.getElementById("keyMapDialog").style.display = "block";
     }
 
+    // For preventing multiple buttons from being clicked and having them all be set to the same key at once
+    let isAwaitingNewKey = false;
+    
     function changeMap(controllerButton) {
       const keydownListener = function (event) {
         const key = event.key;
         customKeyMap[controllerButton] = event.keyCode; // Update custom key mapping
         document.getElementById(controllerButton).innerHTML = key;
         window.removeEventListener('keydown', keydownListener);
+        isAwaitingNewKey = false;
       };
-      window.addEventListener('keydown', keydownListener);
+      if (!isAwaitingNewKey) {
+        window.addEventListener('keydown', keydownListener);
+        isAwaitingNewKey = true;
+      }
     }
 
     window.top.postMessage("REQ:SS", "*");
