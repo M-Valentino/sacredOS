@@ -207,6 +207,10 @@
       document.getElementById("keyMapDialog").style.display = "block";
     }
 
+    function closeKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "none";
+    }
+
     // For preventing multiple buttons from being clicked and having them all be set to the same key at once
     let isAwaitingNewKey = false;
 
@@ -218,7 +222,7 @@
         if (event.keyCode === 32 || event.keyCode === 13) {
           event.preventDefault();
         }
-        customKeyMap[controllerButton] = event.keyCode; // Update custom key mapping
+        customKeyMap[controllerButton] = event.keyCode;
         if (event.keyCode === 32) {
           mappedKeyIndicator.innerHTML = "Space";
         } else {
@@ -302,45 +306,45 @@
       <tr>
         <td>Up:</td>
         <td id="up" class="currentKey">ArrowUp</td>
-        <td><button class="f-r" onclick="changeMap('up')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('up')">Change</button></td>
       </tr>
       <tr>
         <td>Right:</td>
         <td id="right" class="currentKey">ArrowRight</td>
-        <td><button class="f-r" onclick="changeMap('right')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('right')">Change</button></td>
       </tr>
       <tr>
         <td>Down:</td>
         <td id="down" class="currentKey">ArrowDown</td>
-        <td><button class="f-r" onclick="changeMap('down')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('down')">Change</button></td>
       </tr>
       <tr>
         <td>Left:</td>
         <td id="left" class="currentKey">ArrowLeft</td>
-        <td><button class="f-r" onclick="changeMap('left')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('left')">Change</button></td>
       </tr>
       <tr>
         <td>A:</td>
         <td id="a" class="currentKey">A</td>
-        <td><button class="f-r" onclick="changeMap('a')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('a')">Change</button></td>
       </tr>
       <tr>
         <td>B:</td>
         <td id="b" class="currentKey">S</td>
-        <td><button class="f-r" onclick="changeMap('b')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('b')">Change</button></td>
       </tr>
       <tr>
         <td>Start:</td>
         <td id="start" class="currentKey">Enter</td>
-        <td><button class="f-r" onclick="changeMap('start')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('start')">Change</button></td>
       </tr>
       <tr>
         <td>Select:</td>
         <td id="select" class="currentKey">Tab</td>
-        <td><button class="f-r" onclick="changeMap('select')">Change</button></td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('select')">Change</button></td>
       </tr>
     </table>
-
+    <button class="oSButton osElemBase" onclick="closeKeyMapping()">Close</button>
   </div>
   <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
 </body>
