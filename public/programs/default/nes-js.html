@@ -211,16 +211,25 @@
     let isAwaitingNewKey = false;
 
     function changeMap(controllerButton) {
+      let mappedKeyIndicator = document.getElementById(controllerButton);
       const keydownListener = function (event) {
         const key = event.key;
+        // if space key or enter key
+        if (event.keyCode === 32 || event.keyCode === 13) {
+          event.preventDefault();
+        }
         customKeyMap[controllerButton] = event.keyCode; // Update custom key mapping
-        document.getElementById(controllerButton).innerHTML = key;
+        if (event.keyCode === 32) {
+          mappedKeyIndicator.innerHTML = "Space";
+        } else {
+          mappedKeyIndicator.innerHTML = key;
+        }
         window.removeEventListener('keydown', keydownListener);
         isAwaitingNewKey = false;
       };
       if (!isAwaitingNewKey) {
         window.addEventListener('keydown', keydownListener);
-        document.getElementById(controllerButton).innerHTML = "Press a key";
+        mappedKeyIndicator.innerHTML = "Press a key";
         isAwaitingNewKey = true;
       }
     }
