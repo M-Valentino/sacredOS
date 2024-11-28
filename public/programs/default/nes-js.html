@@ -278,41 +278,49 @@
   </div>
   <div id="keyMapDialog">
     <b>Key Mappings</b>
-    <div class="mapRow">
-      <div class="mr-8">Up:</div>
-      <div id="up" class="mr-8">ArrowUp</div>
-      <button onclick="changeMap('up')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">Right:</div>
-      <div id="right" class="mr-8">ArrowRight</div>
-      <button onclick="changeMap('right')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">Down:</div>
-      <div id="down" class="mr-8">ArrowDown</div>
-      <button onclick="changeMap('down')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">Left:</div>
-      <div id="left" class="mr-8">ArrowLeft</div>
-      <button onclick="changeMap('left')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">A:</div>
-      <div id="a" class="mr-8">A</div>
-      <button onclick="changeMap('a')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">B:</div>
-      <div id="b" class="mr-8">S</div>
-      <button onclick="changeMap('b')">Change</button>
-    </div>
-    <div class="mapRow">
-      <div class="mr-8">Start:</div>
-      <div id="start" class="mr-8">Enter</div>
-      <button onclick="changeMap('start')">Change</button>
-    </div>
+    <table class="mapTable">
+      <tr>
+        <td class="mr-8">Up:</td>
+        <td id="up" class="mr-8">ArrowUp</td>
+        <td><button onclick="changeMap('up')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">Right:</td>
+        <td id="right" class="mr-8">ArrowRight</td>
+        <td><button onclick="changeMap('right')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">Down:</td>
+        <td id="down" class="mr-8">ArrowDown</td>
+        <td><button onclick="changeMap('down')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">Left:</td>
+        <td id="left" class="mr-8">ArrowLeft</td>
+        <td><button onclick="changeMap('left')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">A:</td>
+        <td id="a" class="mr-8">A</td>
+        <td><button onclick="changeMap('a')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">B:</td>
+        <td id="b" class="mr-8">S</td>
+        <td><button onclick="changeMap('b')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">Start:</td>
+        <td id="start" class="mr-8">Enter</td>
+        <td><button onclick="changeMap('start')">Change</button></td>
+      </tr>
+      <tr>
+        <td class="mr-8">Select:</td>
+        <td id="select" class="mr-8">Tab</td>
+        <td><button onclick="changeMap('select')">Change</button></td>
+      </tr>
+    </table>
+
   </div>
   <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
 </body>
