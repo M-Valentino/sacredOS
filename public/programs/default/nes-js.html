@@ -102,42 +102,42 @@
     }
 
     var customKeyMap = {
-      UP: 38, // Default ArrowUp
-      DOWN: 40, // Default ArrowDown
-      LEFT: 37, // Default ArrowLeft
-      RIGHT: 39, // Default ArrowRight
-      A: 65, // Default 'A' key
-      B: 83, // Default 'S' key
-      SELECT: 9, // Default Tab
-      START: 13, // Default Enter
+      up: 38, // Default ArrowUp
+      down: 40, // Default ArrowDown
+      left: 37, // Default ArrowLeft
+      right: 39, // Default ArrowRight
+      a: 65, // Default 'A' key
+      b: 83, // Default 'S' key
+      select: 9, // Default Tab
+      start: 13, // Default Enter
     };
 
     function keyboard(callback, event) {
       console.log(customKeyMap);
       var player = 1;
       switch (event.keyCode) {
-        case customKeyMap.UP:
+        case customKeyMap.up:
           callback(player, jsnes.Controller.BUTTON_UP);
           break;
-        case customKeyMap.DOWN:
+        case customKeyMap.down:
           callback(player, jsnes.Controller.BUTTON_DOWN);
           break;
-        case customKeyMap.LEFT:
+        case customKeyMap.left:
           callback(player, jsnes.Controller.BUTTON_LEFT);
           break;
-        case customKeyMap.RIGHT:
+        case customKeyMap.right:
           callback(player, jsnes.Controller.BUTTON_RIGHT);
           break;
-        case customKeyMap.A:
+        case customKeyMap.a:
           callback(player, jsnes.Controller.BUTTON_A);
           break;
-        case customKeyMap.B:
+        case customKeyMap.b:
           callback(player, jsnes.Controller.BUTTON_B);
           break;
-        case customKeyMap.SELECT:
+        case customKeyMap.select:
           callback(player, jsnes.Controller.BUTTON_SELECT);
           break;
-        case customKeyMap.START:
+        case customKeyMap.start:
           callback(player, jsnes.Controller.BUTTON_START);
           break;
         default:
