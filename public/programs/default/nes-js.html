@@ -42,6 +42,11 @@
     .f-r {
       float: right;
     }
+
+    .currentKey {
+      text-align: center;
+      color: #00f;
+    }
   </style>
 
   <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
@@ -204,7 +209,7 @@
 
     // For preventing multiple buttons from being clicked and having them all be set to the same key at once
     let isAwaitingNewKey = false;
-    
+
     function changeMap(controllerButton) {
       const keydownListener = function (event) {
         const key = event.key;
@@ -215,6 +220,7 @@
       };
       if (!isAwaitingNewKey) {
         window.addEventListener('keydown', keydownListener);
+        document.getElementById(controllerButton).innerHTML = "Press a key";
         isAwaitingNewKey = true;
       }
     }
@@ -286,42 +292,42 @@
     <table class="mapTable">
       <tr>
         <td>Up:</td>
-        <td id="up">ArrowUp</td>
+        <td id="up" class="currentKey">ArrowUp</td>
         <td><button class="f-r" onclick="changeMap('up')">Change</button></td>
       </tr>
       <tr>
         <td>Right:</td>
-        <td id="right">ArrowRight</td>
+        <td id="right" class="currentKey">ArrowRight</td>
         <td><button class="f-r" onclick="changeMap('right')">Change</button></td>
       </tr>
       <tr>
         <td>Down:</td>
-        <td id="down">ArrowDown</td>
+        <td id="down" class="currentKey">ArrowDown</td>
         <td><button class="f-r" onclick="changeMap('down')">Change</button></td>
       </tr>
       <tr>
         <td>Left:</td>
-        <td id="left">ArrowLeft</td>
+        <td id="left" class="currentKey">ArrowLeft</td>
         <td><button class="f-r" onclick="changeMap('left')">Change</button></td>
       </tr>
       <tr>
         <td>A:</td>
-        <td id="a">A</td>
+        <td id="a" class="currentKey">A</td>
         <td><button class="f-r" onclick="changeMap('a')">Change</button></td>
       </tr>
       <tr>
         <td>B:</td>
-        <td id="b">S</td>
+        <td id="b" class="currentKey">S</td>
         <td><button class="f-r" onclick="changeMap('b')">Change</button></td>
       </tr>
       <tr>
         <td>Start:</td>
-        <td id="start">Enter</td>
+        <td id="start" class="currentKey">Enter</td>
         <td><button class="f-r" onclick="changeMap('start')">Change</button></td>
       </tr>
       <tr>
         <td>Select:</td>
-        <td id="select">Tab</td>
+        <td id="select" class="currentKey">Tab</td>
         <td><button class="f-r" onclick="changeMap('select')">Change</button></td>
       </tr>
     </table>
