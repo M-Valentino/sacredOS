@@ -17,10 +17,12 @@
     }
 
     canvas {
-      aspect-ratio: 256 / 240;
-      width: min(100%, 100vh * 256 / 240);
+      /* Prevent extra spacing caused by inline elements */
+      display: block;
+      width: 100%;
       height: auto;
       max-height: calc(100vh - var(--controlHeight));
+      max-width: calc((100vh - var(--controlHeight)) * 256 / 240);
     }
 
     .controls {
