@@ -5,6 +5,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <style>
+    :root {
+      --controlHeight: 25px;
+    }
+
     body {
       height: 100vh;
       margin: 0;
@@ -15,9 +19,12 @@
     canvas {
       aspect-ratio: 256 / 240;
       width: min(100%, 100vh * 256 / 240);
+      height: auto;
+      max-height: calc(100vh - var(--controlHeight));
     }
 
     .controls {
+      height: var(--controlHeight);
       background-color: var(--secColor);
       display: absolute;
       top: 0;
@@ -353,7 +360,7 @@
     </table>
     <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
   </div>
-  <canvas id="nes-canvas" width="256" height="240"/>
+  <canvas id="nes-canvas" width="256" height="240" />
 </body>
 
 </html>
