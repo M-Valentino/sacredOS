@@ -189,6 +189,16 @@ function updateColorVariable(variableName, newColor) {
 
 function changeBGMode(mode) {
   if (mode === "stretch") {
+    if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
+      fileContents["system"]["settings.json"] = fileContents["system"][
+        "settings.json"
+      ].replace(`"desktopBGMode": "tile",`, `"desktopBGMode": "stretch",`);
+      // If setting doesn't exist
+    } else {
+      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
+      tempSettings["desktopBGMode"] = "stretch";
+      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+    }
     let regex = new RegExp(`(--bgRepeat: ).*?;`);
     fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
       regex,
@@ -207,6 +217,16 @@ function changeBGMode(mode) {
       `$1 100% 100%;`
     );
   } else if (mode === "tile") {
+    if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
+      fileContents["system"]["settings.json"] = fileContents["system"][
+        "settings.json"
+      ].replace(`"desktopBGMode": "stretch",`, `"desktopBGMode": "tile",`);
+      // If setting doesn't exist
+    } else {
+      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
+      tempSettings["desktopBGMode"] = "tile";
+      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+    }
     let regex = new RegExp(`(--bgRepeat: ).*?;`);
     fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
       regex,

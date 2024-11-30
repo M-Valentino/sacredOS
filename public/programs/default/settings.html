@@ -248,6 +248,14 @@
           const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
           document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
           document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
+
+          if (savedSettings["desktopBGMode"]) {
+            if (savedSettings["desktopBGMode"] === "stretch") {
+              document.getElementById("backgroundMode").selectedIndex = 0;
+            } else if (savedSettings["desktopBGMode"] === "tile") {
+              document.getElementById("backgroundMode").selectedIndex = 1;
+            }
+          }
         }
         return;
       } else if (e.data.startsWith("OSV:")) {
