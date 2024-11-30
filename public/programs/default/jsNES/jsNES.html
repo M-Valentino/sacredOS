@@ -16,13 +16,34 @@
       background: #000;
     }
 
-    canvas {
+    .fitWindow {
       /* Prevent extra spacing caused by inline elements */
       display: block;
       width: 100%;
       height: auto;
       max-height: calc(100vh - var(--controlHeight));
       max-width: calc((100vh - var(--controlHeight)) * 256 / 240);
+      margin: auto;
+    }
+
+    .size100P {
+      width: 256px;
+      height: 240px;
+      display: block;
+      margin: auto;
+    }
+
+    .size200P {
+      width: 512px;
+      height: 480px;
+      display: block;
+      margin: auto;
+    }
+
+    .size300P {
+      width: 768px;
+      height: 720px;
+      display: block;
       margin: auto;
     }
 
@@ -255,6 +276,10 @@
       }
     }
 
+    function applyScale(type) {
+      document.getElementById("nes-canvas").classList = type;
+    }
+
     window.top.postMessage("REQ:SS", "*");
 
     function openFile() {
@@ -316,6 +341,13 @@
   <div class="controls">
     <button class="oSButton osElemBase" onclick="openFile()">Open Rom</button>
     <button class="oSButton osElemBase" onclick="openKeyMapping()">Key Mapping</button>
+    <select id="scalingSelect" class="oSButton osElemBase" onchange="applyScale(this.value)">
+      <option value="fitWindow">Fit Window</option>
+      <option value="size100P">100% Size</option>
+      <option value="size200P">200% Size</option>
+      <option value="size300P">300% Size</option>
+      <option value="vaporwave">Vaporwave</option>
+    </select>
   </div>
   <div id="keyMapDialog">
     <b>Key Mappings</b>
@@ -363,7 +395,7 @@
     </table>
     <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
   </div>
-  <canvas id="nes-canvas" width="256" height="240" />
+  <canvas id="nes-canvas" class="fitWindow" width="256" height="240" />
 </body>
 
 </html>
