@@ -5,6 +5,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <style>
+    :root {
+      --controlHeight: 25px;
+    }
+
     body {
       height: 100vh;
       margin: 0;
@@ -12,13 +16,39 @@
       background: #000;
     }
 
-    canvas {
+    .fitWindow {
+      /* Prevent extra spacing caused by inline elements */
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - var(--controlHeight));
+      max-width: calc((100vh - var(--controlHeight)) * 256 / 240);
+      margin: auto;
+    }
+
+    .size100P {
+      width: 256px;
+      height: 240px;
+      display: block;
+      margin: auto;
+    }
+
+    .size200P {
+      width: 512px;
+      height: 480px;
+      display: block;
+      margin: auto;
+    }
+
+    .size300P {
+      width: 768px;
+      height: 720px;
       display: block;
       margin: auto;
     }
 
     .controls {
-
+      height: var(--controlHeight);
       background-color: var(--secColor);
       display: absolute;
       top: 0;
@@ -73,7 +103,7 @@
     var audio_samples_R = new Float32Array(SAMPLE_COUNT);
     var audio_write_cursor = 0, audio_read_cursor = 0;
 
-    var nes = new jsnes.NES({
+    const nes = new jsnes.NES({
       onFrame: function (framebuffer_24) {
         for (var i = 0; i < FRAMEBUFFER_SIZE; i++) framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
       },
@@ -113,7 +143,7 @@
       audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
     }
 
-    var customKeyMap = {
+    let customKeyMap = {
       up: 38, // Default ArrowUp
       down: 40, // Default ArrowDown
       left: 37, // Default ArrowLeft
@@ -166,13 +196,13 @@
       canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
       // Allocate framebuffer array.
-      var buffer = new ArrayBuffer(image.data.length);
+      const buffer = new ArrayBuffer(image.data.length);
       framebuffer_u8 = new Uint8ClampedArray(buffer);
       framebuffer_u32 = new Uint32Array(buffer);
 
       // Setup audio.
-      var audio_ctx = new window.AudioContext();
-      var script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
+      const audio_ctx = new window.AudioContext();
+      const script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
       script_processor.onaudioprocess = audio_callback;
       script_processor.connect(audio_ctx.destination);
     }
@@ -190,7 +220,7 @@
     function nes_load_url(canvas_id, path) {
       nes_init(canvas_id);
 
-      var req = new XMLHttpRequest();
+      const req = new XMLHttpRequest();
       req.open("GET", path);
       req.overrideMimeType("text/plain; charset=x-user-defined");
       req.onerror = () => console.log(`Error loading ${path}: ${req.statusText}`);
@@ -244,6 +274,10 @@
         mappedKeyIndicator.innerHTML = "Press a key";
         isAwaitingNewKey = true;
       }
+    }
+
+    function applyScale(type) {
+      document.getElementById("nes-canvas").classList = type;
     }
 
     window.top.postMessage("REQ:SS", "*");
@@ -307,6 +341,12 @@
   <div class="controls">
     <button class="oSButton osElemBase" onclick="openFile()">Open Rom</button>
     <button class="oSButton osElemBase" onclick="openKeyMapping()">Key Mapping</button>
+    <select id="scalingSelect" class="oSButton osElemBase" onchange="applyScale(this.value)">
+      <option value="fitWindow">Fit Window</option>
+      <option value="size100P">100% Size</option>
+      <option value="size200P">200% Size</option>
+      <option value="size300P">300% Size</option>
+    </select>
   </div>
   <div id="keyMapDialog">
     <b>Key Mappings</b>
@@ -354,7 +394,7 @@
     </table>
     <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
   </div>
-  <canvas id="nes-canvas" width="256" height="240" style="width: 100%" />
+  <canvas id="nes-canvas" class="fitWindow" width="256" height="240" />
 </body>
 
 </html>

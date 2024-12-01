@@ -200,12 +200,23 @@ function createMaximizeButton(currentWindowID) {
   return maximizeButton;
 }
 
-function createMenuBarButton(currentWindowID, programName) {
+function createMenuBarButton(currentWindowID, programName, programIcon) {
   let menuBarButton = document.createElement("button");
   menuBarButton.id = `men${currentWindowID}`;
   menuBarButton.classList = "osElemBase oSButton prgrmBarPrgrmBtn";
   menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
-  menuBarButton.textContent = programName;
+  let container = document.createElement("div");
+  container.classList.add("menuButtonInside");
+  let img = document.createElement("img");
+  img.src = programIcon;
+  img.width = 27;
+  img.height = 27;
+  let textSpan = document.createElement("span");
+  textSpan.textContent = programName;
+  container.appendChild(img);
+  container.appendChild(textSpan);
+  menuBarButton.appendChild(container);
+
   menuBarButton.addEventListener("mousedown", function (e) {
     if (
       menuBarButton.style.border ===
@@ -216,8 +227,10 @@ function createMenuBarButton(currentWindowID, programName) {
       bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     }
   });
+
   document.getElementById("programBar").appendChild(menuBarButton);
 }
+
 
 let windowCount = -1;
 let alertCount = -1;
@@ -370,7 +383,15 @@ function openProgram(
     });
   };
   window.appendChild(iframe);
-  createMenuBarButton(currentWindowID, programName);
+  let programIcon = data.match(/<!--.* microIcon="(.+?)".*-->/);
+if (programIcon) {
+  programIcon = programIcon[1]; // Set to the matched group
+} else {
+  programIcon = JSON.parse(
+    fileContents["system"]["icons"]["executable.json"]
+  ).micro;
+}
+  createMenuBarButton(currentWindowID, programName, programIcon);
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
 
