@@ -111,8 +111,13 @@ hr {
   line-height: 32px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   padding-right: 2px;
+  padding-left: 2px;
+}
+
+.menuButtonInside img {
+  margin-right: 4px;
+  transform: translateY(3px);
 }
 
 .menuIcon {

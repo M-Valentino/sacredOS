@@ -205,13 +205,17 @@ function createMenuBarButton(currentWindowID, programName, programIcon) {
   menuBarButton.id = `men${currentWindowID}`;
   menuBarButton.classList = "osElemBase oSButton prgrmBarPrgrmBtn";
   menuBarButton.style.border = "var(--borderWidth) inset var(--secColorDark)";
+  let container = document.createElement("div");
+  container.classList.add("menuButtonInside");
   let img = document.createElement("img");
   img.src = programIcon;
-  img.alt = programName; // Adding an alt attribute for accessibility
+  img.width = 27;
+  img.height = 27;
   let textSpan = document.createElement("span");
   textSpan.textContent = programName;
-  menuBarButton.appendChild(img);
-  menuBarButton.appendChild(textSpan);
+  container.appendChild(img);
+  container.appendChild(textSpan);
+  menuBarButton.appendChild(container);
 
   menuBarButton.addEventListener("mousedown", function (e) {
     if (
