@@ -359,8 +359,10 @@
         fileName = fileName.concat(".txt");
       }
 
+      fileName = fileName.replace("]", "");
+      fileName = fileName.replace("[", "");
+      
       if (fileName !== "") {
-        // Only proceed if the filename is not empty
         window.top.postMessage(`MK:F[${pwd.substring(3)}${fileName}]`, '*');
       }
 
@@ -377,6 +379,9 @@
       if (folderName.includes(".")) {
         window.top.postMessage("ALERT:[Can't name a folder with \".\"!");
       }
+
+      folderName = folderName.replace("]", "");
+      folderName = folderName.replace("[", "");
 
       if (folderName !== "") {
         window.top.postMessage(`MK:D[${pwd.substring(3)}${folderName}]`, '*');
