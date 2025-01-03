@@ -6,21 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     #imageContainer {
-      height: calc(100vh - 8px - 26px);
+      position: absolute;
+      top: 30px;
+    }
+
+    #img {
+      transform-origin: top left;
     }
 
     .menuButt {
       height: 26px;
+    }
+
+    #zoomSelect {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>
 
 <body class="program">
   <p id="noValidImage">No valid image opened.</p>
+  <select id="zoomSelect" class="oSButton osElemBase" onchange="applyZoom(this.value)">
+    <option value="1">100%</option>
+    <option value="2">200%</option>
+    <option value="3">300%</option>
+    <option value="4">400%</option>
+  </select>
   <div id="imageContainer">
   </div>
   <script>
     window.top.postMessage("REQ:SS", "*");
+
+    function applyZoom(value) {
+      document.getElementById("img").style.transform = `scale(${value})`;
+    }
 
     // Function to extract file path from comments within the HTML
     function extractFilePath() {
@@ -38,7 +59,7 @@
 
     const filePath = extractFilePath(); // Extract the file path from a comment
     const extension = filePath.split('.').pop();
-    
+
     if (filePath !== null) {
       window.top.postMessage(`REQ:PH[${filePath}]`, "*");
     }
@@ -66,7 +87,8 @@
             let imageContainer = document.getElementById('imageContainer');
             let image = document.createElement("img");
 
-            image.src= `data:image/${extension};base64,${fileContent}`;
+            image.src = `data:image/${extension};base64,${fileContent}`;
+            image.id = "img";
             imageContainer.appendChild(image);
           }
         }
