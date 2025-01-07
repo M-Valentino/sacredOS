@@ -187,17 +187,25 @@ function updateColorVariable(variableName, newColor) {
   );
 }
 
+function addBGModeSettingEntry(mode) {
+  let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
+  tempSettings["desktopBGMode"] = mode;
+  fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+}
+
 function changeBGMode(mode) {
   if (mode === "stretch") {
     if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
       fileContents["system"]["settings.json"] = fileContents["system"][
         "settings.json"
-      ].replace(`"desktopBGMode": "tile",`, `"desktopBGMode": "stretch",`);
+      ].replace(
+        /"desktopBGMode":\s*"[a-zA-Z]+",/,
+        `"desktopBGMode": "stretch",`
+      );
+
       // If setting doesn't exist
     } else {
-      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
-      tempSettings["desktopBGMode"] = "stretch";
-      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+      addBGModeSettingEntry(mode);
     }
     let regex = new RegExp(`(--bgRepeat: ).*?;`);
     fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
@@ -223,9 +231,7 @@ function changeBGMode(mode) {
       ].replace(`"desktopBGMode": "stretch",`, `"desktopBGMode": "tile",`);
       // If setting doesn't exist
     } else {
-      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
-      tempSettings["desktopBGMode"] = "tile";
-      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+      addBGModeSettingEntry(mode);
     }
     let regex = new RegExp(`(--bgRepeat: ).*?;`);
     fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
@@ -247,7 +253,7 @@ function changeBGMode(mode) {
   }
 }
 
-function existingDialogIsOpen(){
+function existingDialogIsOpen() {
   if (document.getElementById("winSaveFileAsDialog")) {
     window.top.postMessage(
       "ALERT:[Please save the file from the existing dialog or cancel it."
@@ -261,7 +267,6 @@ function existingDialogIsOpen(){
   }
   return false;
 }
-
 
 let openingFileFor;
 let savingFileFor;
@@ -448,7 +453,7 @@ window.onmessage = function (e) {
 
       dataToSave = e.data.substring(6);
       savingFileFor = e.source;
-      console.log(dataToSave)
+      console.log(dataToSave);
 
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
@@ -485,7 +490,7 @@ window.onmessage = function (e) {
       openingFileFor = "";
       closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
       return;
-    } else if (e.data.startsWith("SFFD:[")){
+    } else if (e.data.startsWith("SFFD:[")) {
       const rightBracketIndex = e.data.indexOf("]");
       const filePath = e.data.slice(6, rightBracketIndex);
       const directories = filePath.split("/");
