@@ -113,6 +113,7 @@
   <select id="backgroundMode" class="oSButton osElemBase" onchange="changeBackgroundMode(this.value)">
     <option value="stretch">Stretch</option>
     <option value="tile">Tile</option>
+    <option value="contain">Contain</option>
   </select>
   <h3 class="mt-20">Time Format</h3>
   <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF[24h`)">
@@ -154,6 +155,15 @@
         document.querySelector(':root').style.setProperty('--bgRepeat', 'initial');
         document.querySelector(':root').style.setProperty('--bgAttachment', 'initial');
         document.querySelector(':root').style.setProperty('--bgSize', 'initial');
+      `);
+    }
+
+    function changeBGModeContainSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'no-repeat');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'fixed');
+        document.querySelector(':root').style.setProperty('--bgSize', 'contain');
       `);
     }
 
@@ -224,9 +234,12 @@
       if (mode === "stretch") {
         window.top.postMessage(`U:BGM-stretch`, "*");
         window.top.postMessage(changeBGModeStretchSysWide());
-      } else {
+      } else if (mode === "tile") {
         window.top.postMessage(`U:BGM-tile`, "*");
         window.top.postMessage(changeBGModeTileSysWide());
+      } else if (mode === "contain") {
+        window.top.postMessage(`U:BGM-cover`, "*");
+        window.top.postMessage(changeBGModeContainSysWide());
       }
     }
 

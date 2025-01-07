@@ -254,4 +254,5 @@ hr {
   background-attachment: var(--bgAttachment);
   background-size: var(--bgSize);
   background-image: var(--bgBlobURL);
+  background-position: center center;
 }
