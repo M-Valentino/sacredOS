@@ -103,10 +103,14 @@
     var audio_samples_R = new Float32Array(SAMPLE_COUNT);
     var audio_write_cursor = 0, audio_read_cursor = 0;
 
+    function handleFrame(framebuffer_24) {
+      for (var i = 0; i < FRAMEBUFFER_SIZE; i++) {
+        framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
+      }
+    }
+
     const nes = new jsnes.NES({
-      onFrame: function (framebuffer_24) {
-        for (var i = 0; i < FRAMEBUFFER_SIZE; i++) framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
-      },
+      onFrame: handleFrame,
       onAudioSample: function (l, r) {
         audio_samples_L[audio_write_cursor] = l;
         audio_samples_R[audio_write_cursor] = r;
