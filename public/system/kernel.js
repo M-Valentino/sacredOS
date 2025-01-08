@@ -187,67 +187,47 @@ function updateColorVariable(variableName, newColor) {
   );
 }
 
-function changeBGMode(mode) {
-  if (mode === "stretch") {
-    if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
-      fileContents["system"]["settings.json"] = fileContents["system"][
-        "settings.json"
-      ].replace(`"desktopBGMode": "tile",`, `"desktopBGMode": "stretch",`);
-      // If setting doesn't exist
-    } else {
-      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
-      tempSettings["desktopBGMode"] = "stretch";
-      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
-    }
-    let regex = new RegExp(`(--bgRepeat: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 no-repeat;`
-    );
+function updateBGModeSetting(mode) {
+  if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
+    fileContents["system"]["settings.json"] = fileContents["system"][
+      "settings.json"
+    ].replace(/"desktopBGMode":\s*"[a-zA-Z]+",/, `"desktopBGMode": "${mode}",`);
 
-    regex = new RegExp(`(--bgAttachment: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 fixed;`
-    );
-
-    regex = new RegExp(`(--bgSize: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 100% 100%;`
-    );
-  } else if (mode === "tile") {
-    if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
-      fileContents["system"]["settings.json"] = fileContents["system"][
-        "settings.json"
-      ].replace(`"desktopBGMode": "stretch",`, `"desktopBGMode": "tile",`);
-      // If setting doesn't exist
-    } else {
-      let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
-      tempSettings["desktopBGMode"] = "tile";
-      fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
-    }
-    let regex = new RegExp(`(--bgRepeat: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
-
-    regex = new RegExp(`(--bgAttachment: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
-
-    regex = new RegExp(`(--bgSize: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
+    // If setting doesn't exist
+  } else {
+    let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
+    tempSettings["desktopBGMode"] = mode;
+    fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
   }
 }
 
-function existingDialogIsOpen(){
+function updateCSSvar(varName, value) {
+  let regex = new RegExp(`(${varName}: ).*?;`);
+  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+    regex,
+    `$1 ${value};`
+  );
+}
+
+function changeBGMode(mode) {
+  updateBGModeSetting(mode);
+
+  if (mode === "stretch") {
+    updateCSSvar("--bgRepeat", "no-repeat");
+    updateCSSvar("--bgAttachment", "fixed");
+    updateCSSvar("--bgSize", "100% 100%");
+  } else if (mode === "tile") {
+    updateCSSvar("--bgRepeat", "initial");
+    updateCSSvar("--bgAttachment", "initial");
+    updateCSSvar("--bgSize", "initial");
+  } else if (mode === "contain") {
+    updateCSSvar("--bgRepeat", "no-repeat");
+    updateCSSvar("--bgAttachment", "fixed");
+    updateCSSvar("--bgSize", "contain");
+  }
+}
+
+function existingDialogIsOpen() {
   if (document.getElementById("winSaveFileAsDialog")) {
     window.top.postMessage(
       "ALERT:[Please save the file from the existing dialog or cancel it."
@@ -261,7 +241,6 @@ function existingDialogIsOpen(){
   }
   return false;
 }
-
 
 let openingFileFor;
 let savingFileFor;
@@ -322,7 +301,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.16", "*");
+      e.source.postMessage("OSV:1.17", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -448,7 +427,7 @@ window.onmessage = function (e) {
 
       dataToSave = e.data.substring(6);
       savingFileFor = e.source;
-      console.log(dataToSave)
+      console.log(dataToSave);
 
       let fileDialogData = fileContents["programs"]["default"]["files.html"];
       fileDialogData = fileDialogData.replace(
@@ -485,7 +464,7 @@ window.onmessage = function (e) {
       openingFileFor = "";
       closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
       return;
-    } else if (e.data.startsWith("SFFD:[")){
+    } else if (e.data.startsWith("SFFD:[")) {
       const rightBracketIndex = e.data.indexOf("]");
       const filePath = e.data.slice(6, rightBracketIndex);
       const directories = filePath.split("/");
