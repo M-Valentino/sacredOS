@@ -179,14 +179,6 @@ function deleteFile(directoryPath, fileContents, fileName) {
   }
 }
 
-function updateColorVariable(variableName, newColor) {
-  const regex = new RegExp(`(${variableName}: ).*?;`);
-  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-    regex,
-    `$1 ${newColor};`
-  );
-}
-
 function updateBGModeSetting(mode) {
   if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
     fileContents["system"]["settings.json"] = fileContents["system"][
@@ -281,16 +273,16 @@ window.onmessage = function (e) {
       sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
       return;
     } else if (e.data.startsWith("U:PRIMC")) {
-      updateColorVariable("--primColor", e.data.substring(7));
+      updateCSSvar("--primColor", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCL")) {
-      updateColorVariable("--secColorLight", e.data.substring(7));
+      updateCSSvar("--secColorLight", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCD")) {
-      updateColorVariable("--secColorDark", e.data.substring(7));
+      updateCSSvar("--secColorDark", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECC")) {
-      updateColorVariable("--secColor", e.data.substring(6));
+      updateCSSvar("--secColor", e.data.substring(6));
       return;
     } else if (e.data.startsWith("U:BGM-")) {
       changeBGMode(e.data.substring(6));
