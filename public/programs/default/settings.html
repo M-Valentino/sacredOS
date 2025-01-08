@@ -238,7 +238,7 @@
         window.top.postMessage(`U:BGM-tile`, "*");
         window.top.postMessage(changeBGModeTileSysWide());
       } else if (mode === "contain") {
-        window.top.postMessage(`U:BGM-cover`, "*");
+        window.top.postMessage(`U:BGM-contain`, "*");
         window.top.postMessage(changeBGModeContainSysWide());
       }
     }
@@ -267,6 +267,8 @@
               document.getElementById("backgroundMode").selectedIndex = 0;
             } else if (savedSettings["desktopBGMode"] === "tile") {
               document.getElementById("backgroundMode").selectedIndex = 1;
+            } else if (savedSettings["desktopBGMode"] === "contain") {
+              document.getElementById("backgroundMode").selectedIndex = 2;
             }
           }
         }
