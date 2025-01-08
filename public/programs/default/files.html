@@ -85,8 +85,8 @@
     }
 
     .fileOrDir img {
-      width: 48px;
-      height: 62px;
+      width: 54px;
+      height: 54px;
       margin: auto;
     }
 
@@ -618,7 +618,8 @@
         } else if (imgExtensions.some(ext => key.includes(ext))) {
           icon.src = imageImage;
         } else if (key.indexOf('.html') !== -1) {
-          icon.src = executableImage;
+          const iconMatch = backupObject[key].match(/<!--.* microIcon="(.+?)".*-->/);
+          iconMatch ? icon.src = iconMatch[1] : icon.src = executableImage;
         } else {
           icon.src = documentImage;
         }
