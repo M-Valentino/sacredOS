@@ -201,63 +201,29 @@ function updateBGModeSetting(mode) {
   }
 }
 
+function updateCSSvar(varName, value) {
+  let regex = new RegExp(`(${varName}: ).*?;`);
+  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
+    regex,
+    `$1 ${value};`
+  );
+}
+
 function changeBGMode(mode) {
   updateBGModeSetting(mode);
 
   if (mode === "stretch") {
-    let regex = new RegExp(`(--bgRepeat: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 no-repeat;`
-    );
-
-    regex = new RegExp(`(--bgAttachment: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 fixed;`
-    );
-
-    regex = new RegExp(`(--bgSize: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 100% 100%;`
-    );
+    updateCSSvar("--bgRepeat", "no-repeat");
+    updateCSSvar("--bgAttachment", "fixed");
+    updateCSSvar("--bgSize", "100% 100%");
   } else if (mode === "tile") {
-    let regex = new RegExp(`(--bgRepeat: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
-
-    regex = new RegExp(`(--bgAttachment: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
-
-    regex = new RegExp(`(--bgSize: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 initial;`
-    );
+    updateCSSvar("--bgRepeat", "initial");
+    updateCSSvar("--bgAttachment", "initial");
+    updateCSSvar("--bgSize", "initial");
   } else if (mode === "contain") {
-    let regex = new RegExp(`(--bgRepeat: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 no-repeat;`
-    );
-
-    regex = new RegExp(`(--bgAttachment: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 fixed;`
-    );
-
-    regex = new RegExp(`(--bgSize: ).*?;`);
-    fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-      regex,
-      `$1 contain;`
-    );
+    updateCSSvar("--bgRepeat", "no-repeat");
+    updateCSSvar("--bgAttachment", "fixed");
+    updateCSSvar("--bgSize", "contain");
   }
 }
 
