@@ -27,6 +27,15 @@
     "mode": "Install"
   },
   {
+    "name": "Audio Player",
+    "dir": "/apps/audioPlayer",
+    "icon": "icon.png",
+    "description": "Play your music and audio files in Sacred OS. Works with WAV, MP3, and more.",
+    "author": "Mark Valentino",
+    "link": "https://github.com/M-Valentino",
+    "mode": "Install"
+  },
+  {
     "name": "Peter Alert",
     "dir": "/apps/peterAlert",
     "icon": "icon.png",
