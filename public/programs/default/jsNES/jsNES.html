@@ -167,64 +167,95 @@
     }
 
     // EPX main routine: modifies the 2× data by comparing neighbor pixels
-    function applyEPXAlgorithm(imgHeight, imgWidth, originalImgData, scaledImgData) {
-      // Clone the 2× data so we don't directly overwrite as we go
-      let epxImg = structuredClone(scaledImgData);
+    // -------------------------------------------------------------------------
+    // EPX 2x scaling in a single pass, using typed arrays
+    // -------------------------------------------------------------------------
+    function epxScale2(
+      inData,            // Uint8ClampedArray, RGBA input
+      outData,           // Uint8ClampedArray, RGBA output (2x dimensions)
+      w,                 // original width
+      h                  // original height
+    ) {
+      const doubledW = w << 1; // w * 2
+      // Helper for indexing RGBA
+      // pixel (x, y) in inData => index = (y*w + x)*4
+      function getIndex(_x, _y) {
+        return (_y * w + _x) << 2; // multiply by 4
+      }
+      function getOutIndex(_x, _y) {
+        return (_y * doubledW + _x) << 2;
+      }
+      // Read RGBA from inData safely (handle boundaries by clamping)
+      function getPixel(x, y) {
+        // clamp x, y
+        if (x < 0) x = 0;
+        else if (x >= w) x = w - 1;
+        if (y < 0) y = 0;
+        else if (y >= h) y = h - 1;
+        const idx = getIndex(x, y);
+        return (
+          (inData[idx + 0] << 24) |  // R in high bits
+          (inData[idx + 1] << 16) |  // G
+          (inData[idx + 2] << 8) |  // B
+          (inData[idx + 3] << 0)    // A in lowest bits
+        );
+      }
+      // Write an RGBA integer to outData
+      function putPixel(x, y, rgba) {
+        const outIdx = getOutIndex(x, y);
+        outData[outIdx + 0] = (rgba >>> 24) & 0xFF; // R
+        outData[outIdx + 1] = (rgba >>> 16) & 0xFF; // G
+        outData[outIdx + 2] = (rgba >>> 8) & 0xFF; // B
+        outData[outIdx + 3] = (rgba >>> 0) & 0xFF; // A
+      }
+      // Compare two RGBA-packed integers
+      function sameColor(rgba1, rgba2) {
+        return rgba1 === rgba2;
+      }
 
-      for (let y = 0; y < imgHeight; y++) {
-        for (let x = 0; x < imgWidth; x++) {
-          const P = originalImgData[y][x];
-          const A = (y > 0) ? originalImgData[y - 1][x] : P;
-          const B = (x < imgWidth - 1) ? originalImgData[y][x + 1] : P;
-          const C = (x > 0) ? originalImgData[y][x - 1] : P;
-          const D = (y < imgHeight - 1) ? originalImgData[y + 1][x] : P;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          // center pixel
+          const P = getPixel(x, y);
+          // neighbors:
+          const A = getPixel(x, y - 1); // up
+          const B = getPixel(x + 1, y); // right
+          const C = getPixel(x - 1, y); // left
+          const D = getPixel(x, y + 1); // down
 
-          // Coordinates in the 2× scaled image
-          let outY = y * 2;
-          let outX = x * 2;
+          // Pre-fill the 2×2 block with the center pixel
+          let topLeft = P;
+          let topRight = P;
+          let bottomLeft = P;
+          let bottomRight = P;
 
-          // Corner pixels in the 2× block
-          let topLeft = epxImg[outY][outX];
-          let topRight = epxImg[outY][outX + 1];
-          let bottomLeft = epxImg[outY + 1][outX];
-          let bottomRight = epxImg[outY + 1][outX + 1];
-
-          // If neighbors match, push that pixel in the corners
-          if (arraysEqual(C, A)) {
+          // EPX logic for corners:
+          // top-left
+          if (sameColor(A, C) && !sameColor(A, B) && !sameColor(C, D)) {
             topLeft = A;
           }
-          if (arraysEqual(A, B)) {
+          // top-right
+          if (sameColor(A, B) && !sameColor(A, C) && !sameColor(B, D)) {
             topRight = B;
           }
-          if (arraysEqual(D, C)) {
+          // bottom-left
+          if (sameColor(C, D) && !sameColor(C, A) && !sameColor(D, B)) {
             bottomLeft = C;
           }
-          if (arraysEqual(B, D)) {
+          // bottom-right
+          if (sameColor(B, D) && !sameColor(B, A) && !sameColor(D, C)) {
             bottomRight = D;
           }
 
-          // If multiple surrounding pixels are the same, fill corners with P
-          if (
-            (arraysEqual(A, B) && arraysEqual(B, C)) ||
-            (arraysEqual(B, C) && arraysEqual(C, D)) ||
-            (arraysEqual(A, B) && arraysEqual(B, D)) ||
-            (arraysEqual(A, C) && arraysEqual(C, D)) ||
-            (arraysEqual(A, B) && arraysEqual(B, C) && arraysEqual(C, D))
-          ) {
-            topLeft = P;
-            topRight = P;
-            bottomLeft = P;
-            bottomRight = P;
-          }
-
-          // Update the corners
-          epxImg[outY][outX] = topLeft;
-          epxImg[outY][outX + 1] = topRight;
-          epxImg[outY + 1][outX] = bottomLeft;
-          epxImg[outY + 1][outX + 1] = bottomRight;
+          // Write out the 2×2 block
+          const outX = x << 1;   // x*2
+          const outY = y << 1;   // y*2
+          putPixel(outX, outY, topLeft);
+          putPixel(outX + 1, outY, topRight);
+          putPixel(outX, outY + 1, bottomLeft);
+          putPixel(outX + 1, outY + 1, bottomRight);
         }
       }
-      return epxImg;
     }
 
     // Convert our 3D array (height × width × [RGBA]) back into ImageData for putImageData
@@ -243,46 +274,39 @@
       return output;
     }
 
+    // For the standard NES resolution 256×240:
+    const originalWidth = SCREEN_WIDTH;   // 256
+    const originalHeight = SCREEN_HEIGHT; // 240
+    const scaledWidth = originalWidth << 1;   // 512
+    const scaledHeight = originalHeight << 1; // 480
+
+    // We'll allocate this once (not every frame!)
+    let epxResult_u8 = new Uint8ClampedArray(scaledWidth * scaledHeight * 4);
+
+    // Then in the main loop:
     function onAnimationFrame() {
       window.requestAnimationFrame(onAnimationFrame);
 
       if (!isEpx) {
+        // Nearest neighbor (original code):
         const canvas = document.getElementById("nes-canvas");
-        canvas.width = SCREEN_WIDTH;
-        canvas.height = SCREEN_HEIGHT;
+        canvas.width = originalWidth;
+        canvas.height = originalHeight;
         image.data.set(framebuffer_u8);
         canvas_ctx.putImageData(image, 0, 0);
       } else {
-
-        // 1. We have the raw RGBA bytes in `framebuffer_u8` after handleFrame()
-        //    It's 256*240*4 in length for the NES default resolution.
-        const originalWidth = SCREEN_WIDTH;   // 256
-        const originalHeight = SCREEN_HEIGHT;  // 240
-        const scaledWidth = originalWidth * 2; // 512
-        const scaledHeight = originalHeight * 2; // 480
-
-        // 2. Convert the NES framebuffer into a 3D array [height][width][RGBA]
-        const original3D = convertTo3DArray(framebuffer_u8, originalHeight, originalWidth);
-
-        // 3. Create a 2× placeholder array
-        let scaled3D = fillWithTransparentPixels(scaledWidth, scaledHeight);
-
-        // 4. First do a 2× nearest neighbor so we have a valid scaled "base".
-        scaled3D = nearestNeighborScale(originalHeight, originalWidth, scaled3D, original3D);
-
-        // 5. Apply EPX to that scaled array
-        const epxResult = applyEPXAlgorithm(originalHeight, originalWidth, original3D, scaled3D);
-
-        // 6. Convert back to ImageData
-        const finalImgData = convert3DArrImgTo1D(canvas_ctx, scaledWidth, scaledHeight, epxResult);
-
-        // 7. Ensure our canvas is sized for the new 512×480 image
+        // 2× EPX
         const canvas = document.getElementById("nes-canvas");
         canvas.width = scaledWidth;
         canvas.height = scaledHeight;
+
+        // epxScale2: read from 'framebuffer_u8', write into 'epxResult_u8'
+        epxScale2(framebuffer_u8, epxResult_u8, originalWidth, originalHeight);
+
+        // Now put epxResult_u8 into the canvas
+        const finalImgData = new ImageData(epxResult_u8, scaledWidth, scaledHeight);
         canvas_ctx.putImageData(finalImgData, 0, 0);
       }
-
     }
 
     function audio_remain() {
