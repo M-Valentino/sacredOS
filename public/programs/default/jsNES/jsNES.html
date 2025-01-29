@@ -246,249 +246,265 @@
     function onAnimationFrame() {
       window.requestAnimationFrame(onAnimationFrame);
 
-      // 1. We have the raw RGBA bytes in `framebuffer_u8` after handleFrame()
-      //    It's 256*240*4 in length for the NES default resolution.
-      const originalWidth = SCREEN_WIDTH;   // 256
-      const originalHeight = SCREEN_HEIGHT;  // 240
-      const scaledWidth = originalWidth * 2; // 512
-      const scaledHeight = originalHeight * 2; // 480
+      if (!isEpx) {
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = SCREEN_WIDTH;
+        canvas.height = SCREEN_HEIGHT;
+        image.data.set(framebuffer_u8);
+        canvas_ctx.putImageData(image, 0, 0);
+      } else {
 
-      // 2. Convert the NES framebuffer into a 3D array [height][width][RGBA]
-      const original3D = convertTo3DArray(framebuffer_u8, originalHeight, originalWidth);
+        // 1. We have the raw RGBA bytes in `framebuffer_u8` after handleFrame()
+        //    It's 256*240*4 in length for the NES default resolution.
+        const originalWidth = SCREEN_WIDTH;   // 256
+        const originalHeight = SCREEN_HEIGHT;  // 240
+        const scaledWidth = originalWidth * 2; // 512
+        const scaledHeight = originalHeight * 2; // 480
 
-      // 3. Create a 2× placeholder array
-      let scaled3D = fillWithTransparentPixels(scaledWidth, scaledHeight);
+        // 2. Convert the NES framebuffer into a 3D array [height][width][RGBA]
+        const original3D = convertTo3DArray(framebuffer_u8, originalHeight, originalWidth);
 
-      // 4. First do a 2× nearest neighbor so we have a valid scaled "base".
-      scaled3D = nearestNeighborScale(originalHeight, originalWidth, scaled3D, original3D);
+        // 3. Create a 2× placeholder array
+        let scaled3D = fillWithTransparentPixels(scaledWidth, scaledHeight);
 
-      // 5. Apply EPX to that scaled array
-      const epxResult = applyEPXAlgorithm(originalHeight, originalWidth, original3D, scaled3D);
+        // 4. First do a 2× nearest neighbor so we have a valid scaled "base".
+        scaled3D = nearestNeighborScale(originalHeight, originalWidth, scaled3D, original3D);
 
-      // 6. Convert back to ImageData
-      const finalImgData = convert3DArrImgTo1D(canvas_ctx, scaledWidth, scaledHeight, epxResult);
+        // 5. Apply EPX to that scaled array
+        const epxResult = applyEPXAlgorithm(originalHeight, originalWidth, original3D, scaled3D);
 
-      // 7. Ensure our canvas is sized for the new 512×480 image
-      const canvas = document.getElementById("nes-canvas");
-      canvas.width = scaledWidth;
-      canvas.height = scaledHeight;
+        // 6. Convert back to ImageData
+        const finalImgData = convert3DArrImgTo1D(canvas_ctx, scaledWidth, scaledHeight, epxResult);
 
-      // 8. Draw the scaled+filtered image
-      canvas_ctx.putImageData(finalImgData, 0, 0);
+        // 7. Ensure our canvas is sized for the new 512×480 image
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+        canvas_ctx.putImageData(finalImgData, 0, 0);
+      }
 
     }
 
-      function audio_remain() {
-        return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
+    function audio_remain() {
+      return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
+    }
+
+    function audio_callback(event) {
+      var dst = event.outputBuffer;
+      var len = dst.length;
+
+      // Attempt to avoid buffer underruns.
+      if (audio_remain() < AUDIO_BUFFERING) nes.frame();
+
+      var dst_l = dst.getChannelData(0);
+      var dst_r = dst.getChannelData(1);
+      for (var i = 0; i < len; i++) {
+        var src_idx = (audio_read_cursor + i) & SAMPLE_MASK;
+        dst_l[i] = audio_samples_L[src_idx];
+        dst_r[i] = audio_samples_R[src_idx];
       }
 
-      function audio_callback(event) {
-        var dst = event.outputBuffer;
-        var len = dst.length;
+      audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
+    }
 
-        // Attempt to avoid buffer underruns.
-        if (audio_remain() < AUDIO_BUFFERING) nes.frame();
+    let customKeyMap = {
+      up: 38, // Default ArrowUp
+      down: 40, // Default ArrowDown
+      left: 37, // Default ArrowLeft
+      right: 39, // Default ArrowRight
+      a: 65, // Default 'A' key
+      b: 83, // Default 'S' key
+      select: 9, // Default Tab
+      start: 13, // Default Enter
+    };
 
-        var dst_l = dst.getChannelData(0);
-        var dst_r = dst.getChannelData(1);
-        for (var i = 0; i < len; i++) {
-          var src_idx = (audio_read_cursor + i) & SAMPLE_MASK;
-          dst_l[i] = audio_samples_L[src_idx];
-          dst_r[i] = audio_samples_R[src_idx];
+    function keyboard(callback, event) {
+      console.log(customKeyMap);
+      var player = 1;
+      switch (event.keyCode) {
+        case customKeyMap.up:
+          callback(player, jsnes.Controller.BUTTON_UP);
+          break;
+        case customKeyMap.down:
+          callback(player, jsnes.Controller.BUTTON_DOWN);
+          break;
+        case customKeyMap.left:
+          callback(player, jsnes.Controller.BUTTON_LEFT);
+          break;
+        case customKeyMap.right:
+          callback(player, jsnes.Controller.BUTTON_RIGHT);
+          break;
+        case customKeyMap.a:
+          callback(player, jsnes.Controller.BUTTON_A);
+          break;
+        case customKeyMap.b:
+          callback(player, jsnes.Controller.BUTTON_B);
+          break;
+        case customKeyMap.select:
+          callback(player, jsnes.Controller.BUTTON_SELECT);
+          break;
+        case customKeyMap.start:
+          callback(player, jsnes.Controller.BUTTON_START);
+          break;
+        default:
+          break;
+      }
+    }
+
+    function nes_init(canvas_id) {
+      var canvas = document.getElementById(canvas_id);
+      canvas_ctx = canvas.getContext("2d");
+      image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      canvas_ctx.fillStyle = "black";
+      canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      // Allocate framebuffer array.
+      const buffer = new ArrayBuffer(image.data.length);
+      framebuffer_u8 = new Uint8ClampedArray(buffer);
+      framebuffer_u32 = new Uint32Array(buffer);
+
+      // Setup audio.
+      const audio_ctx = new window.AudioContext();
+      const script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
+      script_processor.onaudioprocess = audio_callback;
+      script_processor.connect(audio_ctx.destination);
+    }
+
+    function nes_boot(rom_data) {
+      nes.loadROM(rom_data);
+      window.requestAnimationFrame(onAnimationFrame);
+    }
+
+    function nes_load_data(canvas_id, rom_data) {
+      nes_init(canvas_id);
+      nes_boot(rom_data);
+    }
+
+    function nes_load_url(canvas_id, path) {
+      nes_init(canvas_id);
+
+      const req = new XMLHttpRequest();
+      req.open("GET", path);
+      req.overrideMimeType("text/plain; charset=x-user-defined");
+      req.onerror = () => console.log(`Error loading ${path}: ${req.statusText}`);
+
+      req.onload = function () {
+        if (this.status === 200) {
+          nes_boot(this.responseText);
+        } else if (this.status === 0) {
+          // Aborted, so ignore error
+        } else {
+          req.onerror();
         }
-
-        audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
-      }
-
-      let customKeyMap = {
-        up: 38, // Default ArrowUp
-        down: 40, // Default ArrowDown
-        left: 37, // Default ArrowLeft
-        right: 39, // Default ArrowRight
-        a: 65, // Default 'A' key
-        b: 83, // Default 'S' key
-        select: 9, // Default Tab
-        start: 13, // Default Enter
       };
 
-      function keyboard(callback, event) {
-        console.log(customKeyMap);
-        var player = 1;
-        switch (event.keyCode) {
-          case customKeyMap.up:
-            callback(player, jsnes.Controller.BUTTON_UP);
-            break;
-          case customKeyMap.down:
-            callback(player, jsnes.Controller.BUTTON_DOWN);
-            break;
-          case customKeyMap.left:
-            callback(player, jsnes.Controller.BUTTON_LEFT);
-            break;
-          case customKeyMap.right:
-            callback(player, jsnes.Controller.BUTTON_RIGHT);
-            break;
-          case customKeyMap.a:
-            callback(player, jsnes.Controller.BUTTON_A);
-            break;
-          case customKeyMap.b:
-            callback(player, jsnes.Controller.BUTTON_B);
-            break;
-          case customKeyMap.select:
-            callback(player, jsnes.Controller.BUTTON_SELECT);
-            break;
-          case customKeyMap.start:
-            callback(player, jsnes.Controller.BUTTON_START);
-            break;
-          default:
-            break;
+      req.send();
+    }
+
+    document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
+    document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
+
+    function openKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "block";
+    }
+
+    function closeKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "none";
+    }
+
+    // For preventing multiple buttons from being clicked and having them all be set to the same key at once
+    let isAwaitingNewKey = false;
+
+    function changeMap(controllerButton) {
+      let mappedKeyIndicator = document.getElementById(controllerButton);
+      const keydownListener = function (event) {
+        const key = event.key;
+        // if space key or enter key
+        if (event.keyCode === 32 || event.keyCode === 13) {
+          event.preventDefault();
+        }
+        customKeyMap[controllerButton] = event.keyCode;
+        if (event.keyCode === 32) {
+          mappedKeyIndicator.innerHTML = "Space";
+        } else {
+          mappedKeyIndicator.innerHTML = key;
+        }
+        window.removeEventListener('keydown', keydownListener);
+        isAwaitingNewKey = false;
+      };
+      if (!isAwaitingNewKey) {
+        window.addEventListener('keydown', keydownListener);
+        mappedKeyIndicator.innerHTML = "Press a key";
+        isAwaitingNewKey = true;
+      }
+    }
+
+    function applyScale(type) {
+      document.getElementById("nes-canvas").classList = type;
+    }
+
+    let isEpx = false;
+    function applyFilter(type) {
+      if (type === "nearestNeighbor") {
+        isEpx = false;
+      } else {
+        isEpx = true;
+      }
+    }
+
+    window.top.postMessage("REQ:SS", "*");
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+        const binaryString = atob(fileContent);
+        const dataArray = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          dataArray[i] = binaryString.charCodeAt(i);
+        }
+
+        const blob = new Blob([dataArray], { type: "application/octet-stream" });
+        const objectUrl = URL.createObjectURL(blob);
+        nes_load_url("nes-canvas", objectUrl);
+        URL.revokeObjectURL(objectURL)
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
         }
       }
-
-      function nes_init(canvas_id) {
-        var canvas = document.getElementById(canvas_id);
-        canvas_ctx = canvas.getContext("2d");
-        image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        canvas_ctx.fillStyle = "black";
-        canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        // Allocate framebuffer array.
-        const buffer = new ArrayBuffer(image.data.length);
-        framebuffer_u8 = new Uint8ClampedArray(buffer);
-        framebuffer_u32 = new Uint32Array(buffer);
-
-        // Setup audio.
-        const audio_ctx = new window.AudioContext();
-        const script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
-        script_processor.onaudioprocess = audio_callback;
-        script_processor.connect(audio_ctx.destination);
-      }
-
-      function nes_boot(rom_data) {
-        nes.loadROM(rom_data);
-        window.requestAnimationFrame(onAnimationFrame);
-      }
-
-      function nes_load_data(canvas_id, rom_data) {
-        nes_init(canvas_id);
-        nes_boot(rom_data);
-      }
-
-      function nes_load_url(canvas_id, path) {
-        nes_init(canvas_id);
-
-        const req = new XMLHttpRequest();
-        req.open("GET", path);
-        req.overrideMimeType("text/plain; charset=x-user-defined");
-        req.onerror = () => console.log(`Error loading ${path}: ${req.statusText}`);
-
-        req.onload = function () {
-          if (this.status === 200) {
-            nes_boot(this.responseText);
-          } else if (this.status === 0) {
-            // Aborted, so ignore error
-          } else {
-            req.onerror();
-          }
-        };
-
-        req.send();
-      }
-
-      document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
-      document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
-
-      function openKeyMapping() {
-        document.getElementById("keyMapDialog").style.display = "block";
-      }
-
-      function closeKeyMapping() {
-        document.getElementById("keyMapDialog").style.display = "none";
-      }
-
-      // For preventing multiple buttons from being clicked and having them all be set to the same key at once
-      let isAwaitingNewKey = false;
-
-      function changeMap(controllerButton) {
-        let mappedKeyIndicator = document.getElementById(controllerButton);
-        const keydownListener = function (event) {
-          const key = event.key;
-          // if space key or enter key
-          if (event.keyCode === 32 || event.keyCode === 13) {
-            event.preventDefault();
-          }
-          customKeyMap[controllerButton] = event.keyCode;
-          if (event.keyCode === 32) {
-            mappedKeyIndicator.innerHTML = "Space";
-          } else {
-            mappedKeyIndicator.innerHTML = key;
-          }
-          window.removeEventListener('keydown', keydownListener);
-          isAwaitingNewKey = false;
-        };
-        if (!isAwaitingNewKey) {
-          window.addEventListener('keydown', keydownListener);
-          mappedKeyIndicator.innerHTML = "Press a key";
-          isAwaitingNewKey = true;
-        }
-      }
-
-      function applyScale(type) {
-        document.getElementById("nes-canvas").classList = type;
-      }
-
-      window.top.postMessage("REQ:SS", "*");
-
-      function openFile() {
-        window.top.postMessage("OPWD:[", "*");
-      }
-
-      function getFileName(filePath) {
-        const directories = filePath.split("/");
-        return directories.pop();
-      }
-
-      let programId = "";
-      window.addEventListener("message", function (e) {
-        if (e.data.startsWith("SS:")) {
-          const stylesheet = e.data.substring(3);
-          try {
-            const styleElement = document.createElement('style');
-            styleElement.type = 'text/css';
-            styleElement.innerText = stylesheet;
-            document.head.appendChild(styleElement);
-          } catch (error) {
-            console.error("Error requesting stylesheet:", error);
-          }
-          return;
-        } else if (e.data.startsWith("PHFD:[")) {
-          const rightBracketIndex = e.data.indexOf("]");
-          filePath = e.data.substring(6, rightBracketIndex);
-          let fileContent = e.data.substring(rightBracketIndex + 1);
-          if (fileContent === "undefined") {
-            fileContent = "";
-          } else {
-            window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
-          }
-          const binaryString = atob(fileContent);
-          const dataArray = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            dataArray[i] = binaryString.charCodeAt(i);
-          }
-
-          const blob = new Blob([dataArray], { type: "application/octet-stream" });
-          const objectUrl = URL.createObjectURL(blob);
-          nes_load_url("nes-canvas", objectUrl);
-          URL.revokeObjectURL(objectURL)
-        } else if (e.data.startsWith("ID:[")) {
-          programId = e.data.substring(4);
-        } else if (e.data.startsWith("NSP:[")) {
-          if (filePath === null) {
-            filePath = e.data.substring(5);
-            window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
-          }
-        }
-      });
+    });
 
   </script>
 </head>
@@ -503,6 +519,10 @@
       <option value="size100P">100% Size</option>
       <option value="size200P">200% Size</option>
       <option value="size300P">300% Size</option>
+    </select>
+    <select id="filterSelect" class="oSButton osElemBase" onchange="applyFilter(this.value)">
+      <option value="nearestNeighbor">Nearest Neighbor</option>
+      <option value="epx">EPX</option>
     </select>
   </div>
   <div id="keyMapDialog">
