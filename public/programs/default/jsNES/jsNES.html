@@ -118,11 +118,195 @@
       },
     });
 
+    function convertTo3DArray(pixels, imgHeight, imgWidth) {
+      let originalImgData = [];
+      let index = 0;
+      for (let y = 0; y < imgHeight; y++) {
+        originalImgData[y] = [];
+        for (let x = 0; x < imgWidth; x++) {
+          // Each pixel is 4 bytes in RGBA order
+          const r = pixels[index++];
+          const g = pixels[index++];
+          const b = pixels[index++];
+          const a = pixels[index++];
+          originalImgData[y][x] = [r, g, b, a];
+        }
+      }
+      return originalImgData;
+    }
+
+    // Create a 3D array (height × width) full of transparent RGBA pixels
+    function fillWithTransparentPixels(newWidth, newHeight) {
+      return Array.from({ length: newHeight }, () =>
+        Array.from({ length: newWidth }, () => [0, 0, 0, 0])
+      );
+    }
+
+    // Compare two RGBA pixel arrays
+    function arraysEqual(arr1, arr2) {
+      return (
+        arr1[0] === arr2[0] &&
+        arr1[1] === arr2[1] &&
+        arr1[2] === arr2[2] &&
+        arr1[3] === arr2[3]
+      );
+    }
+
+    // 2× nearest neighbor fill to initialize the bigger image, ensuring no “holes”
+    function nearestNeighborScale(originalHeight, originalWidth, scaledImgData, originalImgData) {
+      for (let y = 0; y < originalHeight; y++) {
+        for (let x = 0; x < originalWidth; x++) {
+          const pixel = originalImgData[y][x];
+          scaledImgData[y * 2][x * 2] = pixel;
+          scaledImgData[y * 2][x * 2 + 1] = pixel;
+          scaledImgData[y * 2 + 1][x * 2] = pixel;
+          scaledImgData[y * 2 + 1][x * 2 + 1] = pixel;
+        }
+      }
+      return scaledImgData;
+    }
+
+    // EPX main routine: modifies the 2× data by comparing neighbor pixels
+    // -------------------------------------------------------------------------
+    // EPX 2x scaling in a single pass, using typed arrays
+    // -------------------------------------------------------------------------
+    function epxScale2(
+      inData,            // Uint8ClampedArray, RGBA input
+      outData,           // Uint8ClampedArray, RGBA output (2x dimensions)
+      w,                 // original width
+      h                  // original height
+    ) {
+      const doubledW = w << 1; // w * 2
+      // Helper for indexing RGBA
+      // pixel (x, y) in inData => index = (y*w + x)*4
+      function getIndex(_x, _y) {
+        return (_y * w + _x) << 2; // multiply by 4
+      }
+      function getOutIndex(_x, _y) {
+        return (_y * doubledW + _x) << 2;
+      }
+      // Read RGBA from inData safely (handle boundaries by clamping)
+      function getPixel(x, y) {
+        // clamp x, y
+        if (x < 0) x = 0;
+        else if (x >= w) x = w - 1;
+        if (y < 0) y = 0;
+        else if (y >= h) y = h - 1;
+        const idx = getIndex(x, y);
+        return (
+          (inData[idx + 0] << 24) |  // R in high bits
+          (inData[idx + 1] << 16) |  // G
+          (inData[idx + 2] << 8) |  // B
+          (inData[idx + 3] << 0)    // A in lowest bits
+        );
+      }
+      // Write an RGBA integer to outData
+      function putPixel(x, y, rgba) {
+        const outIdx = getOutIndex(x, y);
+        outData[outIdx + 0] = (rgba >>> 24) & 0xFF; // R
+        outData[outIdx + 1] = (rgba >>> 16) & 0xFF; // G
+        outData[outIdx + 2] = (rgba >>> 8) & 0xFF; // B
+        outData[outIdx + 3] = (rgba >>> 0) & 0xFF; // A
+      }
+      // Compare two RGBA-packed integers
+      function sameColor(rgba1, rgba2) {
+        return rgba1 === rgba2;
+      }
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          // center pixel
+          const P = getPixel(x, y);
+          // neighbors:
+          const A = getPixel(x, y - 1); // up
+          const B = getPixel(x + 1, y); // right
+          const C = getPixel(x - 1, y); // left
+          const D = getPixel(x, y + 1); // down
+
+          // Pre-fill the 2×2 block with the center pixel
+          let topLeft = P;
+          let topRight = P;
+          let bottomLeft = P;
+          let bottomRight = P;
+
+          // EPX logic for corners:
+          // top-left
+          if (sameColor(A, C) && !sameColor(A, B) && !sameColor(C, D)) {
+            topLeft = A;
+          }
+          // top-right
+          if (sameColor(A, B) && !sameColor(A, C) && !sameColor(B, D)) {
+            topRight = B;
+          }
+          // bottom-left
+          if (sameColor(C, D) && !sameColor(C, A) && !sameColor(D, B)) {
+            bottomLeft = C;
+          }
+          // bottom-right
+          if (sameColor(B, D) && !sameColor(B, A) && !sameColor(D, C)) {
+            bottomRight = D;
+          }
+
+          // Write out the 2×2 block
+          const outX = x << 1;   // x*2
+          const outY = y << 1;   // y*2
+          putPixel(outX, outY, topLeft);
+          putPixel(outX + 1, outY, topRight);
+          putPixel(outX, outY + 1, bottomLeft);
+          putPixel(outX + 1, outY + 1, bottomRight);
+        }
+      }
+    }
+
+    // Convert our 3D array (height × width × [RGBA]) back into ImageData for putImageData
+    function convert3DArrImgTo1D(context, width, height, img3DArr) {
+      const output = context.createImageData(width, height);
+      let idx = 0;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const [r, g, b, a] = img3DArr[y][x];
+          output.data[idx++] = r;
+          output.data[idx++] = g;
+          output.data[idx++] = b;
+          output.data[idx++] = a;
+        }
+      }
+      return output;
+    }
+
+    // For the standard NES resolution 256×240:
+    const originalWidth = SCREEN_WIDTH;   // 256
+    const originalHeight = SCREEN_HEIGHT; // 240
+    const scaledWidth = originalWidth << 1;   // 512
+    const scaledHeight = originalHeight << 1; // 480
+
+    // We'll allocate this once (not every frame!)
+    let epxResult_u8 = new Uint8ClampedArray(scaledWidth * scaledHeight * 4);
+
+    // Then in the main loop:
     function onAnimationFrame() {
       window.requestAnimationFrame(onAnimationFrame);
 
-      image.data.set(framebuffer_u8);
-      canvas_ctx.putImageData(image, 0, 0);
+      if (!isEpx) {
+        // Nearest neighbor (original code):
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = originalWidth;
+        canvas.height = originalHeight;
+        image.data.set(framebuffer_u8);
+        canvas_ctx.putImageData(image, 0, 0);
+      } else {
+        // 2× EPX
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+
+        // epxScale2: read from 'framebuffer_u8', write into 'epxResult_u8'
+        epxScale2(framebuffer_u8, epxResult_u8, originalWidth, originalHeight);
+
+        // Now put epxResult_u8 into the canvas
+        const finalImgData = new ImageData(epxResult_u8, scaledWidth, scaledHeight);
+        canvas_ctx.putImageData(finalImgData, 0, 0);
+      }
     }
 
     function audio_remain() {
@@ -284,6 +468,15 @@
       document.getElementById("nes-canvas").classList = type;
     }
 
+    let isEpx = false;
+    function applyFilter(type) {
+      if (type === "nearestNeighbor") {
+        isEpx = false;
+      } else {
+        isEpx = true;
+      }
+    }
+
     window.top.postMessage("REQ:SS", "*");
 
     function openFile() {
@@ -350,6 +543,10 @@
       <option value="size100P">100% Size</option>
       <option value="size200P">200% Size</option>
       <option value="size300P">300% Size</option>
+    </select>
+    <select id="filterSelect" class="oSButton osElemBase" onchange="applyFilter(this.value)">
+      <option value="nearestNeighbor">Nearest Neighbor</option>
+      <option value="epx">EPX</option>
     </select>
   </div>
   <div id="keyMapDialog">
