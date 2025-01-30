@@ -293,7 +293,7 @@ window.onmessage = function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.17", "*");
+      e.source.postMessage("OSV:1.18", "*");
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
