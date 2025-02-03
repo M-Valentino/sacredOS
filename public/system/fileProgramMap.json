@@ -1,0 +1,34 @@
+{
+  "html": {
+    "open": "",
+    "edit": "programs/default/notepad.html"
+  },
+  "bmp": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "gif": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "jpg": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "jpeg": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "png": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "webp": {
+    "open": "programs/default/imageViewer.html",
+    "edit": "programs/default/notepad.html"
+  },
+  "nes": {
+    "open": "programs/default/jsNES/jsNES.html",
+    "edit": "programs/default/notepad.html"
+  }
+}
