@@ -36,6 +36,15 @@
     "mode": "Install"
   },
   {
+    "name": "Wacky Calendar v1.0",
+    "dir": "/apps/wacky-calendar",
+    "icon": "icon.png",
+    "description": "This calendar helps you keep track of important holidays like National Poop Day.",
+    "author": "Mark Valentino",
+    "link": "https://github.com/M-Valentino",
+    "mode": "Install"
+  },
+  {
     "name": "Peter Alert",
     "dir": "/apps/peterAlert",
     "icon": "icon.png",
