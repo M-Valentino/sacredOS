@@ -49,7 +49,7 @@
         <div class="innerCrtBorder">
           <main id="bootScreen">
             <header class="flexBetween">
-              <h1 id="biosTitle">𓍰 Sacred OS 2 Boot Menu</h1><button id="help" class="biosButton">Help</button>
+              <h1 id="biosTitle">𓍰 Sacred OS Boot Menu</h1><button id="help" class="biosButton">Help</button>
             </header>
             <div id="helpDialog" class="biosDialog">
               <p>
@@ -373,7 +373,7 @@
     let lineCount = 0;
     const compileElement = document.getElementById("compile");
 
-    async function loadfileContents(fileTable, basePath = '/sacred_2/') {
+    async function loadfileContents(fileTable, basePath = '') {
       document.getElementById("sysChecks").style.display = "none";
       document.getElementById("freshInstallInfo").style.display = "initial";
       let tempFileContent = {};

@@ -1,0 +1,102 @@
+<!--width="620" height="450" dontShowOnStartMenu-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #imageContainer {
+      position: absolute;
+      top: 30px;
+    }
+
+    #img {
+      transform-origin: top left;
+    }
+
+    .menuButt {
+      height: 26px;
+    }
+
+    #zoomSelect {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <p id="noValidImage">No valid image opened.</p>
+  <select id="zoomSelect" class="oSButton osElemBase" onchange="applyZoom(this.value)">
+    <option value="1">100%</option>
+    <option value="2">200%</option>
+    <option value="3">300%</option>
+    <option value="4">400%</option>
+  </select>
+  <div id="imageContainer">
+  </div>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+
+    function applyZoom(value) {
+      document.getElementById("img").style.transform = `scale(${value})`;
+    }
+
+    // Function to extract file path from comments within the HTML
+    function extractFilePath() {
+      const nodes = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+      let node;
+      while (node = nodes.nextNode()) {
+        const content = node.nodeValue.trim();
+        const match = content.match(/path="([^"]+)"/); // Regular expression to extract path
+        if (match) {
+          return match[1]; // Return the extracted path
+        }
+      }
+      return null; // Return null if no matching comment is found
+    }
+
+    const filePath = extractFilePath(); // Extract the file path from a comment
+    const extension = filePath.split('.').pop();
+
+    if (filePath !== null) {
+      window.top.postMessage(`REQ:PH[${filePath}]`, "*");
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else
+        if (e.data.startsWith("PH:")) {
+          const expectedPattern = `PH:[${filePath}]`;
+          if (e.data.startsWith(expectedPattern)) {
+            document.getElementById("noValidImage").remove();
+            // Extract file content by removing the initial part of the message
+            let fileContent = e.data.substring(expectedPattern.length);
+
+            let imageContainer = document.getElementById('imageContainer');
+            let image = document.createElement("img");
+
+            image.src = `data:image/${extension};base64,${fileContent}`;
+            image.id = "img";
+            imageContainer.appendChild(image);
+          }
+        }
+
+    };
+
+  </script>
+
+</body>
+
+</html>

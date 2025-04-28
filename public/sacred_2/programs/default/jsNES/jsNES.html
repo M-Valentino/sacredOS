@@ -1,0 +1,601 @@
+<!--width="668" height="646" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAA9QTFRFAAAAAAAA+DgAr38A/6NHdMoVFgAAAAV0Uk5TAP////8c0CZSAAAAiklEQVR4nHWO0Q3DMAhEoe4AeIOIdICoeABLZv+ZAlQNVGruA/HEAQfwRw/mimzaEmWsmdSWLp0Fhw5NHLrkSPdTNYcgwpKkhrtct3TKi/dxocfYWs3IZZt/sL3ZDInlS/w94E4EnRAIuzeGCIAUNabYA632MCMh+tQaR/jipzdbnHKzG4r6bQLTCdh6ECWWjImrAAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <style>
+    :root {
+      --controlHeight: 25px;
+    }
+
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .fitWindow {
+      /* Prevent extra spacing caused by inline elements */
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - var(--controlHeight));
+      max-width: calc((100vh - var(--controlHeight)) * 256 / 240);
+      margin: auto;
+    }
+
+    .size100P {
+      width: 256px;
+      height: 240px;
+      display: block;
+      margin: auto;
+    }
+
+    .size200P {
+      width: 512px;
+      height: 480px;
+      display: block;
+      margin: auto;
+    }
+
+    .size300P {
+      width: 768px;
+      height: 720px;
+      display: block;
+      margin: auto;
+    }
+
+    .controls {
+      height: var(--controlHeight);
+      background-color: var(--secColor);
+      display: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #keyMapDialog {
+      padding: 1rem;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: var(--secColor);
+      z-index: 1000;
+      width: fit-content;
+      min-width: 300px;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    .f-r {
+      float: right;
+    }
+
+    .currentKey {
+      text-align: center;
+      color: #00f;
+    }
+
+    .closeBttn {
+      display: block;
+      margin: auto;
+      margin-top: 8px;
+    }
+  </style>
+
+  <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
+  <script>
+    const SCREEN_WIDTH = 256;
+    const SCREEN_HEIGHT = 240;
+    const FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
+
+    var canvas_ctx, image;
+    var framebuffer_u8, framebuffer_u32;
+
+    const AUDIO_BUFFERING = 512;
+    const SAMPLE_COUNT = 4 * 1024;
+    const SAMPLE_MASK = SAMPLE_COUNT - 1;
+    var audio_samples_L = new Float32Array(SAMPLE_COUNT);
+    var audio_samples_R = new Float32Array(SAMPLE_COUNT);
+    var audio_write_cursor = 0, audio_read_cursor = 0;
+
+    function handleFrame(framebuffer_24) {
+      for (var i = 0; i < FRAMEBUFFER_SIZE; i++) {
+        framebuffer_u32[i] = 0xFF000000 | framebuffer_24[i];
+      }
+    }
+
+    const nes = new jsnes.NES({
+      onFrame: handleFrame,
+      onAudioSample: function (l, r) {
+        audio_samples_L[audio_write_cursor] = l;
+        audio_samples_R[audio_write_cursor] = r;
+        audio_write_cursor = (audio_write_cursor + 1) & SAMPLE_MASK;
+      },
+    });
+
+    function convertTo3DArray(pixels, imgHeight, imgWidth) {
+      let originalImgData = [];
+      let index = 0;
+      for (let y = 0; y < imgHeight; y++) {
+        originalImgData[y] = [];
+        for (let x = 0; x < imgWidth; x++) {
+          // Each pixel is 4 bytes in RGBA order
+          const r = pixels[index++];
+          const g = pixels[index++];
+          const b = pixels[index++];
+          const a = pixels[index++];
+          originalImgData[y][x] = [r, g, b, a];
+        }
+      }
+      return originalImgData;
+    }
+
+    // Create a 3D array (height × width) full of transparent RGBA pixels
+    function fillWithTransparentPixels(newWidth, newHeight) {
+      return Array.from({ length: newHeight }, () =>
+        Array.from({ length: newWidth }, () => [0, 0, 0, 0])
+      );
+    }
+
+    // Compare two RGBA pixel arrays
+    function arraysEqual(arr1, arr2) {
+      return (
+        arr1[0] === arr2[0] &&
+        arr1[1] === arr2[1] &&
+        arr1[2] === arr2[2] &&
+        arr1[3] === arr2[3]
+      );
+    }
+
+    // 2× nearest neighbor fill to initialize the bigger image, ensuring no “holes”
+    function nearestNeighborScale(originalHeight, originalWidth, scaledImgData, originalImgData) {
+      for (let y = 0; y < originalHeight; y++) {
+        for (let x = 0; x < originalWidth; x++) {
+          const pixel = originalImgData[y][x];
+          scaledImgData[y * 2][x * 2] = pixel;
+          scaledImgData[y * 2][x * 2 + 1] = pixel;
+          scaledImgData[y * 2 + 1][x * 2] = pixel;
+          scaledImgData[y * 2 + 1][x * 2 + 1] = pixel;
+        }
+      }
+      return scaledImgData;
+    }
+
+    // EPX main routine: modifies the 2× data by comparing neighbor pixels
+    // -------------------------------------------------------------------------
+    // EPX 2x scaling in a single pass, using typed arrays
+    // -------------------------------------------------------------------------
+    function epxScale2(
+      inData,            // Uint8ClampedArray, RGBA input
+      outData,           // Uint8ClampedArray, RGBA output (2x dimensions)
+      w,                 // original width
+      h                  // original height
+    ) {
+      const doubledW = w << 1; // w * 2
+      // Helper for indexing RGBA
+      // pixel (x, y) in inData => index = (y*w + x)*4
+      function getIndex(_x, _y) {
+        return (_y * w + _x) << 2; // multiply by 4
+      }
+      function getOutIndex(_x, _y) {
+        return (_y * doubledW + _x) << 2;
+      }
+      // Read RGBA from inData safely (handle boundaries by clamping)
+      function getPixel(x, y) {
+        // clamp x, y
+        if (x < 0) x = 0;
+        else if (x >= w) x = w - 1;
+        if (y < 0) y = 0;
+        else if (y >= h) y = h - 1;
+        const idx = getIndex(x, y);
+        return (
+          (inData[idx + 0] << 24) |  // R in high bits
+          (inData[idx + 1] << 16) |  // G
+          (inData[idx + 2] << 8) |  // B
+          (inData[idx + 3] << 0)    // A in lowest bits
+        );
+      }
+      // Write an RGBA integer to outData
+      function putPixel(x, y, rgba) {
+        const outIdx = getOutIndex(x, y);
+        outData[outIdx + 0] = (rgba >>> 24) & 0xFF; // R
+        outData[outIdx + 1] = (rgba >>> 16) & 0xFF; // G
+        outData[outIdx + 2] = (rgba >>> 8) & 0xFF; // B
+        outData[outIdx + 3] = (rgba >>> 0) & 0xFF; // A
+      }
+      // Compare two RGBA-packed integers
+      function sameColor(rgba1, rgba2) {
+        return rgba1 === rgba2;
+      }
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          // center pixel
+          const P = getPixel(x, y);
+          // neighbors:
+          const A = getPixel(x, y - 1); // up
+          const B = getPixel(x + 1, y); // right
+          const C = getPixel(x - 1, y); // left
+          const D = getPixel(x, y + 1); // down
+
+          // Pre-fill the 2×2 block with the center pixel
+          let topLeft = P;
+          let topRight = P;
+          let bottomLeft = P;
+          let bottomRight = P;
+
+          // EPX logic for corners:
+          // top-left
+          if (sameColor(A, C) && !sameColor(A, B) && !sameColor(C, D)) {
+            topLeft = A;
+          }
+          // top-right
+          if (sameColor(A, B) && !sameColor(A, C) && !sameColor(B, D)) {
+            topRight = B;
+          }
+          // bottom-left
+          if (sameColor(C, D) && !sameColor(C, A) && !sameColor(D, B)) {
+            bottomLeft = C;
+          }
+          // bottom-right
+          if (sameColor(B, D) && !sameColor(B, A) && !sameColor(D, C)) {
+            bottomRight = D;
+          }
+
+          // Write out the 2×2 block
+          const outX = x << 1;   // x*2
+          const outY = y << 1;   // y*2
+          putPixel(outX, outY, topLeft);
+          putPixel(outX + 1, outY, topRight);
+          putPixel(outX, outY + 1, bottomLeft);
+          putPixel(outX + 1, outY + 1, bottomRight);
+        }
+      }
+    }
+
+    // Convert our 3D array (height × width × [RGBA]) back into ImageData for putImageData
+    function convert3DArrImgTo1D(context, width, height, img3DArr) {
+      const output = context.createImageData(width, height);
+      let idx = 0;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const [r, g, b, a] = img3DArr[y][x];
+          output.data[idx++] = r;
+          output.data[idx++] = g;
+          output.data[idx++] = b;
+          output.data[idx++] = a;
+        }
+      }
+      return output;
+    }
+
+    // For the standard NES resolution 256×240:
+    const originalWidth = SCREEN_WIDTH;   // 256
+    const originalHeight = SCREEN_HEIGHT; // 240
+    const scaledWidth = originalWidth << 1;   // 512
+    const scaledHeight = originalHeight << 1; // 480
+
+    // We'll allocate this once (not every frame!)
+    let epxResult_u8 = new Uint8ClampedArray(scaledWidth * scaledHeight * 4);
+
+    // Then in the main loop:
+    function onAnimationFrame() {
+      window.requestAnimationFrame(onAnimationFrame);
+
+      if (!isEpx) {
+        // Nearest neighbor (original code):
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = originalWidth;
+        canvas.height = originalHeight;
+        image.data.set(framebuffer_u8);
+        canvas_ctx.putImageData(image, 0, 0);
+      } else {
+        // 2× EPX
+        const canvas = document.getElementById("nes-canvas");
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+
+        // epxScale2: read from 'framebuffer_u8', write into 'epxResult_u8'
+        epxScale2(framebuffer_u8, epxResult_u8, originalWidth, originalHeight);
+
+        // Now put epxResult_u8 into the canvas
+        const finalImgData = new ImageData(epxResult_u8, scaledWidth, scaledHeight);
+        canvas_ctx.putImageData(finalImgData, 0, 0);
+      }
+    }
+
+    function audio_remain() {
+      return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
+    }
+
+    function audio_callback(event) {
+      var dst = event.outputBuffer;
+      var len = dst.length;
+
+      // Attempt to avoid buffer underruns.
+      if (audio_remain() < AUDIO_BUFFERING) nes.frame();
+
+      var dst_l = dst.getChannelData(0);
+      var dst_r = dst.getChannelData(1);
+      for (var i = 0; i < len; i++) {
+        var src_idx = (audio_read_cursor + i) & SAMPLE_MASK;
+        dst_l[i] = audio_samples_L[src_idx];
+        dst_r[i] = audio_samples_R[src_idx];
+      }
+
+      audio_read_cursor = (audio_read_cursor + len) & SAMPLE_MASK;
+    }
+
+    let customKeyMap = {
+      up: 38, // Default ArrowUp
+      down: 40, // Default ArrowDown
+      left: 37, // Default ArrowLeft
+      right: 39, // Default ArrowRight
+      a: 65, // Default 'A' key
+      b: 83, // Default 'S' key
+      select: 9, // Default Tab
+      start: 13, // Default Enter
+    };
+
+    function keyboard(callback, event) {
+      console.log(customKeyMap);
+      var player = 1;
+      switch (event.keyCode) {
+        case customKeyMap.up:
+          callback(player, jsnes.Controller.BUTTON_UP);
+          break;
+        case customKeyMap.down:
+          callback(player, jsnes.Controller.BUTTON_DOWN);
+          break;
+        case customKeyMap.left:
+          callback(player, jsnes.Controller.BUTTON_LEFT);
+          break;
+        case customKeyMap.right:
+          callback(player, jsnes.Controller.BUTTON_RIGHT);
+          break;
+        case customKeyMap.a:
+          callback(player, jsnes.Controller.BUTTON_A);
+          break;
+        case customKeyMap.b:
+          callback(player, jsnes.Controller.BUTTON_B);
+          break;
+        case customKeyMap.select:
+          callback(player, jsnes.Controller.BUTTON_SELECT);
+          break;
+        case customKeyMap.start:
+          callback(player, jsnes.Controller.BUTTON_START);
+          break;
+        default:
+          break;
+      }
+    }
+
+    function nes_init(canvas_id) {
+      var canvas = document.getElementById(canvas_id);
+      canvas_ctx = canvas.getContext("2d");
+      image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      canvas_ctx.fillStyle = "black";
+      canvas_ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      // Allocate framebuffer array.
+      const buffer = new ArrayBuffer(image.data.length);
+      framebuffer_u8 = new Uint8ClampedArray(buffer);
+      framebuffer_u32 = new Uint32Array(buffer);
+
+      // Setup audio.
+      const audio_ctx = new window.AudioContext();
+      const script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
+      script_processor.onaudioprocess = audio_callback;
+      script_processor.connect(audio_ctx.destination);
+    }
+
+    function nes_boot(rom_data) {
+      nes.loadROM(rom_data);
+      window.requestAnimationFrame(onAnimationFrame);
+    }
+
+    function nes_load_data(canvas_id, rom_data) {
+      nes_init(canvas_id);
+      nes_boot(rom_data);
+    }
+
+    function nes_load_url(canvas_id, path) {
+      nes_init(canvas_id);
+
+      const req = new XMLHttpRequest();
+      req.open("GET", path);
+      req.overrideMimeType("text/plain; charset=x-user-defined");
+      req.onerror = () => console.log(`Error loading ${path}: ${req.statusText}`);
+
+      req.onload = function () {
+        if (this.status === 200) {
+          nes_boot(this.responseText);
+        } else if (this.status === 0) {
+          // Aborted, so ignore error
+        } else {
+          req.onerror();
+        }
+      };
+
+      req.send();
+    }
+
+    document.addEventListener('keydown', (event) => { keyboard(nes.buttonDown, event) });
+    document.addEventListener('keyup', (event) => { keyboard(nes.buttonUp, event) });
+
+    function openKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "block";
+    }
+
+    function closeKeyMapping() {
+      document.getElementById("keyMapDialog").style.display = "none";
+    }
+
+    // For preventing multiple buttons from being clicked and having them all be set to the same key at once
+    let isAwaitingNewKey = false;
+
+    function changeMap(controllerButton) {
+      let mappedKeyIndicator = document.getElementById(controllerButton);
+      const keydownListener = function (event) {
+        const key = event.key;
+        // if space key or enter key
+        if (event.keyCode === 32 || event.keyCode === 13) {
+          event.preventDefault();
+        }
+        customKeyMap[controllerButton] = event.keyCode;
+        if (event.keyCode === 32) {
+          mappedKeyIndicator.innerHTML = "Space";
+        } else {
+          mappedKeyIndicator.innerHTML = key;
+        }
+        window.removeEventListener('keydown', keydownListener);
+        isAwaitingNewKey = false;
+      };
+      if (!isAwaitingNewKey) {
+        window.addEventListener('keydown', keydownListener);
+        mappedKeyIndicator.innerHTML = "Press a key";
+        isAwaitingNewKey = true;
+      }
+    }
+
+    function applyScale(type) {
+      document.getElementById("nes-canvas").classList = type;
+    }
+
+    let isEpx = false;
+    function applyFilter(type) {
+      if (type === "nearestNeighbor") {
+        isEpx = false;
+      } else {
+        isEpx = true;
+      }
+    }
+
+    window.top.postMessage("REQ:SS", "*");
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+        const binaryString = atob(fileContent);
+        const dataArray = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          dataArray[i] = binaryString.charCodeAt(i);
+        }
+
+        const blob = new Blob([dataArray], { type: "application/octet-stream" });
+        const objectUrl = URL.createObjectURL(blob);
+        nes_load_url("nes-canvas", objectUrl);
+        URL.revokeObjectURL(objectURL)
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+      }
+    });
+
+  </script>
+</head>
+
+<body>
+
+  <div class="controls">
+    <button class="oSButton osElemBase" onclick="openFile()">Open Rom</button>
+    <button class="oSButton osElemBase" onclick="openKeyMapping()">Key Mapping</button>
+    <select id="scalingSelect" class="oSButton osElemBase" onchange="applyScale(this.value)">
+      <option value="fitWindow">Fit Window</option>
+      <option value="size100P">100% Size</option>
+      <option value="size200P">200% Size</option>
+      <option value="size300P">300% Size</option>
+    </select>
+    <select id="filterSelect" class="oSButton osElemBase" onchange="applyFilter(this.value)">
+      <option value="nearestNeighbor">Nearest Neighbor</option>
+      <option value="epx">EPX</option>
+    </select>
+  </div>
+  <div id="keyMapDialog">
+    <b>Key Mappings</b>
+    <table>
+      <tr>
+        <td>Up:</td>
+        <td id="up" class="currentKey">ArrowUp</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('up')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Right:</td>
+        <td id="right" class="currentKey">ArrowRight</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('right')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Down:</td>
+        <td id="down" class="currentKey">ArrowDown</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('down')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Left:</td>
+        <td id="left" class="currentKey">ArrowLeft</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('left')">Change</button></td>
+      </tr>
+      <tr>
+        <td>A:</td>
+        <td id="a" class="currentKey">A</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('a')">Change</button></td>
+      </tr>
+      <tr>
+        <td>B:</td>
+        <td id="b" class="currentKey">S</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('b')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Start:</td>
+        <td id="start" class="currentKey">Enter</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('start')">Change</button></td>
+      </tr>
+      <tr>
+        <td>Select:</td>
+        <td id="select" class="currentKey">Tab</td>
+        <td><button class="f-r oSButton osElemBase" onclick="changeMap('select')">Change</button></td>
+      </tr>
+    </table>
+    <button class="oSButton osElemBase closeBttn" onclick="closeKeyMapping()">Close</button>
+  </div>
+  <canvas id="nes-canvas" class="fitWindow" width="256" height="240" />
+</body>
+
+</html>

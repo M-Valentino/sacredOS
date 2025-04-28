@@ -1,0 +1,261 @@
+<!--width="1000" height="700" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAABSdJREFUeJxdlftPk1cYx/sfbDNjtJb4YqmWmwWLBTqBMiKoiFKKVIUxwFFEReWyZpgNB9qtCYwRx2UorGPBRuO8jBhwG0O3MMAxh8hwYwkxLBi3X/Y/7PPyvClmyZOTc3nP53yfyzmv7s6nO4YCtltdKd/2JP8WSloIbl36XFnoV1ZvxD0fSaadazdN+aK/O6bHHrQp2NJgIkuyyve/DsbPXEqYvWhi119f2XRQwAEd6cmisxIyzV2MAvp81M7moT2vdCW/9KK1xb5MyzxcTIX2K2xZJ3IU0JHutFDAAReiCJwsMi8UWR4ftoaNYdgYgq7ZtuF6rcKW6Q4F04hPr9lUgd1pPS0qWlx+1L/lntP4IuJ/BtGdqt9lNzYlRqix6lfWNf5w2TY+sBuo6Bfin6F4JPC1CAn3pSPu08nflVRkiRjzmdgrGzUiEQRKEAHhAmu0Z3MMp8p21B+Jr/bY6LizzdIW7k1A3ansKCw304zMCxkRCGQLpmWm410rLk9cct5szxDi/bZN5w/GLN/y/NGVv/xZyfxxO53F5jTa2Y/yHg+7HvW+0XsoBvmcUZGwoT3PIBvXMjNqRxqlg+MQqQPW7ja+duc9x8qYd7bG/rApk1Y68805dP6ZqFsNvXmt0CBEEUi6Na+Xb6ZSULhMYX7RliiOs4YQti3690J51uf6pTUTdehlhnmMAlKJqXqI4KbbjbTkWQcVHCY4CSJ1q1LKt/wdKICIv7ddZtE4c9IBVzTiL6Ec8injLa8KUdNIZsBBEYO4GLTNN6RRQO3FKX25CkTawTIrONArgTzOmzkRN+qJPrdv8/tvmyHebVFlanEkdkDxXQRSCj8HrMv1KRQ5UQPBflqMmTBxtXUnfXJCMXzdbMAgql5zZ6aCDhINSIyLPFkV96w5GyhZnvAmo1dtj9uJA5MsgaOD45RkaWlqd5X+auPG+/6NGpGSPF9q6a1UqEr0flNjmqzdPue1EET8JXxjVVtxkCEmJ2E/vWVKd8QWljggflAe9WWdYZ34cMBClTYVmPB95koRNQSI89n29Gxap3szpccMfSE+qTIjNrjfwC4KHqKv3AKRUGpEYgd0vCtmqt/Md8hhMwGiI26SBCQLaLrYyDyrRAbfUepxWwklREK5NJyikyspOSGCsPiO/Wfc0Zxce8DE5UGjKKVtLtrEvH+/wpeSHyLGBcVxQkmRqPUoDxxQXla+wFCB79WuWMrNlmTkofOf2E4HY540ct/V7K0ROYmhJEfTKESM64xfGK8el/rGJ4W0vAVkDNbwh3vQ0lm/k+uEp4RCiAjHoUGvqnEplKoS5Q6RKYzocqm//zidy/vv5OkLp7OIEemCKENMiMSXwnxSZ+k5GNFREalpFCLvK3dTcESXC8Ce+euVuAyO92Kszy1EMotShtwfBGJEE2JrcSRQzWv+FeB401V1awYUyvjAEeTgZrnLyhA6BhHtOE6gH5yxSlVSHgGPQTSqmfnxnJnEU96dZVEs0LJG+KcHi5EJC2linAGOGd/JDNDUAzjQvM0N+XpqgO33/PEqkTxcrtCHoRiOVDoj+ZQaxniuqSGqJHgs+eo7r8s8HwAKG44jBZpuvivxdr1CpoBCxMBRN+luN5ZxIN+527ktx3k4KxKvSwqcxIHgcp0Z1uZFwhU0RAg8Mbrfe238epAJFJmcg35YxQ2NuUeP0gGHUUPQ93mrw5NWRxLPLSfBhYhnKIOmEpHKACgGlOISihg7eREgAhIiaOaZhCgCwSEIDrT/AM9UsIYSsh55AAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    button, select {
+      cursor:pointer;border-top:2px solid #9f4;border-right:2px solid #1b0;border-bottom:2px solid #1b0;border-left:2px solid #9f4;background-color:#5f0;font-size:12px;color:#000;padding-left:12px;padding-right:12px;padding-top:4px;padding-bottom:4px
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffbc49;
+      background-image: linear-gradient(30deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(150deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(30deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(150deg, #444cf7 12%, transparent 12.5%, transparent 87%, #444cf7 87.5%, #444cf7), linear-gradient(60deg, #444cf777 25%, transparent 25.5%, transparent 75%, #444cf777 75%, #444cf777), linear-gradient(60deg, #444cf777 25%, transparent 25.5%, transparent 75%, #444cf777 75%, #444cf777);
+      background-size: 20px 35px;
+      background-position: 0 0, 0 0, 10px 18px, 10px 18px, 0 0, 10px 18px;
+    }
+
+    .calendar {
+      min-width: 100vw;
+      margin: 0 auto;
+      padding: 8px;
+      max-height: 100vh;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .calendar-header select,
+    .calendar-header button {
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #007f4a80;
+    }
+
+    .day {
+      text-align: center;
+      padding: 15px 0;
+      background: #d0ffef;
+      min-height: 90px;
+    }
+
+    .day-name {
+      text-align: center;
+      min-height: 40px;
+      padding: 15px 0;
+    }
+
+    .day-name {
+      background: #94ffd6;
+      font-weight: bold;
+    }
+
+    .day {
+      font-size: 11px;
+    }
+
+    .day.today {
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+    }
+
+    .day.blank {
+      background: #007f4a80;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="calendar">
+    <div class="calendar-header">
+      <button id="prevMonth">&lt;</button>
+      <div>
+        <select id="monthSelect"></select>
+        <select id="yearSelect"></select>
+      </div>
+      <button id="nextMonth">&gt;</button>
+    </div>
+    <div class="calendar-grid" id="calendar">
+      <!-- Days will be generated here -->
+    </div>
+  </div>
+
+  <script>
+    function addHoliday(month, d) {
+      if (month === 0 && d === 1) {
+        return `${d}<br/> Your first hangover of the year is today!`;
+      } if (month === 0 && d === 8) {
+        return `${d}<br/> Today, our glorious comrade Kim Jong Un, the invincible commander of our destiny, celebrates his most auspicious birthday, a day of boundless joy for everyone!`;
+      } else if (month === 1 && d === 9) {
+        return `${d}<br/> Happy National Poop day 💩! What a shitty holiday to celebrate.`;
+      } else if (month === 1 && d === 14) {
+        return `${d}<br/> It's Valentine's Day — time to flex those relationship muscles or cry into a heart-shaped pizza.`;
+      } else if (month === 2 && d === 15) {
+        return `${d}<br/> Its International Penis Day! 🍆`;
+      } else if (month === 2 && d === 17) {
+        return `${d}<br/> St. Patrick's Day Eve Eve. Prep your liver.`;
+      } else if (month === 2 && d === 18) {
+        return `${d}<br/> St. Patrick's Day! Drink green stuff and celebrate your 1/16<sup>th</sup> Irish heritage. 🍀`;
+      } else if (month === 3 && d === 1) {
+        return `${d}<br/> April Fools! Except it's still March. We fooled you early. 🎭`;
+      } else if (month === 3 && d === 20) {
+        return `${d}<br/> Beware of the devil's lettuce on this day you heathens!`;
+      } else if (month === 4 && d === 4) {
+        return `${d}<br/> May the 4th be with you… wait, wrong month? Still a good day for a lightsaber duel.`;
+      } else if (month === 4 && d === 5) {
+        return `${d}<br/> Cinco de Drinko. Tacos are mandatory. 🌮🍹`;
+      } else if (month === 4 && d === 10) {
+        return `${d}<br/> John Wayne Gacy Was executed on this day! 🤡`;
+      } else if (month === 5 && d === 6) {
+        return `${d}<br/> National Donut Day is around this day <small>(I'm too lazy to code the exact day)</small>. Glaze yourself in glory. 🍩`;
+      } else if (month === 6 && d === 3) {
+        return `${d}<br/> Happy Birthday to Tom Cruise — still doing his own stunts, including blowing out all those candles without a fire permit! 🎂🔥`;
+      } else if (month === 6 && d === 4) {
+        return `${d}<br/> Happy Birthday Murrica! Long live Whattaburger and machine guns!`;
+      } else if (month === 6 && d === 16) {
+        return `${d}<br/> The Island Boys just turned up for their birthday, feelin’ blessed and drippin’ in vibes—ya know they stay lit, even on their born day!`;
+      } else if (month === 7 && d === 2) {
+        return `${d}<br/> Its national boob day! 🍈🍈`;
+      } else if (month === 8 && d === 30) {
+        return `${d}<br/> <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=pGhwBFYtn1s">When September Ends</a>`;
+      } else if (month === 9 && d === 1) {
+        return `${d}<br/> The MLB World Series was first started today in 1903.`;
+      } else if (month === 9 && d === 31) {
+        return `${d}<br/> Halloween! Time to dress like your true weird self and beg strangers for sugar. 🎃`;
+      } else if (month === 10 && d === 24) {
+        return `${d}<br/> Thanksgiving Eve: mentally prepare for family drama and 17 types of potatoes. 🥔`;
+      } else if (month === 10 && d === 25) {
+        return `${d}<br/> Thanksgiving Day — eat until you question your life choices. 🦃`;
+      } else if (month === 11 && d === 25) {
+        return `${d}<br/> Christmas! Santa broke into your house and left socks. Jolly! 🎅`;
+      } else if (month === 11 && d === 31) {
+        return `${d}<br/> New Year's Eve: make bad decisions and even worse resolutions! 🎉`;
+      }
+      return d;
+    }
+
+
+    const calendar = document.getElementById("calendar");
+    const monthSelect = document.getElementById("monthSelect");
+    const yearSelect = document.getElementById("yearSelect");
+
+    const now = new Date();
+    let currentMonth = now.getMonth();
+    let currentYear = now.getFullYear();
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    // Populate month and year dropdowns
+    monthNames.forEach((month, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = month;
+      monthSelect.appendChild(option);
+    });
+
+    for (let y = 1970; y <= 2100; y++) {
+      const option = document.createElement("option");
+      option.value = y;
+      option.textContent = y;
+      yearSelect.appendChild(option);
+    }
+
+    function generateCalendar(month, year) {
+      calendar.innerHTML = "";
+
+      // Weekday labels
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      dayNames.forEach(day => {
+        const div = document.createElement("div");
+        div.className = "day-name";
+        div.textContent = day;
+        calendar.appendChild(div);
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      // Blank days before the first day of the month
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        blank.className = "day blank";
+        calendar.appendChild(blank);
+      }
+
+      for (let d = 1; d <= totalDays; d++) {
+        const day = document.createElement("div");
+        day.className = "day";
+        day.innerHTML = addHoliday(month, d);
+
+        if (
+          d === now.getDate() &&
+          month === now.getMonth() &&
+          year === now.getFullYear()
+        ) {
+          day.classList.add("today");
+        }
+
+        calendar.appendChild(day);
+      }
+
+      monthSelect.value = month;
+      yearSelect.value = year;
+    }
+
+    // Event listeners
+    monthSelect.addEventListener("change", () => {
+      currentMonth = parseInt(monthSelect.value);
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    yearSelect.addEventListener("change", () => {
+      currentYear = parseInt(yearSelect.value);
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById("prevMonth").addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      generateCalendar(currentMonth, currentYear);
+    });
+
+    // Initial load
+    generateCalendar(currentMonth, currentYear);
+  </script>
+</body>
+
+</html>

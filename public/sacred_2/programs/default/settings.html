@@ -1,0 +1,283 @@
+<!--width="270" height="370" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAapJREFUeNq8lr/Ng0AMxTnECih1anpETc8UWYIRWCJTpKdmAWpqxBD3fQ/xImPuH00soSTOnX+2750TY63NfmWF/GCMiW7o+/6U3TAM0U0sKL+TmQb5fD7LY8HvBIutz1OqSAGmrHfCXq/XZXHbtl6g6zsXsPAF2LYtK8vy4v98PqfPXdd59yfBlmXJns/nybeu6w7SwTWcIMTQZuQ9k9JHawBEdQjYNM3+PlQxEiFoHEejpe+FEYiKNEi/SuDj8TiBJKyIHSzbJAHIHE9d1xcgfP+PdV36IgZCVfosROYWwaVY9LkeSjVBNfqEI1t0vP+e7a0Jgszlow3n5/KxvSHZXypzyVXa0VI7z/NeXVVVlgpMAV7UqKcB1ShtmiYJ/4LghxqlodVJ0sfYQgAN850nE3u/3+bWTwznIzJlJTEQq3LNVm9lXMyxxWCydbqlAHEtRx0r9F5qKRS9WQanyTOSyenZGr1nujIE1gKgiOjnHlfrnWcmLy5BlLsLhO/kHQTItd4rEAJDIGkEhtYHpa8Nl1i3MSWZoEBC2WOvw5dk5pd/UvPsh/YnwAAIIH4dYG3CNQAAAABJRU5ErkJggg=="-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primColor: #ea9318;
+      --secColor: #ccc;
+      --secColorLight: #e7e7e7;
+      --secColorDark: #aaa;
+    }
+
+    .setting {
+      margin-top: 5px;
+      height: 24px;
+    }
+
+    .change {
+      margin-left: 10px;
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 200px;
+    }
+
+    .colorBox {
+      width: 24px;
+      height: 24px;
+      border: 1px solid #000;
+    }
+
+    .text {
+      transform: translateY(5px);
+    }
+
+    .mb-10 {
+      margin-bottom: 10px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
+    }
+
+    h3 {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <p>You are using Sacred OS v<span id="osVersion"></span></p>
+  <h3>Colors</h3>
+  <div class="setting mb-10">
+    <label for="themeSelector">Select Theme: </label>
+    <select id="themeSelector" class="oSButton osElemBase" onchange="applyTheme(this.value)">
+      <option value="default">Default Theme</option>
+      <option value="rastafarian">Rastafarian</option>
+      <option value="blackWhite">Black and White</option>
+      <option value="vaporwave">Vaporwave</option>
+    </select>
+  </div>
+  <div class="setting">
+    <div class="flexRow">
+      <div class="flexRow">
+        <div class="text">Accent Color</div>
+        <div class="colorBox" id="primColorBox" style="background-color: var(--primColor);"></div>
+      </div>
+      <input type="color" id="colorPicker" style="display:none" onchange="changePrimColor(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker').click()">Change</button>
+    </div>
+  </div>
+  <div class="setting">
+    <div class="flexRow">
+      <div class="flexRow">
+        <div class="text">Main Color</div>
+        <div class="colorBox" id="secColorBox" style="background-color: var(--secColor);"></div>
+      </div>
+      <input type="color" id="colorPicker2" style="display:none" onchange="changeSecColor(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker2').click()">Change</button>
+    </div>
+  </div>
+  <div class="setting">
+    <div class="flexRow">
+      <div class="flexRow">
+        <div class="text">Highlight Color</div>
+        <div class="colorBox" id="secColorLightBox" style="background-color: var(--secColorLight);"></div>
+      </div>
+      <input type="color" id="colorPicker3" style="display:none" onchange="changeSecColorLight(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker3').click()">Change</button>
+    </div>
+  </div>
+  <div class="setting">
+    <div class="flexRow">
+      <div class="flexRow">
+        <div class="text">Border Color</div>
+        <div class="colorBox" id="secColorDarkBox" style="background-color: var(--secColorDark);"></div>
+      </div>
+      <input type="color" id="colorPicker4" style="display:none" onchange="changeSecColorDark(this.value)" />
+      <button class="oSButton osElemBase change"
+        onclick="document.getElementById('colorPicker4').click()">Change</button>
+    </div>
+  </div>
+  <h3 class="mt-20">Background</h3>
+  <label for="backgroundMode">Background Mode: </label>
+  <select id="backgroundMode" class="oSButton osElemBase" onchange="changeBackgroundMode(this.value)">
+    <option value="stretch">Stretch</option>
+    <option value="tile">Tile</option>
+    <option value="contain">Contain</option>
+  </select>
+  <h3 class="mt-20">Time Format</h3>
+  <input type="radio" id="24h" name="time_format" value="24h" onchange="window.top.postMessage(`U:TF[24h`)">
+  <label for="24h">24 hours</label>
+  <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF[12h`)">
+  <label for="12h">12 hours</label>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:OSV", "*");
+    const settingsFilePath = "system/settings.json";
+    window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
+
+    function changePrimColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
+    }
+    function changeSecColorSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColor', '${color}');`);
+    }
+    function changeSecColorLSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorLight', '${color}');`);
+    }
+    function changeSecColorDSystemWide(color) {
+      return encodeURI(`document.querySelector(':root').style.setProperty('--secColorDark', '${color}');`);
+    }
+
+    function changeBGModeStretchSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'no-repeat');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'fixed');
+        document.querySelector(':root').style.setProperty('--bgSize', '100% 100%');
+      `);
+    }
+
+    function changeBGModeTileSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'initial');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'initial');
+        document.querySelector(':root').style.setProperty('--bgSize', 'initial');
+      `);
+    }
+
+    function changeBGModeContainSysWide() {
+      return encodeURI(
+        `
+        document.querySelector(':root').style.setProperty('--bgRepeat', 'no-repeat');
+        document.querySelector(':root').style.setProperty('--bgAttachment', 'fixed');
+        document.querySelector(':root').style.setProperty('--bgSize', 'contain');
+      `);
+    }
+
+    function changePrimColor(color) {
+      document.querySelector(':root').style.setProperty('--primColor', color);
+      document.getElementById('primColorBox').style.backgroundColor = color;
+      window.top.postMessage(`U:PRIMC${color}`, "*");
+      window.top.postMessage(changePrimColorSystemWide(color), "*");
+    }
+
+    function changeSecColor(color) {
+      document.querySelector(':root').style.setProperty('--secColor', color);
+      document.getElementById('secColorBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECC${color}`, "*");
+      window.top.postMessage(changeSecColorSystemWide(color), "*");
+    }
+
+    function changeSecColorLight(color) {
+      document.querySelector(':root').style.setProperty('--secColorLight', color);
+      document.getElementById('secColorLightBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECCL${color}`, "*");
+      window.top.postMessage(changeSecColorLSystemWide(color), "*");
+    }
+
+    function changeSecColorDark(color) {
+      document.querySelector(':root').style.setProperty('--secColorDark', color);
+      document.getElementById('secColorDarkBox').style.backgroundColor = color;
+      window.top.postMessage(`U:SECCD${color}`, "*");
+      window.top.postMessage(changeSecColorDSystemWide(color), "*");
+    }
+
+    function applyTheme(theme) {
+      let primColor, secColor, secColorLight, secColorDark;
+      switch (theme) {
+        case 'default':
+          primColor = '#ea9318';
+          secColor = '#ccc';
+          secColorLight = '#e7e7e7';
+          secColorDark = '#aaa';
+          break;
+        case 'rastafarian':
+          primColor = '#28a745';
+          secColor = '#ffc107';
+          secColorLight = '#ffe630';
+          secColorDark = '#a24300';
+          break;
+        case 'blackWhite':
+          primColor = '#bbb';
+          secColor = '#dddddd';
+          secColorLight = '#fff';
+          secColorDark = '#888';
+          break;
+        case 'vaporwave':
+          primColor = '#f9c';
+          secColor = '#bff';
+          secColorLight = '#dff';
+          secColorDark = '#9cd';
+          break;
+      }
+
+      changePrimColor(primColor);
+      changeSecColor(secColor);
+      changeSecColorLight(secColorLight);
+      changeSecColorDark(secColorDark);
+    }
+
+    function changeBackgroundMode(mode) {
+      if (mode === "stretch") {
+        window.top.postMessage(`U:BGM-stretch`, "*");
+        window.top.postMessage(changeBGModeStretchSysWide());
+      } else if (mode === "tile") {
+        window.top.postMessage(`U:BGM-tile`, "*");
+        window.top.postMessage(changeBGModeTileSysWide());
+      } else if (mode === "contain") {
+        window.top.postMessage(`U:BGM-contain`, "*");
+        window.top.postMessage(changeBGModeContainSysWide());
+      }
+    }
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PH:")) {
+        const expectedPattern = `PH:[${settingsFilePath}]`;
+        if (e.data.startsWith(expectedPattern)) {
+          const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
+          document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
+          document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
+
+          if (savedSettings["desktopBGMode"]) {
+            if (savedSettings["desktopBGMode"] === "stretch") {
+              document.getElementById("backgroundMode").selectedIndex = 0;
+            } else if (savedSettings["desktopBGMode"] === "tile") {
+              document.getElementById("backgroundMode").selectedIndex = 1;
+            } else if (savedSettings["desktopBGMode"] === "contain") {
+              document.getElementById("backgroundMode").selectedIndex = 2;
+            }
+          }
+        }
+        return;
+      } else if (e.data.startsWith("OSV:")) {
+        document.getElementById("osVersion").innerText = e.data.substring(4);
+      }
+    };
+  </script>
+</body>
+
+</html>

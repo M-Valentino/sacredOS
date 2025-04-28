@@ -1,0 +1,123 @@
+<!--width="620" height="450" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAB5QTFRF//3+AAAAj+n8AAAA/91A//2j7unL/4L7sbGx/9z/rM26LAAAAAp0Uk5T/wD//////////9aBzwkAAAB9SURBVHiclZDRDYAgDERJWMCGDWCBAoEFYAQ20B0cwBFcWDCNngk/3t/ltdA7RSaKPNGiiJVIz2ywIkf+Q835sbwzDrcDaaq4q1vBlzuEfwcEm2qEM1wrDmiqDDf3Tbw51WDf4QEhYN4YA+b1DihUR8Y2NE/b+FXdhMZH3V6VhSJCRKzhLAAAAABJRU5ErkJggg=="-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #textareaContainer {
+      height: calc(100vh - 8px - 26px);
+      /* max-height: calc(100vh - var(--programBarHeight) - 8px); */
+    }
+
+    #mainTextarea {
+      box-sizing: border-box;
+      height: 100%;
+      width: 100%;
+      resize: none;
+    }
+
+    .menuButt {
+      height: 26px;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <button class="oSButton osElemBase" onclick="save()">Save</button>
+  <button class="oSButton osElemBase" onclick="saveAsNewFile()">Save As</button>
+  <button class="oSButton osElemBase" onclick="openFile()">Open</button>
+  <div id="textareaContainer">
+    <textarea id="mainTextarea"></textarea>
+  </div>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    // window.top.postMessage("REQ:PH", "*");
+
+    // Function to extract file path from comments within the HTML
+    function extractFilePath() {
+      const nodes = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+      let node;
+      while (node = nodes.nextNode()) {
+        const content = node.nodeValue.trim();
+        const match = content.match(/path="([^"]+)"/); // Regular expression to extract path
+        if (match) {
+          return match[1]; // Return the extracted path
+        }
+      }
+      return null;
+    }
+
+    let filePath = extractFilePath(); // Extract the file path from a comment
+    window.top.postMessage(`REQ:PH[${filePath}]`, "*");
+
+    function save() {
+      if (filePath !== null) {
+        window.top.postMessage(`SF:[${filePath}]${document.getElementById("mainTextarea").value}`, "*");
+      } else {
+        saveAsNewFile();
+      }
+    }
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function saveAsNewFile() {
+      window.top.postMessage(`SANF:[${document.getElementById("mainTextarea").value}`, "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PH:")) {
+        const expectedPattern = `PH:[${filePath}]`;
+        if (e.data.startsWith(expectedPattern)) {
+          // Extract file content by removing the initial part of the message
+          let fileContent = e.data.substring(expectedPattern.length);
+          if (fileContent === "undefined") {
+            fileContent = "";
+          }
+          // Sets the content to the textarea
+          document.getElementById('mainTextarea').value = fileContent;
+        }
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+        document.getElementById('mainTextarea').value = fileContent;
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+        }
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>

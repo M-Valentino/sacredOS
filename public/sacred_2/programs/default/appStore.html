@@ -1,0 +1,158 @@
+<!--width="700" height="600" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAC1QTFRFAAAA/AEA/SsA/lsA/kwA/RYA/AkA/5YA/6cA/3YA/2UA/j4A/SAA/2oA/3sAJNt+9AAAAA90Uk5TAP//////////////////5Y2epgAAAOlJREFUeJxjZEABjCRzBRn+fxB8D+OCeQxAAsxlFGB4zyioKHTmPZgr9vv/B0ahVKXj6z8AuYxRx96DuIw3DrwHcZX6/BkYpQ+tXH8bxBVcxGcPNE7o9DNboCYG0anl90HmSW4o3w/mivsDrRBk0WA5D+LOKHkPslFgTeUtIFdMvSQB5CJBmYpsIFfQ5sUdkIMEd94Gcz0b3D+AHKRZDeYyn2K1A+pmPPQuHshlFFUM9zMFumBT3n2QqwQ85H/Pe88gKKW2HuQFwUi92yAu668PYA+K6L2//x7kTZj3wf6Heh9I8EN5pAUsAOQBXRyos5aNAAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .appSection {
+      border: 1px solid #aaa;
+      background-color: #fff;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .ml-16 {
+      margin-left: 16px;
+    }
+
+    .ml-8 {
+      margin-left: 8px;
+    }
+
+    .flexRow {
+      display: flex;
+      flex-direction: row;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body class="program">
+  <input id="searchBar" type="text" placeholder="Search apps..." /><button onclick="search()"
+    class="oSButton osElemBase ml-8">Search</button><button class="oSButton osElemBase ml-8" onclick="showAll()">Show All Apps</button>
+  <div id="appStoreContainer"></div>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+    let appData = [];
+
+    async function getAppStoreData(fileURL) {
+      try {
+        const time = new Date().getTime();
+        const response = await fetch(`${fileURL}?t=${time}`);
+        if (response.ok) {
+          appData = await response.json();
+          populateAppStore(appData); // Populate with all apps on load
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+    function populateAppStore(data) {
+      const container = document.getElementById('appStoreContainer');
+      container.innerHTML = ''; // Clear existing content
+
+      data.forEach((app) => {
+        const appSection = document.createElement('div');
+        appSection.classList.add('appSection');
+        container.appendChild(appSection);
+
+        const appTitle = document.createElement('h2');
+        appTitle.textContent = app.name;
+        appSection.appendChild(appTitle);
+
+        const flexContainer = document.createElement('div');
+        flexContainer.classList.add('flexRow');
+        appSection.appendChild(flexContainer);
+
+        const appImage = document.createElement('img');
+        appImage.src = `/appStore${app.dir}/${app.icon}`;
+        appImage.width = 64;
+        appImage.height = 64;
+        flexContainer.appendChild(appImage);
+
+        const appDesc = document.createElement('p');
+        appDesc.textContent = app.description;
+        appDesc.classList.add('ml-16');
+        flexContainer.appendChild(appDesc);
+
+        const flexContainer2 = document.createElement('div');
+        flexContainer2.classList.add('flexRow');
+        appSection.appendChild(flexContainer2);
+
+        const appAuthor = document.createElement('div');
+        appAuthor.innerHTML = `<b>Author</b>: <a href="${app.link}" target="_blank" rel="noopener noreferrer">${app.author}</a>`;
+        flexContainer2.appendChild(appAuthor);
+
+        const button = document.createElement('button');
+        button.textContent = `${app.mode} ${app.name}`;
+        button.classList.add('oSButton', 'osElemBase', 'ml-16');
+        button.onclick = () => {
+          runInstallScript(`/appStore/${app.dir}/install.js`);
+        };
+        flexContainer2.appendChild(button);
+      });
+    }
+
+    function search() {
+      const searchString = document.getElementById('searchBar').value.toLowerCase();
+      const filteredData = appData.filter((app) =>
+        app.name.toLowerCase().includes(searchString) ||
+        app.description.toLowerCase().includes(searchString) ||
+        app.author.toLowerCase().includes(searchString)
+      );
+      populateAppStore(filteredData);
+    }
+
+    function showAll() {
+      document.getElementById('searchBar').value = "";
+      populateAppStore(appData);
+    }
+
+    async function runInstallScript(fileURL) {
+      try {
+        const time = new Date().getTime();
+        const response = await fetch(`${fileURL}?t=${time}`);
+        if (response.ok) {
+          const content = await response.text();
+          eval(content);
+        } else {
+          console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching file ${fileURL}: ${err}`);
+      }
+    }
+
+    getAppStoreData('/appStore/appStoreData.json');
+
+    window.onmessage = function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    };
+  </script>
+</body>
+
+</html>

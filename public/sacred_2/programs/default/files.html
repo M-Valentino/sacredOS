@@ -1,0 +1,784 @@
+<!--width="600" height="400" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKpJREFUeNpi/P//PwO9ABMDHQELjMHIyMhQ6ciA15vt+xkYSbUAOeQGxmfEAEI+xwEYybIMG/AyGOwJhFzX0izObPr+U8ey/4vwR/6R85T7jBGeDxYz0qYoif3POCAJZNSyUcuIswyWj6hNY7XMxhCigNo01kx9pIg2mRpYxGHP1Nsu0IbGsAwkASrtqU1jDcYqJ9oEY9u+gS4byWk5EQLoZjIO20YqQIABALwHeXra/70iAAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --displayBottomDialogActions: none;
+      --displayIfSaveFileAsMode: none;
+      --displayIfOpenFileMode: none;
+    }
+
+    .program {
+      overflow-y: hidden;
+    }
+
+    #dirUp {
+      width: 32px;
+    }
+
+    #saveFileHere,
+    #openFileHere,
+    #cancelSaveFileHere {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .flexRowLarge {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .flexRowReverse {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: row-reverse;
+      width: 100%;
+    }
+
+    .flexBttnRow {
+      flex-direction: row;
+      overflow-x: hidden;
+      white-space: nowrap;
+    }
+
+    .mr-8 {
+      margin-right: 8px;
+    }
+
+    .ml-8 {
+      margin-left: 8px;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    #topLevelObjects {
+      overflow-y: scroll;
+      height: 100%;
+      padding-bottom: 60px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: flex-start;
+    }
+
+    .flexColBetween {
+      height: calc(100% - 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .fileOrDir {
+      width: 104px;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .fileOrDir img {
+      width: 54px;
+      height: 54px;
+      margin: auto;
+    }
+
+    img {
+      margin-top: 4px;
+    }
+
+    .redX {
+      color: #f00;
+      font-weight: bold;
+      margin-right: 5px;
+    }
+
+    .greenPlus {
+      color: #007d00;
+      font-weight: bolder;
+      margin-right: 5px;
+    }
+
+    .blueCaret {
+      color: #22f;
+      font-weight: bolder;
+      margin-right: 5px;
+    }
+
+    #newFileDialog,
+    #newFolderDialog,
+    #fileRenameDialog,
+    #folderRenameDialog {
+      display: none;
+    }
+
+    #bottomDialogContent {
+      display: var(--displayBottomDialogActions);
+    }
+
+    #fileNameInputBottomDialog {
+      display: var(--displayIfSaveFileAsMode);
+    }
+
+    #saveFileHere {
+      display: var(--displayIfSaveFileAsMode);
+    }
+
+    #openFileHere {
+      display: var(--displayIfOpenFileMode);
+    }
+
+    .dialog {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background-color: var(--secColor);
+      box-shadow: 10px 10px 0 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .dialogBody {
+      padding: 20px;
+    }
+
+    .newInput {
+      margin-bottom: 10px;
+    }
+
+    .contextMenu {
+      width: 140px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .fileDialogButtons {
+      float: right;
+      width: fit-content;
+    }
+
+    .vertButtonText {
+      white-space: normal;
+      word-break: break-all;
+      width: fit-content;
+      margin: auto;
+    }
+
+    .listButton {
+      background-color: transparent;
+      /* TODO: refactor this. This prevents layout shift when selecting a file or dir */
+      border: var(--borderWidth) solid transparent;
+      cursor: pointer;
+      color: #000
+    }
+  </style>
+</head>
+
+<body class="program">
+  <div class="flexBttnRow">
+    <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
+    <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
+        class="redX">X</span>Delete</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
+      Folder</button>
+    <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
+    <input type="file" id="fileUpload" style="display:none;">
+  </div>
+  <div class="flexRowLarge">
+    <input type="text" id="pwd" class="w-100">
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="dirJump()">></button>
+    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
+  </div>
+  <hr>
+  <div class="flexColBetween">
+    <div id="topLevelObjects"></div>
+
+    <div id="bottomDialogContent">
+      <hr>
+      <div class="flexRowReverse">
+        <button class="oSButton osElemBase ml-8" id="cancelSaveFileHere"
+          onclick="cancelOpenOrSaveFile()">Cancel</button>
+        <button class="oSButton osElemBase ml-8" id="openFileHere" onclick="openFileForSource()">Open</button>
+        <button class="oSButton osElemBase ml-8" id="saveFileHere" onclick="saveFileHere()">Save</button>
+        <input id="fileNameInputBottomDialog" type="text" class="w-100" />
+      </div>
+    </div>
+  </div>
+  <!-- hidden dialog div -->
+  <div id="newFileDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Create New File</div>
+    <div class="dialogBody">
+      <label for="newFileNameInput">Enter file name:</label>
+      <input type="text" id="newFileNameInput" class="newInput" placeholder="File name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFile()"> OK </button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFileDialog', 'newFileNameInput')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="newFolderDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Create New Folder</div>
+    <div class="dialogBody">
+      <label for="newFileNameInput">Enter folder name:</label>
+      <input type="text" id="newFolderNameInput" class="newInput" placeholder="Folder name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkNewFolder()"> OK </button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('newFolderDialog', 'newFolderNameInput')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="fileRenameDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Rename File</div>
+    <div class="dialogBody">
+      <label for="renameFileNameInput">Enter new name:</label>
+      <input type="text" id="renameFileNameInput" class="newInput" placeholder="New name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFile()"> OK </button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('fileRenameDialog', 'renameFileNameInput')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- hidden dialog div -->
+  <div id="folderRenameDialog" class="dialog windowRidgeBorder">
+    <div class="menuHeader">Rename Folder</div>
+    <div class="dialogBody">
+      <label for="renameFolderInput">Enter new name:</label>
+      <input type="text" id="renameFolderInput" class="newInput" placeholder="New name">
+      <br>
+      <button id="okButton" class="oSButton osElemBase" onclick="handleOkRenameFolder()"> OK </button>
+      <button class="oSButton osElemBase"
+        onclick="handleCancelDialog('folderRenameDialog', 'renameFolderInput')">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let diskBackup = {};
+    const MODES = {
+      OPEN: "OPEN",
+      OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
+    }
+    const initialMode = MODES.OPEN;
+    let firstLoad = true;
+
+    window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:AF", "*");
+
+    let pwd = "://";
+    document.getElementById("pwd").value = pwd;
+
+    function openInNotepad(key) {
+      const message = {
+        action: "openProgram",
+        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["default"]["notepad.html"], withFile: `${pwd.substring(3)}${key}` }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+    }
+
+    function openInImageViewer(key) {
+      const message = {
+        action: "openProgram",
+        params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${pwd.substring(3)}${key}` }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+    }
+
+    const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
+
+    function handleOpen(key, backupObject) {
+      let keyToCheck = key;
+      const extension = keyToCheck.split('.').pop();
+      if (extension === "html") {
+        const message = {
+          action: "openProgram",
+          params: { fileName: key, fileData: backupObject[key] }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      } else if (imgExtensions.some(ext => key.includes(ext))) {
+        openInImageViewer(key);
+        return;
+      } else if (key.match(/\..*/)) {
+        openInNotepad(key);
+        return;
+      }
+      displayTopLevelObjects(backupObject[key]);
+      pwd += `${key}/`;
+      document.getElementById("pwd").value = pwd;
+    }
+
+    function markForDeletion() {
+      let documentFiles = document.querySelectorAll(".oSButtonDashed");
+      documentFiles.forEach(file => {
+        const path = pwd.substring(3) + file.textContent;
+        window.top.postMessage(`DEL[${path}`, '*');
+      });
+    }
+
+    function closeExistingDialogs() {
+      const dialogs = document.querySelectorAll(".dialog");
+      dialogs.forEach((d) => {
+        d.style.display = "none";
+      });
+    }
+
+    function makeNewFile() {
+      closeExistingDialogs();
+      let newFileDialog = document.getElementById("newFileDialog");
+      newFileDialog.style.display = "initial";
+    }
+
+    function makeNewFolder() {
+      closeExistingDialogs();
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      newFolderDialog.style.display = "initial";
+    }
+
+    function handleOkNewFile() {
+      // Handle OK button click
+      let newFileNameInput = document.getElementById("newFileNameInput");
+      let newFileDialog = document.getElementById("newFileDialog");
+
+      // Get the entered filename
+      let fileName = newFileNameInput.value.trim();
+
+      if (!fileName.includes(".")) {
+        fileName = fileName.concat(".txt");
+      }
+
+      fileName = fileName.replace("]", "");
+      fileName = fileName.replace("[", "");
+      
+      if (fileName !== "") {
+        window.top.postMessage(`MK:F[${pwd.substring(3)}${fileName}]`, '*');
+      }
+
+      // Hide the dialog
+      newFileDialog.style.display = "none";
+      newFileNameInput.value = "";
+    }
+
+    function handleOkNewFolder() {
+      let newFolderNameInput = document.getElementById("newFolderNameInput");
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      let folderName = newFolderNameInput.value.trim();
+
+      if (folderName.includes(".")) {
+        window.top.postMessage("ALERT:[Can't name a folder with \".\"!");
+      }
+
+      folderName = folderName.replace("]", "");
+      folderName = folderName.replace("[", "");
+
+      if (folderName !== "") {
+        window.top.postMessage(`MK:D[${pwd.substring(3)}${folderName}]`, '*');
+      } else {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      }
+
+      newFolderDialog.style.display = "none";
+      newFolderNameInput.value = "";
+    }
+
+    function handleOkRenameFile() {
+      let renameFileInput = document.getElementById("renameFileNameInput");
+      let renameFileDialog = document.getElementById("fileRenameDialog");
+      let newFileName = renameFileInput.value.trim();
+      if (newFileName === "") {
+        window.top.postMessage("ALERT:[Empty file name!");
+      } else if (!newFileName.includes(".")) {
+        window.top.postMessage("ALERT:[File names must include an extension!");
+      } else {
+        window.top.postMessage(`RNF:[${renamingFile}]${newFileName}`, "*");
+        renameFileInput.value = "";
+      }
+      renameFileDialog.style.display = "none";
+    }
+
+    function handleOkRenameFolder() {
+      let renameFolderInput = document.getElementById("renameFolderInput");
+      let renameFolderDialog = document.getElementById("folderRenameDialog");
+      let newFolderName = renameFolderInput.value.trim();
+      if (newFolderName === "") {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      } else {
+        window.top.postMessage(`RND:[${renamingFolder}]${newFolderName}`, "*");
+        renameFolderInput.value = "";
+      }
+      renameFolderDialog.style.display = "none";
+    }
+
+    function handleCancelDialog(dialogId, inputId) {
+      document.getElementById(dialogId).style.display = "none";
+      document.getElementById(inputId).value = "";
+    }
+
+    function removeOldContextMenus() {
+      const oldMenu = document.getElementsByTagName('div'),
+        forEach = Array.prototype.forEach,
+        regex = /^cntxtMn-.*$/;
+
+      forEach.call(oldMenu, function (d) {
+        if (d.id !== undefined && regex.test(d.id)) {
+          d.parentNode.removeChild(d);
+        }
+      });
+    }
+
+    let renamingFile = "";
+    let renamingFolder = "";
+    function handleContextMenu(e, key) {
+      e.preventDefault();
+      // Prevents duplicate context menus from being made
+      if (document.getElementById(`cntxtMn-${key}`)) {
+        return;
+      }
+      removeOldContextMenus();
+      let contextMenu = document.createElement("div");
+      contextMenu.id = `cntxtMn-${key}`;
+      contextMenu.style.position = "absolute";
+      contextMenu.style.left = e.clientX + "px";
+      contextMenu.style.top = e.clientY + "px";
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase", "contextMenu");
+      document.body.appendChild(contextMenu);
+
+      // Folders don't have periods and shouldn't be edited.
+      if (key.includes(".")) {
+        let menuItemEdit = document.createElement("button");
+        menuItemEdit.textContent = "Edit";
+        menuItemEdit.classList.add("oSButton", "osElemBase");
+        menuItemEdit.onclick = function () {
+          openInNotepad(key);
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(menuItemEdit);
+
+        let fileRenameBttn = document.createElement("button");
+        fileRenameBttn.textContent = "Rename";
+        fileRenameBttn.classList.add("oSButton", "osElemBase");
+        fileRenameBttn.onclick = function () {
+          closeExistingDialogs();
+          let renameFileDialog = document.getElementById("fileRenameDialog");
+          renameFileDialog.style.display = "initial";
+          const input = document.getElementById("renameFileNameInput");
+          input.value = key;
+          input.select();
+
+          renamingFile = `${pwd.substring(3)}${key}`;
+        };
+
+        contextMenu.appendChild(fileRenameBttn);
+      } else {
+        let folderRenameBttn = document.createElement("button");
+        folderRenameBttn.textContent = "Rename";
+        folderRenameBttn.classList.add("oSButton", "osElemBase");
+        folderRenameBttn.onclick = function () {
+          closeExistingDialogs();
+          let renameFolderDialog = document.getElementById("folderRenameDialog");
+          renameFolderDialog.style.display = "initial";
+          const input = document.getElementById("renameFolderInput");
+          input.value = key;
+          input.select();
+
+          renamingFolder = `${pwd.substring(3)}${key}`;
+        };
+
+        contextMenu.appendChild(folderRenameBttn);
+      }
+
+      if (imgExtensions.some(ext => key.includes(ext))) {
+        let setDesktopBG = document.createElement("button");
+        setDesktopBG.textContent = "Set as Desktop BG";
+        setDesktopBG.classList.add("oSButton", "osElemBase");
+        setDesktopBG.onclick = function () {
+          window.top.postMessage(`U:DSKTP-BG[${pwd.substring(3)}${key}`, "*");
+        };
+        contextMenu.appendChild(setDesktopBG);
+      }
+
+      let deleteCtxtBttn = document.createElement("button");
+      deleteCtxtBttn.textContent = "Delete";
+      deleteCtxtBttn.classList.add("oSButton", "osElemBase");
+      deleteCtxtBttn.onclick = function () {
+        window.top.postMessage(`DEL[${pwd.substring(3)}${key}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(deleteCtxtBttn);
+
+      // Event listener to remove the context menu on next left click outside of it
+      document.addEventListener('click', function handleClick(event) {
+        if (!contextMenu.contains(event.target)) {
+          contextMenu.remove();
+          document.removeEventListener('click', handleClick);
+        }
+      });
+    }
+
+    document.getElementById("fileUploadButton").addEventListener("click", function () {
+      document.getElementById("fileUpload").click();
+    });
+
+    document.getElementById("fileUpload").addEventListener("change", async function (event) {
+      const file = event.target.files[0];
+      let filename = file.name;
+      filename = filename.replace("]", "");
+      filename = filename.replace("[", "");
+      const extension = file.name.split('.').pop();
+      const path = pwd.substring(3) + filename;
+
+      // For text files
+      if (file && ['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          const uploadedFile = e.target.result;
+          window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
+        };
+        reader.readAsText(file);
+        // For binary files
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64File = e.target.result.split(',')[1];  // Strips off the data URL prefix to get pure base64 content
+          window.top.postMessage(`SF:[${path}]${base64File}`, "*");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("topLevelObjects").addEventListener("click", function (event) {
+      if (event.target === this) {
+        removeDashedBorders();
+      }
+    });
+
+    function removeDashedBorders() {
+      let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+      prevSelectedButtons.forEach(bttn => {
+        bttn.classList.replace("oSButtonDashed", "listButton");
+      });
+    }
+
+    let fileForOpeningFromDialog;
+    function displayTopLevelObjects(backupObject) {
+      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).normal;
+      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).normal;
+      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).normal;
+      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).normal;
+      let displayArea = document.getElementById("topLevelObjects");
+      displayArea.innerHTML = '';
+
+      const topLevelKeys = Object.keys(backupObject);
+      topLevelKeys.forEach(function (key) {
+        let button = document.createElement('button');
+
+        button.classList = "listButton fileOrDir";
+
+        let clickTimeout;
+        let clickCount = 0;
+        button.onclick = function () {
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimeout = setTimeout(() => {
+              clickCount = 0;
+            }, 1000);
+            removeDashedBorders();
+            button.classList.replace("listButton", "oSButtonDashed");
+            if (initialMode === MODES.OPEN_FOR_PROGRAM) {
+              fileForOpeningFromDialog = `${pwd.substring(3)}${key}`;
+            }
+          } else if (clickCount === 2) {
+            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
+              handleOpen(key, backupObject);
+            }
+            clearTimeout(clickTimeout);
+            clickCount = 0;
+          }
+        };
+
+        button.addEventListener('contextmenu', function (e) {
+          handleContextMenu(e, key);
+        }, false);
+
+        let icon = document.createElement('img');
+        if (key.indexOf('.') === -1) {
+          icon.src = folderImage;
+        } else if (imgExtensions.some(ext => key.includes(ext))) {
+          icon.src = imageImage;
+        } else if (key.indexOf('.html') !== -1) {
+          const iconMatch = backupObject[key].match(/<!--.* microIcon="(.+?)".*-->/);
+          iconMatch ? icon.src = iconMatch[1] : icon.src = executableImage;
+        } else {
+          icon.src = documentImage;
+        }
+        button.appendChild(icon);
+
+        let bttnTxt = document.createElement("div");
+        bttnTxt.textContent = key;
+        bttnTxt.classList.add("vertButtonText");
+        button.appendChild(bttnTxt);
+        displayArea.appendChild(button);
+      });
+    }
+
+    function removeLastSlashSection(str) {
+      const lastIndex = str.lastIndexOf('/');
+      // If '/' was not found or is the only character, return the original string
+      if (lastIndex <= 0) {
+        return str;
+      }
+      // Find the next-to-last index of '/'
+      const nextToLastIndex = str.lastIndexOf('/', lastIndex - 1);
+      // If the next-to-last '/' was not found, return the original string
+      if (nextToLastIndex < 0) {
+        return str;
+      }
+      return str.substring(0, nextToLastIndex + 1) + str.substring(lastIndex + 1);
+    }
+
+    function upDir() {
+      const oldDir = pwd;
+      if (oldDir === "://") {
+        return;
+      }
+      let newDir = removeLastSlashSection(oldDir);
+      if (newDir === ":/") {
+        newDir = "://";
+      }
+      pwd = newDir;
+      document.getElementById("pwd").value = pwd;
+
+      // New logic to navigate the backupObject based on newDir
+      const pathParts = newDir.substring(3).split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", newDir);
+          return;
+        }
+      }
+
+      displayTopLevelObjects(currentObject);
+    }
+
+    function dirJump(
+      nestedDirectoryPath = document.getElementById("pwd").value.substring(3),
+      typedPath = document.getElementById("pwd").value.substring(3),
+      traversedDisk = diskBackup,
+    ) {
+      const directories = nestedDirectoryPath.split("/");
+      const currentDirectory = directories.shift();
+
+      if (nestedDirectoryPath === "") {
+        displayTopLevelObjects(traversedDisk);
+        // If the typed path is empty, we don't want a third slash appended to "://"
+        pwd = `://${typedPath}${(typedPath.slice(-1) !== "/" && typedPath.length > 0) ? "/" : ""}`;
+        document.getElementById("pwd").value = pwd;
+      } else if (
+        currentDirectory &&
+        traversedDisk.hasOwnProperty(currentDirectory)
+      ) {
+        const nestedDirectoryPath = directories.join("/");
+        dirJump(nestedDirectoryPath, typedPath, traversedDisk[currentDirectory]);
+      } else {
+        window.top.postMessage("ALERT:[Invalid Path");
+        document.getElementById("pwd").value = pwd;
+        return;
+      }
+    }
+
+    function downloadDisk() {
+      // Ensure diskBackup is a string that contains valid JSON before initiating download
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
+      const d = new Date();
+      let element = document.createElement('a');
+      element.setAttribute('href', dataStr);
+      element.setAttribute('download', `SacredOSBackup-${d.toISOString()}.json`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    function displayCurrentDirectory() {
+      const currentDir = pwd.substring(3);
+      const pathParts = currentDir.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", currentDir);
+          return;
+        }
+      }
+      displayTopLevelObjects(currentObject);
+    }
+
+    function openFileForSource() {
+      window.top.postMessage(`OFFD:[${fileForOpeningFromDialog}`, "*");
+    }
+
+    function saveFileHere() {
+      let nameOfFileToSave = document.getElementById("fileNameInputBottomDialog").value;
+      if (!nameOfFileToSave.includes(".")) {
+        window.top.postMessage("ALERT:[File must contain an extension!");
+        return;
+      }
+      window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`,"*");
+    }
+
+    function cancelOpenOrSaveFile() {
+      window.top.postMessage(`CLOSE:[${programId}`, "*");
+    }
+
+    let programId = "";
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("AF:")) {
+        const jsonString = e.data.substring(3);
+        try {
+          diskBackup = JSON.parse(jsonString);
+          if (firstLoad) {
+            pwd = "://";
+            firstLoad = false;
+          }
+          displayCurrentDirectory(); // Display the current directory recursively
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
+        return;
+      } else if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      }
+    });
+  </script>
+</body>
+
+</html>
