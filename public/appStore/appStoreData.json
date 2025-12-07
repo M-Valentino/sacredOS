@@ -36,6 +36,15 @@
     "mode": "Install"
   },
   {
+    "name": "Synthesizer",
+    "dir": "/apps/synthesizer",
+    "icon": "icon.png",
+    "description": "Synthesizer keyboard complete extensive waveform customizations. Record and playback your music makings.",
+    "author": "ChatGPT",
+    "link": "https://chatgpt.com",
+    "mode": "Install"
+  },
+  {
     "name": "Wacky Calendar v1.0",
     "dir": "/apps/wacky-calendar",
     "icon": "icon.png",
