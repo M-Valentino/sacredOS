@@ -1,4 +1,4 @@
-<!--width="880" height="660" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAC1QTFRFJQ0RgTFMZxg3lUhqJxZ4gWPUSkedJBRLPUV4IxMqJ0EmICEdJ2Uvh+KKW7dpxpwU5gAAAU9JREFUeJw9kM9LAkEUx9+bIaKTu0IKkWIueIuWpGsEiuV/Ef0FBoEUBBv9gG7ZzcCoq0WHLkEn75ksegtWN28FuQaVLDkzzUzU5QPf4Tvv+74PASA6kADLk8C8hBnAL8daprtAuOIYVxnYLrUfs8ylEGIZgFFjKL8J19aSp/uc8GQ/3Q1xO8UJtBb9FMDVUhyrjjOIAlysexZAGasnJWknjqM4wqqK/J4YTWliHcVdESPt5fPbivjCJuiNTBHIsA+sS2FYb8/CSrTaMbzcqXU2usHebjvH/UN86IGVaKhYyNUy6JmBGEJjRU+geJ0KP53NyDsjlZKI4bEhn0cvcZkLN0XcjynbU0bxtYank4Gp9uvNKRceTMtG0ENVzJuRfYfG/RonA+PsyA9xi7q2PEgHFJtY4JBlnYUWnafQZFhI+nIG0YRZzP8fWUtFyv74A1N0hnzMntJKAAAAAElFTkSuQmCC"-->
+<!--width="1064" height="720" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAC1QTFRFJQ0RgTFMZxg3lUhqJxZ4gWPUSkedJBRLPUV4IxMqJ0EmICEdJ2Uvh+KKW7dpxpwU5gAAAU9JREFUeJw9kM9LAkEUx9+bIaKTu0IKkWIueIuWpGsEiuV/Ef0FBoEUBBv9gG7ZzcCoq0WHLkEn75ksegtWN28FuQaVLDkzzUzU5QPf4Tvv+74PASA6kADLk8C8hBnAL8daprtAuOIYVxnYLrUfs8ylEGIZgFFjKL8J19aSp/uc8GQ/3Q1xO8UJtBb9FMDVUhyrjjOIAlysexZAGasnJWknjqM4wqqK/J4YTWliHcVdESPt5fPbivjCJuiNTBHIsA+sS2FYb8/CSrTaMbzcqXU2usHebjvH/UN86IGVaKhYyNUy6JmBGEJjRU+geJ0KP53NyDsjlZKI4bEhn0cvcZkLN0XcjynbU0bxtYank4Gp9uvNKRceTMtG0ENVzJuRfYfG/RonA+PsyA9xi7q2PEgHFJtY4JBlnYUWnafQZFhI+nIG0YRZzP8fWUtFyv74A1N0hnzMntJKAAAAAElFTkSuQmCC"-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +33,7 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 20% -10%, #1b1f3b 0%, var(--bg) 60%);
+      background: var(--bg);
       color: var(--text)
     }
 
@@ -105,27 +105,18 @@
     main {
       max-width: 1100px;
       margin: 20px auto 48px;
-      padding: 0 16px
-    }
-
-    .grid {
-      display: grid;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
       gap: 16px;
-      grid-template-columns: 1.4fr 1fr
     }
-
-    @media (max-width:980px) {
-      .grid {
-        grid-template-columns: 1fr
-      }
-    }
-
+  
     .panel {
       background: linear-gradient(180deg, var(--panel-2), var(--panel));
       border-radius: var(--radius);
       border: 1px solid rgba(255, 255, 255, .08);
       box-shadow: var(--shadow);
-      padding: 16px
+      padding: 8px
     }
 
     .panel h2 {
@@ -135,16 +126,19 @@
     }
 
     .controls {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(2, minmax(0, 1fr))
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .controls .group {
       background: rgba(255, 255, 255, .03);
       border: 1px solid rgba(255, 255, 255, .07);
       border-radius: 12px;
-      padding: 12px
+      padding: 12px;
+      min-width: 440px;
     }
 
     .controls .group h3 {
@@ -349,7 +343,7 @@
     </div>
   </header>
 
-  <main class="grid">
+  <main>
     <section class="panel">
       <h2>Controls</h2>
       <div class="controls">
