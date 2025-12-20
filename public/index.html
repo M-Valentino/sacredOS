@@ -57,10 +57,8 @@
                 <b>fresh install</b>.
                 If this is your first time using Sacred OS, you will want to boot with a fresh install.
               </p>
-              <p>To save your data and come back to where you left off, open the start menu and click the button that
-                says "Save Session". Your data is automatically saved to IndexedDB, which allows you to store large amounts
-                of data. You can now boot from IndexedDB to resume where you left off. Don't forget to click the Save Session button as Sacred OS,
-                <b>does not</b> automatically save your data.
+              <p>Your data is automatically saved locally in your web browser to an IndexedDB, which allows you to store gigabytes data.
+                Choose the IndexedDB boot option to resume where you left off.
               </p>
               <p>If you frequently clear your browser's data or want to use Sacred on a different device, You want to
                 boot from a JSON disk backup. JSON disk backups will save your session exactly as how IndexedDB
@@ -403,24 +401,9 @@
         const response = await fetch(`${fileURL}?t=${time}`);
 
         if (response.ok) {
-          const contentType = response.headers.get('Content-Type') || '';
-          const extension = fileURL.split('.').pop().toLowerCase();
-          // Determine if the file is of a type that we handle as text
-          if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
-            return await response.text();
-          } else {
-            const arrayBuffer = await response.arrayBuffer();
-            const binaryContent = new Uint8Array(arrayBuffer);
-            let base64String = "";
-            // In Safari, String.fromCharCode supports a max arg length of 65535
-            for (let i = 0; i < binaryContent.length; i += 65535) {
-              base64String += btoa(
-                String.fromCharCode(...binaryContent.slice(i, i + 65535))
-              );
-            }
-
-            return base64String;
-          }
+          // Always fetch as ArrayBuffer and convert to Uint8Array
+          const arrayBuffer = await response.arrayBuffer();
+          return new Uint8Array(arrayBuffer);
         } else {
           console.error(`Error fetching file ${fileURL}: HTTP status ${response.status}`);
         }
@@ -491,11 +474,20 @@
         }
       }
 
+      // Helper function to decode Uint8Array to string
+      function decodeIfUint8Array(content) {
+        if (content instanceof Uint8Array) {
+          const decoder = new TextDecoder('utf-8');
+          return decoder.decode(content);
+        }
+        return content;
+      }
+
       // Check if fileContents are loaded
       if (fileContents && fileContents.system) {
         if (fileContents.system['gui.frag.html']) {
           let guiHTML = document.createElement('div');
-          guiHTML.innerHTML = fileContents.system['gui.frag.html'];
+          guiHTML.innerHTML = decodeIfUint8Array(fileContents.system['gui.frag.html']);
           document.body.appendChild(guiHTML);
           // Hide user prompt and show main menu
           document.getElementById("crtAndBootContainer").style.display = "none";
@@ -504,19 +496,19 @@
         if (fileContents.system['gui.css']) {
           let styleElement = document.createElement('style');
           styleElement.type = 'text/css';
-          styleElement.innerText = fileContents.system['gui.css'];
+          styleElement.innerText = decodeIfUint8Array(fileContents.system['gui.css']);
           document.head.appendChild(styleElement);
         }
         if (fileContents.system['kernel.js']) {
           let kernelScript = document.createElement('script');
           kernelScript.type = 'text/javascript';
-          kernelScript.textContent = fileContents.system['kernel.js'];
+          kernelScript.textContent = decodeIfUint8Array(fileContents.system['kernel.js']);
           document.body.appendChild(kernelScript);
         }
         if (fileContents.system['gui.js']) {
           let guiScript = document.createElement('script');
           guiScript.type = 'text/javascript';
-          guiScript.textContent = fileContents.system['gui.js'];
+          guiScript.textContent = decodeIfUint8Array(fileContents.system['gui.js']);
           document.body.appendChild(guiScript);
           // Wait a bit for scripts to load, then start GUI
           setTimeout(() => guiStart(), 100);

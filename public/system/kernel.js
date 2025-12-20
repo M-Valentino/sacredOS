@@ -12,8 +12,24 @@ function sendMessageToAllIframes(message) {
   }
 }
 
+// Helper function to decode text file from Uint8Array
+function decodeTextFile(content) {
+  if (content instanceof Uint8Array) {
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(content);
+  }
+  return content;
+}
+
+// Helper function to encode text file to Uint8Array
+function encodeTextFile(content) {
+  const encoder = new TextEncoder();
+  return encoder.encode(content);
+}
+
 async function updateBGModeSetting(mode) {
-  const settingsContent = await findFileContents("system", "settings.json");
+  let settingsContent = await findFileContents("system", "settings.json");
+  settingsContent = decodeTextFile(settingsContent);
   let updatedSettings;
   if (settingsContent.includes(`"desktopBGMode":`)) {
     updatedSettings = settingsContent.replace(/"desktopBGMode":\s*"[a-zA-Z]+",/, `"desktopBGMode": "${mode}",`);
@@ -22,14 +38,29 @@ async function updateBGModeSetting(mode) {
     tempSettings["desktopBGMode"] = mode;
     updatedSettings = JSON.stringify(tempSettings);
   }
-  await saveFileContentsRecursive("system", "settings.json", updatedSettings);
+  await saveFileContentsRecursive("system", "settings.json", encodeTextFile(updatedSettings));
 }
 
 async function updateCSSvar(varName, value) {
   let regex = new RegExp(`(${varName}: ).*?;`);
-  const cssContent = await findFileContents("system", "gui.css");
+  let cssContent = await findFileContents("system", "gui.css");
+  cssContent = decodeTextFile(cssContent);
   const updatedCSS = cssContent.replace(regex, `$1 ${value};`);
-  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
+  await saveFileContentsRecursive("system", "gui.css", encodeTextFile(updatedCSS));
+}
+
+// Update multiple CSS variables in a single operation to avoid race conditions
+async function updateMultipleCSSvars(updates) {
+  let cssContent = await findFileContents("system", "gui.css");
+  cssContent = decodeTextFile(cssContent);
+  let updatedCSS = cssContent;
+  
+  for (const [varName, value] of Object.entries(updates)) {
+    const regex = new RegExp(`(${varName}: ).*?;`);
+    updatedCSS = updatedCSS.replace(regex, `$1 ${value};`);
+  }
+  
+  await saveFileContentsRecursive("system", "gui.css", encodeTextFile(updatedCSS));
 }
 
 async function changeBGMode(mode) {
@@ -81,9 +112,25 @@ window.onmessage = async function (e) {
       const directoryPath = directories.join("/");
 
       // Check if the directory and file exist using IndexedDB
-      const fileContent = await findFileContents(directoryPath, fileName);
+      let fileContent = await findFileContents(directoryPath, fileName);
 
       if (fileContent !== null) {
+        // Convert Uint8Array to appropriate format based on file type
+        const extension = fileName.split('.').pop().toLowerCase();
+        if (fileContent instanceof Uint8Array) {
+          if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+            // Text file - decode to string
+            const decoder = new TextDecoder('utf-8');
+            fileContent = decoder.decode(fileContent);
+          } else {
+            // Binary file - convert to base64
+            let binaryString = "";
+            for (let i = 0; i < fileContent.length; i += 65535) {
+              binaryString += String.fromCharCode(...fileContent.slice(i, i + 65535));
+            }
+            fileContent = btoa(binaryString);
+          }
+        }
         sendMessageToAllIframes(`PH:[${filePath}]` + fileContent, "*");
       } else {
         console.error("File not found:", filePath);
@@ -103,6 +150,17 @@ window.onmessage = async function (e) {
         window.top.postMessage("ALERT:[" + error.message, "*");
       }
       return;
+    } else if (e.data.startsWith("U:THEME[")) {
+      // Batch update all colors for theme changes to avoid race conditions
+      const rightBracketIndex = e.data.indexOf("]");
+      const themeData = JSON.parse(e.data.substring(8, rightBracketIndex));
+      await updateMultipleCSSvars({
+        "--primColor": themeData.primColor,
+        "--secColor": themeData.secColor,
+        "--secColorLight": themeData.secColorLight,
+        "--secColorDark": themeData.secColorDark
+      });
+      return;
     } else if (e.data.startsWith("U:PRIMC")) {
       await updateCSSvar("--primColor", e.data.substring(7));
       return;
@@ -119,8 +177,13 @@ window.onmessage = async function (e) {
       await changeBGMode(e.data.substring(6));
       return;
     } else if (e.data == "REQ:SS") {
-      const cssContent = await findFileContents("system", "gui.css");
+      let cssContent = await findFileContents("system", "gui.css");
       if (cssContent) {
+        // Convert Uint8Array to string if needed
+        if (cssContent instanceof Uint8Array) {
+          const decoder = new TextDecoder('utf-8');
+          cssContent = decoder.decode(cssContent);
+        }
         e.source.postMessage("SS:" + cssContent, "*");
       }
       return;
@@ -134,7 +197,29 @@ window.onmessage = async function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-      const fileContent = e.data.substring(rightBracketIndex + 1);
+      let fileContent = e.data.substring(rightBracketIndex + 1);
+
+      // Convert string content to Uint8Array for storage
+      const extension = fileName.split('.').pop().toLowerCase();
+      if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+        // Text file - encode string to Uint8Array
+        const encoder = new TextEncoder();
+        fileContent = encoder.encode(fileContent);
+      } else {
+        // Binary file - assume it's base64, convert to Uint8Array
+        try {
+          const binaryString = atob(fileContent);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          fileContent = bytes;
+        } catch (e) {
+          // If base64 decode fails, treat as text
+          const encoder = new TextEncoder();
+          fileContent = encoder.encode(fileContent);
+        }
+      }
 
       await saveFileContentsRecursive(directoryPath, fileName, fileContent);
       await broadcastFileStructure();
@@ -209,7 +294,12 @@ window.onmessage = async function (e) {
       if (existingDialogIsOpen()) {
         return;
       }
-      const fileDialogData = await findFileContents("programs/default", "files.html");
+      let fileDialogData = await findFileContents("programs/default", "files.html");
+      // Convert from Uint8Array to string if needed
+      if (fileDialogData instanceof Uint8Array) {
+        const decoder = new TextDecoder('utf-8');
+        fileDialogData = decoder.decode(fileDialogData);
+      }
       let modifiedData = fileDialogData;
       modifiedData = modifiedData.replace(
         "--displayBottomDialogActions: none;",
@@ -241,7 +331,12 @@ window.onmessage = async function (e) {
       savingFileFor = e.source;
       console.log(dataToSave);
 
-      const fileDialogData = await findFileContents("programs/default", "files.html");
+      let fileDialogData = await findFileContents("programs/default", "files.html");
+      // Convert from Uint8Array to string if needed
+      if (fileDialogData instanceof Uint8Array) {
+        const decoder = new TextDecoder('utf-8');
+        fileDialogData = decoder.decode(fileDialogData);
+      }
       let modifiedData = fileDialogData;
       modifiedData = modifiedData.replace(
         "--displayBottomDialogActions: none;",
@@ -268,7 +363,25 @@ window.onmessage = async function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-      const fileToReturn = await findFileContents(directoryPath, fileName);
+      let fileToReturn = await findFileContents(directoryPath, fileName);
+      
+      // Convert Uint8Array to appropriate format based on file type
+      const extension = fileName.split('.').pop().toLowerCase();
+      if (fileToReturn instanceof Uint8Array) {
+        if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+          // Text file - decode to string
+          const decoder = new TextDecoder('utf-8');
+          fileToReturn = decoder.decode(fileToReturn);
+        } else {
+          // Binary file - convert to base64
+          let binaryString = "";
+          for (let i = 0; i < fileToReturn.length; i += 65535) {
+            binaryString += String.fromCharCode(...fileToReturn.slice(i, i + 65535));
+          }
+          fileToReturn = btoa(binaryString);
+        }
+      }
+      
       openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
       openingFileFor = "";
       closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
@@ -279,7 +392,31 @@ window.onmessage = async function (e) {
       const directories = filePath.split("/");
       const fileName = e.data.substring(rightBracketIndex + 1);
       const directoryPath = directories.join("/");
-      await saveFileContentsRecursive(directoryPath, fileName, dataToSave);
+      
+      // Convert string content to Uint8Array for storage
+      let contentToSave = dataToSave;
+      const extension = fileName.split('.').pop().toLowerCase();
+      if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+        // Text file - encode string to Uint8Array
+        const encoder = new TextEncoder();
+        contentToSave = encoder.encode(contentToSave);
+      } else {
+        // Binary file - assume it's base64, convert to Uint8Array
+        try {
+          const binaryString = atob(contentToSave);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          contentToSave = bytes;
+        } catch (e) {
+          // If base64 decode fails, treat as text
+          const encoder = new TextEncoder();
+          contentToSave = encoder.encode(contentToSave);
+        }
+      }
+      
+      await saveFileContentsRecursive(directoryPath, fileName, contentToSave);
 
       await broadcastFileStructure();
       closeProgram("winSaveFileAsDialog", "menSaveFileAsDialog");
@@ -313,16 +450,18 @@ window.onmessage = async function (e) {
       return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
-      const shortcutsContent = await findFileContents("system", "menuShortcuts.json");
+      let shortcutsContent = await findFileContents("system", "menuShortcuts.json");
+      shortcutsContent = decodeTextFile(shortcutsContent);
       let newShortcuts = JSON.parse(shortcutsContent);
       if (!newShortcuts.includes(path)) {
         newShortcuts.push(path);
-        await saveFileContentsRecursive("system", "menuShortcuts.json", JSON.stringify(newShortcuts));
+        await saveFileContentsRecursive("system", "menuShortcuts.json", encodeTextFile(JSON.stringify(newShortcuts)));
         populateMenu();
       }
       return;
     } else if (e.data.startsWith("U:TF[")) {
-      const settingsContent = await findFileContents("system", "settings.json");
+      let settingsContent = await findFileContents("system", "settings.json");
+      settingsContent = decodeTextFile(settingsContent);
       let updatedSettings;
       if (e.data.substring(5) === "24h") {
         updatedSettings = settingsContent.replace(`"timeFormat": "12h"`, `"timeFormat": "24h"`);
@@ -330,15 +469,16 @@ window.onmessage = async function (e) {
         updatedSettings = settingsContent.replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
       }
       if (updatedSettings) {
-        await saveFileContentsRecursive("system", "settings.json", updatedSettings);
+        await saveFileContentsRecursive("system", "settings.json", encodeTextFile(updatedSettings));
       }
       return;
     } else if (e.data.startsWith("U:DSKTP-BG[")) {
       const imgPath = e.data.substring(11);
       const regexBG = new RegExp(`("desktopBGPath":\\s*").*?(")`);
-      const settingsContent = await findFileContents("system", "settings.json");
+      let settingsContent = await findFileContents("system", "settings.json");
+      settingsContent = decodeTextFile(settingsContent);
       const updatedSettings = settingsContent.replace(regexBG, `$1${imgPath}$2`);
-      await saveFileContentsRecursive("system", "settings.json", updatedSettings);
+      await saveFileContentsRecursive("system", "settings.json", encodeTextFile(updatedSettings));
       loadDesktopBG();
       return;
     } else if (e.data.startsWith("ALERT:[")) {

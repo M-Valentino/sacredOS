@@ -166,6 +166,16 @@ async function clearAll() {
   });
 }
 
+// Helper function to convert base64 string to Uint8Array
+function base64ToUint8Array(base64) {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
 // Convert nested object structure to IndexedDB
 async function importFromObject(obj, basePath = []) {
   await initDB();
@@ -176,20 +186,66 @@ async function importFromObject(obj, basePath = []) {
     for (const key in currentObj) {
       if (currentObj.hasOwnProperty(key)) {
         const newPath = [...currentPath, key];
-        const value = currentObj[key];
+        let value = currentObj[key];
 
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-          // It's a folder (object)
-          await new Promise((resolve, reject) => {
-            const request = store.put({ path: pathToKey(newPath), value: {} });
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(new Error(`Failed to import folder: ${pathToKey(newPath)}`));
-          });
+          // Check if it's a Uint8Array (already bytes)
+          if (value instanceof Uint8Array) {
+            // It's already a Uint8Array, store as-is
+            await new Promise((resolve, reject) => {
+              const request = store.put({ path: pathToKey(newPath), value: value });
+              request.onsuccess = () => resolve();
+              request.onerror = () => reject(new Error(`Failed to import file: ${pathToKey(newPath)}`));
+            });
+          } else if (Object.keys(value).length === 0) {
+            // It's a folder (empty object)
+            await new Promise((resolve, reject) => {
+              const request = store.put({ path: pathToKey(newPath), value: {} });
+              request.onsuccess = () => resolve();
+              request.onerror = () => reject(new Error(`Failed to import folder: ${pathToKey(newPath)}`));
+            });
 
-          // Recursively traverse folder contents
-          await traverse(value, newPath);
+            // Recursively traverse folder contents
+            await traverse(value, newPath);
+          } else {
+            // It's a folder (object with keys)
+            await new Promise((resolve, reject) => {
+              const request = store.put({ path: pathToKey(newPath), value: {} });
+              request.onsuccess = () => resolve();
+              request.onerror = () => reject(new Error(`Failed to import folder: ${pathToKey(newPath)}`));
+            });
+
+            // Recursively traverse folder contents
+            await traverse(value, newPath);
+          }
+        } else if (typeof value === 'string') {
+          // It's a string - could be text or base64
+          // For backward compatibility: if it looks like base64 (long string without newlines for binary files),
+          // convert it to Uint8Array. Otherwise, convert text to Uint8Array.
+          // We'll convert all strings to Uint8Array to be consistent
+          const extension = key.split('.').pop().toLowerCase();
+          if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+            // Text file - convert string to Uint8Array using UTF-8 encoding
+            const encoder = new TextEncoder();
+            value = encoder.encode(value);
+          } else {
+            // Binary file - assume it's base64 and convert to Uint8Array
+            // Check if it's valid base64
+            try {
+              value = base64ToUint8Array(value);
+            } catch (e) {
+              // If base64 decode fails, treat as text and encode to bytes
+              const encoder = new TextEncoder();
+              value = encoder.encode(value);
+            }
+          }
+          await new Promise((resolve, reject) => {
+            const request = store.put({ path: pathToKey(newPath), value: value });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(new Error(`Failed to import file: ${pathToKey(newPath)}`));
+          });
         } else {
-          // It's a file (string or other value)
+          // It's some other type - store as-is (shouldn't happen normally)
           await new Promise((resolve, reject) => {
             const request = store.put({ path: pathToKey(newPath), value: value });
             request.onsuccess = () => resolve();
@@ -204,6 +260,16 @@ async function importFromObject(obj, basePath = []) {
   return new Promise((resolve) => {
     transaction.oncomplete = () => resolve();
   });
+}
+
+// Helper function to convert Uint8Array to base64 string
+function uint8ArrayToBase64(uint8Array) {
+  let binaryString = "";
+  // In Safari, String.fromCharCode supports a max arg length of 65535
+  for (let i = 0; i < uint8Array.length; i += 65535) {
+    binaryString += String.fromCharCode(...uint8Array.slice(i, i + 65535));
+  }
+  return btoa(binaryString);
 }
 
 // Convert IndexedDB to nested object structure (for backward compatibility)
@@ -224,13 +290,29 @@ async function exportToObject() {
     const finalKey = pathArray[pathArray.length - 1];
     // If it's a folder (empty object), set it as empty object
     // If it's a file, set the value
-    if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) {
-      // It's a folder - ensure it exists as empty object
-      if (!current[finalKey] || typeof current[finalKey] !== 'object') {
-        current[finalKey] = {};
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      if (value instanceof Uint8Array) {
+        // Convert Uint8Array based on file type
+        const extension = finalKey.split('.').pop().toLowerCase();
+        if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+          // Text file - decode to string
+          const decoder = new TextDecoder('utf-8');
+          current[finalKey] = decoder.decode(value);
+        } else {
+          // Binary file - convert to base64 string for JSON export
+          current[finalKey] = uint8ArrayToBase64(value);
+        }
+      } else if (Object.keys(value).length === 0) {
+        // It's a folder - ensure it exists as empty object
+        if (!current[finalKey] || typeof current[finalKey] !== 'object') {
+          current[finalKey] = {};
+        }
+      } else {
+        // It's some other object - store as-is
+        current[finalKey] = value;
       }
     } else {
-      // It's a file - set the value
+      // It's a file - set the value (should be string or other primitive)
       current[finalKey] = value;
     }
   }

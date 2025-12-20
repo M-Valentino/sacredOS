@@ -224,10 +224,30 @@
           break;
       }
 
-      changePrimColor(primColor);
-      changeSecColor(secColor);
-      changeSecColorLight(secColorLight);
-      changeSecColorDark(secColorDark);
+      // Update UI immediately
+      document.querySelector(':root').style.setProperty('--primColor', primColor);
+      document.querySelector(':root').style.setProperty('--secColor', secColor);
+      document.querySelector(':root').style.setProperty('--secColorLight', secColorLight);
+      document.querySelector(':root').style.setProperty('--secColorDark', secColorDark);
+      document.getElementById('primColorBox').style.backgroundColor = primColor;
+      document.getElementById('secColorBox').style.backgroundColor = secColor;
+      document.getElementById('secColorLightBox').style.backgroundColor = secColorLight;
+      document.getElementById('secColorDarkBox').style.backgroundColor = secColorDark;
+
+      // Send batch update message to save all colors at once (avoids race condition)
+      const themeData = {
+        primColor: primColor,
+        secColor: secColor,
+        secColorLight: secColorLight,
+        secColorDark: secColorDark
+      };
+      window.top.postMessage(`U:THEME[${JSON.stringify(themeData)}]`, "*");
+      
+      // Also update system-wide via eval (for immediate effect in all iframes)
+      window.top.postMessage(changePrimColorSystemWide(primColor), "*");
+      window.top.postMessage(changeSecColorSystemWide(secColor), "*");
+      window.top.postMessage(changeSecColorLSystemWide(secColorLight), "*");
+      window.top.postMessage(changeSecColorDSystemWide(secColorDark), "*");
     }
 
     function changeBackgroundMode(mode) {

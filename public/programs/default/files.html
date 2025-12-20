@@ -539,23 +539,22 @@
       const extension = file.name.split('.').pop();
       const path = pwd.substring(3) + filename;
 
-      // For text files
-      if (file && ['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-          const uploadedFile = e.target.result;
-          window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
-        };
-        reader.readAsText(file);
-        // For binary files
-      } else if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const base64File = e.target.result.split(',')[1];  // Strips off the data URL prefix to get pure base64 content
-          window.top.postMessage(`SF:[${path}]${base64File}`, "*");
-        };
-        reader.readAsDataURL(file);
-      }
+      // Read all files as ArrayBuffer, then convert to base64 for transmission
+      // The kernel will convert base64 to Uint8Array for storage
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const arrayBuffer = e.target.result;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        // Convert to base64 for transmission
+        let binaryString = "";
+        for (let i = 0; i < uint8Array.length; i += 65535) {
+          binaryString += String.fromCharCode(...uint8Array.slice(i, i + 65535));
+        }
+        const base64File = btoa(binaryString);
+        window.top.postMessage(`SF:[${path}]${base64File}`, "*");
+      };
+      reader.readAsArrayBuffer(file);
     });
 
     document.getElementById("topLevelObjects").addEventListener("click", function (event) {
