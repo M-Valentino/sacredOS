@@ -4,13 +4,6 @@ async function broadcastFileStructure() {
   sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
 }
 
-async function saveToLocalStorage() {
-  const fileContents = await exportToObject();
-  localStorage.setItem("SacredSession", JSON.stringify(fileContents));
-  window.top.postMessage(
-    "ALERT:[Your session has been saved! It is now safe to leave this webpage."
-  );
-}
 
 function sendMessageToAllIframes(message) {
   const iframes = document.getElementsByTagName("iframe");
