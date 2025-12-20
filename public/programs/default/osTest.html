@@ -48,12 +48,13 @@
   </main>
   <script>
     window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("REQ:AF", "*");
 
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    let diskBackup;
+    let diskBackup = {};
     let awaitingAF = true;
     let osv;
     let awaitingOSV = true;

@@ -53,32 +53,32 @@
             </header>
             <div id="helpDialog" class="biosDialog">
               <p>
-                Sacred OS can boot in three ways: from <b>local storage</b>, from a <b>JSON disk backup</b>, or with a
+                Sacred OS can boot in three ways: from <b>IndexedDB</b>, from a <b>JSON disk backup</b>, or with a
                 <b>fresh install</b>.
                 If this is your first time using Sacred OS, you will want to boot with a fresh install.
               </p>
               <p>To save your data and come back to where you left off, open the start menu and click the button that
-                says "Save Session". You can now boot from local storage. Local storage is kind of like a large cookie,
-                which allows you store a lot of data. Don't forget to click the Save Session button as Sacred OS,
+                says "Save Session". Your data is automatically saved to IndexedDB, which allows you to store large amounts
+                of data. You can now boot from IndexedDB to resume where you left off. Don't forget to click the Save Session button as Sacred OS,
                 <b>does not</b> automatically save your data.
               </p>
               <p>If you frequently clear your browser's data or want to use Sacred on a different device, You want to
-                boot from a JSON disk backup. JSON disk backups will save your session exactly as how local storage
+                boot from a JSON disk backup. JSON disk backups will save your session exactly as how IndexedDB
                 does, but you are able to save it as a file anywhere on your real computer. You can create
                 these backups in the files.html program.
               </p>
               <button id="closeHelp" class="biosButton closeDialog">Ok</button>
             </div>
-            <div id="noLSDialog" class="biosDialog">
-              <p>No saved session on your device's local storage was found. If this is your first time using Sacred OS,
+            <div id="noIDBDialog" class="biosDialog">
+              <p>No saved session in IndexedDB was found. If this is your first time using Sacred OS,
                 you should boot with a fresh install. Please click the help button for more info.
               </p>
-              <button id="closeNoLS" class="biosButton closeDialog">Ok</button>
+              <button id="closeNoIDB" class="biosButton closeDialog">Ok</button>
             </div>
             <hr class="biosHrMain mb-20" />
             <section id="bootOptions">
               <div class="biosTextMain">Choose a boot source:</div>
-              <button id="localStorage" class="biosButton mt-20 mr-20">Local Storage (Recommended)</button>
+              <button id="indexedDB" class="biosButton mt-20 mr-20">IndexedDB (Recommended)</button>
               <button id="uploadJson" class="biosButton mt-20 mr-20">JSON Disk Backup</button>
               <input type="file" id="fileInput" style="display:none;">
               <button id="defaultSettings" class="biosButton mt-20">Fresh install</button>
@@ -171,8 +171,8 @@
       document.getElementById("helpDialog").style.display = "none";
     });
 
-    document.getElementById("closeNoLS").addEventListener("click", function () {
-      document.getElementById("noLSDialog").style.display = "none";
+    document.getElementById("closeNoIDB").addEventListener("click", function () {
+      document.getElementById("noIDBDialog").style.display = "none";
     });
 
     let powerOn = true;
@@ -309,12 +309,40 @@
       document.getElementById("fileInput").click();
     });
 
-    document.getElementById("localStorage").addEventListener("click", function () {
-      fileContents = JSON.parse(localStorage.getItem("SacredSession"));
-      if (fileContents === null) {
-        document.getElementById("noLSDialog").style.display = "initial";
+    document.getElementById("indexedDB").addEventListener("click", async function () {
+      // Load IndexedDB wrapper first
+      const indexedDBScript = document.createElement('script');
+      indexedDBScript.src = 'system/indexeddb.js';
+      await new Promise((resolve, reject) => {
+        indexedDBScript.onload = resolve;
+        indexedDBScript.onerror = reject;
+        document.head.appendChild(indexedDBScript);
+      });
+
+      // Check if IndexedDB has data
+      const hasIndexedDBData = await hasData();
+      
+      if (!hasIndexedDBData) {
+        // Check if there's old localStorage data to migrate
+        const oldLocalStorageData = localStorage.getItem("SacredSession");
+        if (oldLocalStorageData) {
+          try {
+            fileContents = JSON.parse(oldLocalStorageData);
+            // Migrate from localStorage to IndexedDB
+            await importFromObject(fileContents);
+            // Continue with boot
+            await afterFileContentLoaded();
+            return;
+          } catch (error) {
+            console.error("Error migrating from localStorage:", error);
+          }
+        }
+        // No data found
+        document.getElementById("noIDBDialog").style.display = "initial";
       } else {
-        afterFileContentLoaded();
+        // Load data from IndexedDB
+        fileContents = await exportToObject();
+        await afterFileContentLoaded();
       }
     });
 
@@ -323,7 +351,25 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = async function (e) {
+          // Load IndexedDB wrapper first
+          const indexedDBScript = document.createElement('script');
+          indexedDBScript.src = 'system/indexeddb.js';
+          await new Promise((resolve, reject) => {
+            indexedDBScript.onload = resolve;
+            indexedDBScript.onerror = reject;
+            document.head.appendChild(indexedDBScript);
+          });
+
+          // Parse JSON file
           fileContents = JSON.parse(e.target.result);
+          
+          // Clear all existing IndexedDB data
+          await clearAll();
+          
+          // Import the JSON data into IndexedDB
+          await importFromObject(fileContents);
+          
+          // Boot from the imported data
           await afterFileContentLoaded();
         };
         reader.readAsText(file);
@@ -333,9 +379,22 @@
     document.getElementById("defaultSettings").addEventListener("click", async function () {
       const bootOptions = document.getElementById("bootOptions");
       bootOptions.remove()
+      
+      // Load IndexedDB wrapper first
+      const indexedDBScript = document.createElement('script');
+      indexedDBScript.src = 'system/indexeddb.js';
+      await new Promise((resolve, reject) => {
+        indexedDBScript.onload = resolve;
+        indexedDBScript.onerror = reject;
+        document.head.appendChild(indexedDBScript);
+      });
+      
+      // Clear all existing IndexedDB data for fresh install
+      await clearAll();
+      
       defaultFileContents = await loadfileContents(fileTable);
       fileContents = defaultFileContents;
-      afterFileContentLoaded();
+      await afterFileContentLoaded();
     });
 
     async function fetchContent(fileURL) {
@@ -411,6 +470,27 @@
     }
 
     async function afterFileContentLoaded() {
+      // Load IndexedDB wrapper first (if not already loaded)
+      if (typeof initDB === 'undefined') {
+        const indexedDBScript = document.createElement('script');
+        indexedDBScript.src = 'system/indexeddb.js';
+        await new Promise((resolve, reject) => {
+          indexedDBScript.onload = resolve;
+          indexedDBScript.onerror = reject;
+          document.head.appendChild(indexedDBScript);
+        });
+      }
+
+      // Migrate fileContents to IndexedDB (only if we have fileContents from fresh install)
+      // Note: JSON backups handle their own clearing and importing before calling this function
+      if (fileContents && Object.keys(fileContents).length > 0) {
+        // Check if IndexedDB already has data - if so, don't overwrite (unless it's a fresh install)
+        const hasIndexedDBData = await hasData();
+        if (!hasIndexedDBData) {
+          await importFromObject(fileContents);
+        }
+      }
+
       // Check if fileContents are loaded
       if (fileContents && fileContents.system) {
         if (fileContents.system['gui.frag.html']) {
@@ -438,7 +518,8 @@
           guiScript.type = 'text/javascript';
           guiScript.textContent = fileContents.system['gui.js'];
           document.body.appendChild(guiScript);
-          guiStart();
+          // Wait a bit for scripts to load, then start GUI
+          setTimeout(() => guiStart(), 100);
         }
       }
     }

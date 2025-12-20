@@ -1,4 +1,11 @@
-function saveToLocalStorage() {
+// Helper function to broadcast file structure to all iframes
+async function broadcastFileStructure() {
+  const fileContents = await exportToObject();
+  sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+}
+
+async function saveToLocalStorage() {
+  const fileContents = await exportToObject();
   localStorage.setItem("SacredSession", JSON.stringify(fileContents));
   window.top.postMessage(
     "ALERT:[Your session has been saved! It is now safe to leave this webpage."
@@ -12,210 +19,41 @@ function sendMessageToAllIframes(message) {
   }
 }
 
-function findFileContents(directoryPath, fileContents, fileName) {
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
-  // If file is in root dir
-  if (directoryPath === "") {
-    return structuredClone(fileContents[fileName]);
-  } else if (
-    currentDirectory &&
-    fileContents.hasOwnProperty(currentDirectory)
-  ) {
-    if (directories.length === 0) {
-      // Reached the final directory, check for the file
-      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
-        return structuredClone(fileContents[currentDirectory][fileName]);
-      }
-    } else {
-      // Continue recursively for nested directories
-      const nestedDirectoryPath = directories.join("/");
-      return findFileContents(
-        nestedDirectoryPath,
-        fileContents[currentDirectory],
-        fileName
-      );
-    }
-  }
-  console.log(`${fileName} could not be found!`);
-  return null; // File not found
-}
-
-function checkFileExistsAndCreate(directory, fileName) {
-  if (directory.hasOwnProperty(fileName)) {
-    window.top.postMessage("ALERT:[A file with that name already exists!");
+async function updateBGModeSetting(mode) {
+  const settingsContent = await findFileContents("system", "settings.json");
+  let updatedSettings;
+  if (settingsContent.includes(`"desktopBGMode":`)) {
+    updatedSettings = settingsContent.replace(/"desktopBGMode":\s*"[a-zA-Z]+",/, `"desktopBGMode": "${mode}",`);
   } else {
-    directory[fileName] = "";
-  }
-}
-
-function makeFolder(directoryPath, fileContents, folderName) {
-  if (folderName === "") {
-    window.top.postMessage("ALERT:[Invalid folder name!");
-    return;
-  }
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
-
-  // If current traversed dir or root dir
-  if (directoryPath === "" || directoryPath === "/") {
-    if (!fileContents.hasOwnProperty(folderName)) {
-      fileContents[folderName] = {};
-    } else {
-      window.top.postMessage("ALERT:[A folder with that name already exists!");
-    }
-  } else if (
-    currentDirectory &&
-    fileContents.hasOwnProperty(currentDirectory)
-  ) {
-    const nestedDirectoryPath = directories.join("/");
-    makeFolder(nestedDirectoryPath, fileContents[currentDirectory], folderName);
-  } else {
-    window.top.postMessage("ALERT:[Could not create new folder here.");
-    return;
-  }
-}
-
-function makeFile(directoryPath, fileContents, fileName) {
-  if (fileName === "") {
-    window.top.postMessage("ALERT:[Invalid file name!");
-    return;
-  }
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
-
-  // If file to be created is in root dir
-  if (directoryPath === "") {
-    checkFileExistsAndCreate(fileContents, fileName);
-  } else if (
-    currentDirectory &&
-    fileContents.hasOwnProperty(currentDirectory)
-  ) {
-    if (directories.length === 0) {
-      checkFileExistsAndCreate(fileContents[currentDirectory], fileName);
-    } else {
-      // Continue recursively for nested directories
-      const nestedDirectoryPath = directories.join("/");
-      makeFile(nestedDirectoryPath, fileContents[currentDirectory], fileName);
-    }
-  } else {
-    window.top.postMessage("ALERT:[Could not create new file here.");
-    return;
-  }
-}
-
-function saveFileContentsRecursive(
-  directoryPath,
-  fileContents,
-  fileName,
-  fileContent
-) {
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
-
-  if (directoryPath === "") {
-    fileContents[fileName] = fileContent;
-    return;
-  }
-
-  if (!fileContents.hasOwnProperty(currentDirectory)) {
-    fileContents[currentDirectory] = {};
-  }
-
-  if (directories.length === 0) {
-    // Reached the final directory, save the file content
-    fileContents[currentDirectory][fileName] = fileContent;
-  } else {
-    // Continue recursively for nested directories
-    const nestedDirectoryPath = directories.join("/");
-    saveFileContentsRecursive(
-      nestedDirectoryPath,
-      fileContents[currentDirectory],
-      fileName,
-      fileContent
-    );
-  }
-}
-
-function deleteFolderContents(folderContents) {
-  for (const key in folderContents) {
-    if (folderContents.hasOwnProperty(key)) {
-      if (typeof folderContents[key] === "object") {
-        // Recursively delete contents if it's a folder
-        deleteFolderContents(folderContents[key]);
-      }
-      delete folderContents[key];
-    }
-  }
-}
-
-function deleteFile(directoryPath, fileContents, fileName) {
-  const directories = directoryPath.split("/");
-  const currentDirectory = directories.shift();
-
-  if (directoryPath === "") {
-    delete fileContents[fileName];
-    return;
-  } else if (
-    currentDirectory &&
-    fileContents.hasOwnProperty(currentDirectory)
-  ) {
-    if (directories.length === 0) {
-      // Reached the final directory, delete the file or folder if it exists
-      if (fileContents[currentDirectory].hasOwnProperty(fileName)) {
-        if (typeof fileContents[currentDirectory][fileName] === "object") {
-          // If it's a folder, recursively delete all contents
-          deleteFolderContents(fileContents[currentDirectory][fileName]);
-        }
-        delete fileContents[currentDirectory][fileName];
-      } else {
-        console.error("File not found:", fileName);
-      }
-    } else {
-      // Continue recursively for nested directories
-      const nestedDirectoryPath = directories.join("/");
-      deleteFile(nestedDirectoryPath, fileContents[currentDirectory], fileName);
-    }
-  }
-}
-
-function updateBGModeSetting(mode) {
-  if (fileContents["system"]["settings.json"].includes(`"desktopBGMode":`)) {
-    fileContents["system"]["settings.json"] = fileContents["system"][
-      "settings.json"
-    ].replace(/"desktopBGMode":\s*"[a-zA-Z]+",/, `"desktopBGMode": "${mode}",`);
-
-    // If setting doesn't exist
-  } else {
-    let tempSettings = JSON.parse(fileContents["system"]["settings.json"]);
+    let tempSettings = JSON.parse(settingsContent);
     tempSettings["desktopBGMode"] = mode;
-    fileContents["system"]["settings.json"] = JSON.stringify(tempSettings);
+    updatedSettings = JSON.stringify(tempSettings);
   }
+  await saveFileContentsRecursive("system", "settings.json", updatedSettings);
 }
 
-function updateCSSvar(varName, value) {
+async function updateCSSvar(varName, value) {
   let regex = new RegExp(`(${varName}: ).*?;`);
-  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-    regex,
-    `$1 ${value};`
-  );
+  const cssContent = await findFileContents("system", "gui.css");
+  const updatedCSS = cssContent.replace(regex, `$1 ${value};`);
+  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
 }
 
-function changeBGMode(mode) {
-  updateBGModeSetting(mode);
+async function changeBGMode(mode) {
+  await updateBGModeSetting(mode);
 
   if (mode === "stretch") {
-    updateCSSvar("--bgRepeat", "no-repeat");
-    updateCSSvar("--bgAttachment", "fixed");
-    updateCSSvar("--bgSize", "100% 100%");
+    await updateCSSvar("--bgRepeat", "no-repeat");
+    await updateCSSvar("--bgAttachment", "fixed");
+    await updateCSSvar("--bgSize", "100% 100%");
   } else if (mode === "tile") {
-    updateCSSvar("--bgRepeat", "initial");
-    updateCSSvar("--bgAttachment", "initial");
-    updateCSSvar("--bgSize", "initial");
+    await updateCSSvar("--bgRepeat", "initial");
+    await updateCSSvar("--bgAttachment", "initial");
+    await updateCSSvar("--bgSize", "initial");
   } else if (mode === "contain") {
-    updateCSSvar("--bgRepeat", "no-repeat");
-    updateCSSvar("--bgAttachment", "fixed");
-    updateCSSvar("--bgSize", "contain");
+    await updateCSSvar("--bgRepeat", "no-repeat");
+    await updateCSSvar("--bgAttachment", "fixed");
+    await updateCSSvar("--bgSize", "contain");
   }
 }
 
@@ -237,10 +75,10 @@ function existingDialogIsOpen() {
 let openingFileFor;
 let savingFileFor;
 let dataToSave;
-window.onmessage = function (e) {
+window.onmessage = async function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
     if (e.data == "REQ:AF") {
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      await broadcastFileStructure();
       return;
     } else if (e.data.startsWith("REQ:PH[")) {
       // Extract the file path from the message
@@ -249,12 +87,8 @@ window.onmessage = function (e) {
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
 
-      // Check if the directory and file exist in fileContents using recursive function
-      const fileContent = findFileContents(
-        directoryPath,
-        fileContents,
-        fileName
-      );
+      // Check if the directory and file exist using IndexedDB
+      const fileContent = await findFileContents(directoryPath, fileName);
 
       if (fileContent !== null) {
         sendMessageToAllIframes(`PH:[${filePath}]` + fileContent, "*");
@@ -268,28 +102,33 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-      deleteFile(directoryPath, fileContents, fileName);
-      populateMenu();
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      try {
+        await deleteFile(directoryPath, fileName);
+        populateMenu();
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+      }
       return;
     } else if (e.data.startsWith("U:PRIMC")) {
-      updateCSSvar("--primColor", e.data.substring(7));
+      await updateCSSvar("--primColor", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCL")) {
-      updateCSSvar("--secColorLight", e.data.substring(7));
+      await updateCSSvar("--secColorLight", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECCD")) {
-      updateCSSvar("--secColorDark", e.data.substring(7));
+      await updateCSSvar("--secColorDark", e.data.substring(7));
       return;
     } else if (e.data.startsWith("U:SECC")) {
-      updateCSSvar("--secColor", e.data.substring(6));
+      await updateCSSvar("--secColor", e.data.substring(6));
       return;
     } else if (e.data.startsWith("U:BGM-")) {
-      changeBGMode(e.data.substring(6));
+      await changeBGMode(e.data.substring(6));
       return;
     } else if (e.data == "REQ:SS") {
-      if (fileContents.system && fileContents.system["gui.css"]) {
-        e.source.postMessage("SS:" + fileContents.system["gui.css"], "*");
+      const cssContent = await findFileContents("system", "gui.css");
+      if (cssContent) {
+        e.source.postMessage("SS:" + cssContent, "*");
       }
       return;
     } else if (e.data == "REQ:OSV") {
@@ -304,14 +143,8 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
       const fileContent = e.data.substring(rightBracketIndex + 1);
 
-      saveFileContentsRecursive(
-        directoryPath,
-        fileContents,
-        fileName,
-        fileContent
-      );
-
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      await saveFileContentsRecursive(directoryPath, fileName, fileContent);
+      await broadcastFileStructure();
       return;
     } else if (e.data.startsWith("UHI:[")) {
       const rightBracketIndex = e.data.indexOf("]");
@@ -337,22 +170,16 @@ window.onmessage = function (e) {
       const newName = e.data.substring(rightBracketIndex + 1);
       if (newName === "" || newName.includes(".")) {
         window.top.postMessage("ALERT:[Invalid folder name!");
-        sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+        await broadcastFileStructure();
         return;
       }
-      const fileOriginalContent = findFileContents(
-        directoryPath,
-        fileContents,
-        fileName
-      );
-      saveFileContentsRecursive(
-        directoryPath,
-        fileContents,
-        newName,
-        fileOriginalContent
-      );
-      deleteFile(directoryPath, fileContents, fileName);
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      try {
+        await renamePath(directoryPath, fileName, newName);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
     } else if (e.data.startsWith("RNF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 
@@ -362,14 +189,13 @@ window.onmessage = function (e) {
       const directoryPath = directories.join("/");
 
       const newName = e.data.substring(rightBracketIndex + 1);
-      const fileOriginalContent = findFileContents(
-        directoryPath,
-        fileContents,
-        fileName
-      );
-      makeFolder(directoryPath, fileContents, newName, fileOriginalContent);
-      deleteFile(directoryPath, fileContents, fileName);
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      try {
+        await renamePath(directoryPath, fileName, newName);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
       return;
     } else if (e.data.startsWith("OP:")) {
       try {
@@ -390,22 +216,23 @@ window.onmessage = function (e) {
       if (existingDialogIsOpen()) {
         return;
       }
-      let fileDialogData = fileContents["programs"]["default"]["files.html"];
-      fileDialogData = fileDialogData.replace(
+      const fileDialogData = await findFileContents("programs/default", "files.html");
+      let modifiedData = fileDialogData;
+      modifiedData = modifiedData.replace(
         "--displayBottomDialogActions: none;",
         "--displayBottomDialogActions: initial;"
       );
-      fileDialogData = fileDialogData.replace(
+      modifiedData = modifiedData.replace(
         "--displayIfOpenFileMode: none;",
         "--displayIfOpenFileMode: initial;"
       );
-      fileDialogData = fileDialogData.replace(
+      modifiedData = modifiedData.replace(
         "const initialMode = MODES.OPEN;",
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
       openProgram(
         "Open File",
-        fileDialogData,
+        modifiedData,
         false,
         false,
         "OpeningFileDialog"
@@ -421,22 +248,23 @@ window.onmessage = function (e) {
       savingFileFor = e.source;
       console.log(dataToSave);
 
-      let fileDialogData = fileContents["programs"]["default"]["files.html"];
-      fileDialogData = fileDialogData.replace(
+      const fileDialogData = await findFileContents("programs/default", "files.html");
+      let modifiedData = fileDialogData;
+      modifiedData = modifiedData.replace(
         "--displayBottomDialogActions: none;",
         "--displayBottomDialogActions: initial;"
       );
-      fileDialogData = fileDialogData.replace(
+      modifiedData = modifiedData.replace(
         "--displayIfSaveFileAsMode: none;",
         "--displayIfSaveFileAsMode: initial;"
       );
-      fileDialogData = fileDialogData.replace(
+      modifiedData = modifiedData.replace(
         "const initialMode = MODES.OPEN;",
         "const initialMode = MODES.OPEN_FOR_PROGRAM;"
       );
       openProgram(
         "Save File",
-        fileDialogData,
+        modifiedData,
         false,
         false,
         "SaveFileAsDialog"
@@ -447,11 +275,7 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-      const fileToReturn = findFileContents(
-        directoryPath,
-        fileContents,
-        fileName
-      );
+      const fileToReturn = await findFileContents(directoryPath, fileName);
       openingFileFor.postMessage(`PHFD:[${filePath}]${fileToReturn}`, "*");
       openingFileFor = "";
       closeProgram("winOpeningFileDialog", "menOpeningFileDialog");
@@ -462,14 +286,9 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = e.data.substring(rightBracketIndex + 1);
       const directoryPath = directories.join("/");
-      saveFileContentsRecursive(
-        directoryPath,
-        fileContents,
-        fileName,
-        dataToSave
-      );
+      await saveFileContentsRecursive(directoryPath, fileName, dataToSave);
 
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      await broadcastFileStructure();
       closeProgram("winSaveFileAsDialog", "menSaveFileAsDialog");
       savingFileFor.postMessage(`NSP:[${filePath}${fileName}`);
       return;
@@ -478,46 +297,55 @@ window.onmessage = function (e) {
       const directories = filePath.split("/");
       const fileName = directories.pop();
       const directoryPath = directories.join("/");
-      makeFile(directoryPath, fileContents, fileName);
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      try {
+        await makeFile(directoryPath, fileName);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
       return;
     } else if (e.data.startsWith("MK:D[")) {
       const filePath = e.data.slice(5, -1);
       const directories = filePath.split("/");
       const folderName = directories.pop();
       const directoryPath = directories.join("/");
-      makeFolder(`${directoryPath}/`, fileContents, folderName);
-      sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+      try {
+        await makeFolder(directoryPath, folderName);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
       return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
-      let newShortcuts = JSON.parse(
-        fileContents["system"]["menuShortcuts.json"]
-      );
+      const shortcutsContent = await findFileContents("system", "menuShortcuts.json");
+      let newShortcuts = JSON.parse(shortcutsContent);
       if (!newShortcuts.includes(path)) {
         newShortcuts.push(path);
-        fileContents["system"]["menuShortcuts.json"] =
-          JSON.stringify(newShortcuts);
+        await saveFileContentsRecursive("system", "menuShortcuts.json", JSON.stringify(newShortcuts));
         populateMenu();
       }
       return;
     } else if (e.data.startsWith("U:TF[")) {
+      const settingsContent = await findFileContents("system", "settings.json");
+      let updatedSettings;
       if (e.data.substring(5) === "24h") {
-        fileContents["system"]["settings.json"] = fileContents["system"][
-          "settings.json"
-        ].replace(`"timeFormat": "12h"`, `"timeFormat": "24h"`);
+        updatedSettings = settingsContent.replace(`"timeFormat": "12h"`, `"timeFormat": "24h"`);
       } else if (e.data.substring(5) === "12h") {
-        fileContents["system"]["settings.json"] = fileContents["system"][
-          "settings.json"
-        ].replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
+        updatedSettings = settingsContent.replace(`"timeFormat": "24h"`, `"timeFormat": "12h"`);
+      }
+      if (updatedSettings) {
+        await saveFileContentsRecursive("system", "settings.json", updatedSettings);
       }
       return;
     } else if (e.data.startsWith("U:DSKTP-BG[")) {
       const imgPath = e.data.substring(11);
       const regexBG = new RegExp(`("desktopBGPath":\\s*").*?(")`);
-      fileContents.system["settings.json"] = fileContents.system[
-        "settings.json"
-      ].replace(regexBG, `$1${imgPath}$2`);
+      const settingsContent = await findFileContents("system", "settings.json");
+      const updatedSettings = settingsContent.replace(regexBG, `$1${imgPath}$2`);
+      await saveFileContentsRecursive("system", "settings.json", updatedSettings);
       loadDesktopBG();
       return;
     } else if (e.data.startsWith("ALERT:[")) {

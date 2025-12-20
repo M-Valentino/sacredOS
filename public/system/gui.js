@@ -1,17 +1,16 @@
-function guiStart() {
-  populateMenu();
-  loadDesktopBG();
-  loadFont();
+async function guiStart() {
+  await populateMenu();
+  await loadDesktopBG();
+  await loadFont();
 }
 
-function loadFont() {
-  const fontPath = JSON.parse(
-    fileContents["system"]["settings.json"]
-  ).fontOSPath;
+async function loadFont() {
+  const settingsContent = await findFileContents("system", "settings.json");
+  const fontPath = JSON.parse(settingsContent).fontOSPath;
   const directories = fontPath.split("/");
   const fileName = directories.pop();
   const directoryPath = directories.join("/");
-  let base64FontData = findFileContents(directoryPath, fileContents, fileName);
+  let base64FontData = await findFileContents(directoryPath, fileName);
 
   const fontMimeType = "font/woff2";
   const fontFamily = "Ark Pixel 12px Proportional latin";
@@ -21,10 +20,9 @@ function loadFont() {
     `(@font-face\\s*{[^}]*font-family:\\s*"${fontFamily}";[^}]*src:\\s*).*?;`,
     "i"
   );
-  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-    regex,
-    `$1${fontDataUrl};`
-  );
+  const cssContent = await findFileContents("system", "gui.css");
+  const updatedCSS = cssContent.replace(regex, `$1${fontDataUrl};`);
+  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
 
   const styleSheet = document.styleSheets[0];
   const ruleIndex = [...styleSheet.cssRules].findIndex((rule) =>
@@ -42,14 +40,13 @@ function loadFont() {
   );
 }
 
-function loadDesktopBG() {
-  const imagePath = JSON.parse(
-    fileContents["system"]["settings.json"]
-  ).desktopBGPath;
+async function loadDesktopBG() {
+  const settingsContent = await findFileContents("system", "settings.json");
+  const imagePath = JSON.parse(settingsContent).desktopBGPath;
   const directories = imagePath.split("/");
   const fileName = directories.pop();
   const directoryPath = directories.join("/");
-  let base64ImageData = findFileContents(directoryPath, fileContents, fileName);
+  let base64ImageData = await findFileContents(directoryPath, fileName);
 
   const binaryString = atob(base64ImageData);
   const dataArray = new Uint8Array(binaryString.length);
@@ -61,30 +58,29 @@ function loadDesktopBG() {
   const objectUrl = URL.createObjectURL(blob);
 
   const regex = new RegExp(`(--bgBlobURL: ).*?;`);
-  fileContents.system["gui.css"] = fileContents.system["gui.css"].replace(
-    regex,
-    `$1 url("${objectUrl}");`
-  );
+  const cssContent = await findFileContents("system", "gui.css");
+  const updatedCSS = cssContent.replace(regex, `$1 url("${objectUrl}");`);
+  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
   document
     .querySelector(":root")
     .style.setProperty("--bgBlobURL", `url("${objectUrl}")`);
 }
 
-function populateMenu() {
+async function populateMenu() {
   let menu = document.getElementById("programs");
   menu.innerHTML = "";
-  const programList = JSON.parse(fileContents["system"]["menuShortcuts.json"]);
+  const shortcutsContent = await findFileContents("system", "menuShortcuts.json");
+  const programList = JSON.parse(shortcutsContent);
 
-  function appendToMenu(program, programData) {
+  async function appendToMenu(program, programData) {
     let menuItem = document.createElement("div");
     const iconMatch = programData.match(/<!--.* microIcon="(.+?)".*-->/);
     let img = document.createElement("img");
     if (iconMatch) {
       img.src = iconMatch[1];
     } else {
-      img.src = JSON.parse(
-        fileContents["system"]["icons"]["executable.json"]
-      ).micro;
+      const executableIconContent = await findFileContents("system/icons", "executable.json");
+      img.src = JSON.parse(executableIconContent).micro;
     }
     img.classList.add("programMenuIcon");
     img.width, (img.height = 27);
@@ -105,13 +101,12 @@ function populateMenu() {
   }
 
   for (let i = 0; i < programList.length; i++) {
-    const programData = findFileContents(
-      programList[i].substring(0, programList[i].lastIndexOf("/")),
-      fileContents,
-      programList[i].split("/").pop()
-    );
+    const programPath = programList[i];
+    const directoryPath = programPath.substring(0, programPath.lastIndexOf("/"));
+    const fileName = programPath.split("/").pop();
+    const programData = await findFileContents(directoryPath, fileName);
     if (programData !== null) {
-      appendToMenu(programList[i], programData);
+      await appendToMenu(programPath, programData);
     }
   }
 }
@@ -384,14 +379,17 @@ function openProgram(
   };
   window.appendChild(iframe);
   let programIcon = data.match(/<!--.* microIcon="(.+?)".*-->/);
-if (programIcon) {
-  programIcon = programIcon[1]; // Set to the matched group
-} else {
-  programIcon = JSON.parse(
-    fileContents["system"]["icons"]["executable.json"]
-  ).micro;
-}
-  createMenuBarButton(currentWindowID, programName, programIcon);
+  if (programIcon) {
+    programIcon = programIcon[1]; // Set to the matched group
+    createMenuBarButton(currentWindowID, programName, programIcon);
+  } else {
+    // Load icon asynchronously
+    (async () => {
+      const executableIconContent = await findFileContents("system/icons", "executable.json");
+      programIcon = JSON.parse(executableIconContent).micro;
+      createMenuBarButton(currentWindowID, programName, programIcon);
+    })();
+  }
 
   bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
 
@@ -740,9 +738,9 @@ function getClockEndText(is12HourTime, isPM) {
   return "";
 }
 
-function updateClock() {
-  const is12HourTime =
-    JSON.parse(fileContents["system"]["settings.json"]).timeFormat === "12h";
+async function updateClock() {
+  const settingsContent = await findFileContents("system", "settings.json");
+  const is12HourTime = JSON.parse(settingsContent).timeFormat === "12h";
   const today = new Date();
   let h = today.getHours();
   const isPM = is12HourTime && h > 12;
@@ -759,4 +757,4 @@ function updateClock() {
   document.getElementById("clock").innerHTML =
     h + ":" + m + ":" + s + getClockEndText(is12HourTime, isPM);
 }
-setInterval(updateClock, 1000);
+setInterval(() => updateClock(), 1000);
