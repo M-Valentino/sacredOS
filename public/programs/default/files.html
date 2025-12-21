@@ -329,6 +329,18 @@
       return false;
     }
 
+    function openInNotepad(key) {
+      const message = {
+        action: "openProgram",
+        params: { 
+          fileName: "notepad.html", 
+          fileData: diskBackup["programs"]["default"]["notepad.html"], 
+          withFile: `${pwd.substring(3)}${key}` 
+        }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+    }
+
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       const extension = keyToCheck.split('.').pop();
@@ -665,8 +677,13 @@
         } else if (imgExtensions.some(ext => key.includes(ext))) {
           icon.src = imageImage;
         } else if (key.indexOf('.html') !== -1) {
-          const iconMatch = backupObject[key].match(/<!--.* microIcon="(.+?)".*-->/);
-          iconMatch ? icon.src = iconMatch[1] : icon.src = executableImage;
+          const fileContent = backupObject[key];
+          if (typeof fileContent === 'string') {
+            const iconMatch = fileContent.match(/<!--.* microIcon="(.+?)".*-->/);
+            icon.src = iconMatch ? iconMatch[1] : executableImage;
+          } else {
+            icon.src = executableImage;
+          }
         } else {
           icon.src = documentImage;
         }
