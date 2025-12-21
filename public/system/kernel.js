@@ -380,6 +380,31 @@ window.onmessage = async function (e) {
         await broadcastFileStructure();
       }
       return;
+    } else if (e.data.startsWith("MK:SHORTCUT[")) {
+      const rightBracketIndex = e.data.indexOf("]", 12);
+      if (rightBracketIndex === -1) {
+        window.top.postMessage("ALERT:[Invalid shortcut creation format!", "*");
+        return;
+      }
+      const directoryPath = e.data.substring(12, rightBracketIndex);
+      const targetPath = e.data.substring(rightBracketIndex + 1);
+      
+      // Generate shortcut file name (use target file name + .shortcut)
+      const targetPathParts = targetPath.split("/").filter(Boolean);
+      const targetFileName = targetPathParts[targetPathParts.length - 1];
+      const shortcutFileName = targetFileName + ".shortcut";
+      
+      // Create shortcut JSON content
+      const shortcutContent = JSON.stringify({ targetPath: targetPath });
+      
+      try {
+        await saveFileContentsRecursive(directoryPath, shortcutFileName, shortcutContent);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
+      return;
     } else if (e.data.startsWith("MK:MENU-SC[")) {
       const path = e.data.substring(11);
       const shortcutsContent = await findFileContents("system", "menuShortcuts.json");

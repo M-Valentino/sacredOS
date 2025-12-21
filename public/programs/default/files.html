@@ -344,9 +344,104 @@
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
     }
 
+    function resolveShortcut(shortcutContent) {
+      try {
+        const shortcutData = JSON.parse(shortcutContent);
+        if (shortcutData.targetPath) {
+          return shortcutData.targetPath;
+        }
+        return null;
+      } catch (error) {
+        console.error("Error parsing shortcut:", error);
+        return null;
+      }
+    }
+
+    function getItemFromPath(pathString) {
+      const pathParts = pathString.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject && currentObject[part] !== undefined) {
+          currentObject = currentObject[part];
+        } else {
+          return null;
+        }
+      }
+      return currentObject;
+    }
+
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       const extension = keyToCheck.split('.').pop();
+      
+      // Check if it's a shortcut file
+      if (extension === "shortcut") {
+        const shortcutContent = backupObject[key];
+        if (typeof shortcutContent !== 'string') {
+          window.top.postMessage("ALERT:[Invalid shortcut file!", "*");
+          return;
+        }
+        
+        const targetPath = resolveShortcut(shortcutContent);
+        if (!targetPath) {
+          window.top.postMessage("ALERT:[Invalid shortcut file format!", "*");
+          return;
+        }
+        
+        // Get the target file/folder from diskBackup
+        const targetItem = getItemFromPath(targetPath);
+        if (targetItem === null) {
+          window.top.postMessage("ALERT:[Shortcut target not found!", "*");
+          return;
+        }
+        
+        // Get the target file name
+        const targetPathParts = targetPath.split("/").filter(Boolean);
+        const targetFileName = targetPathParts[targetPathParts.length - 1];
+        
+        // Now open the target file using the same logic
+        const targetExtension = targetFileName.split('.').pop();
+        
+        // HTML files open directly
+        if (targetExtension === "html") {
+          const message = {
+            action: "openProgram",
+            params: { fileName: targetFileName, fileData: targetItem }
+          };
+          window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+          return;
+        }
+        
+        // Try to open with file association
+        if (targetFileName.match(/\..*/)) {
+          // Create a temporary backup object for the target
+          const tempBackup = { [targetFileName]: targetItem };
+          if (openFileWithAssociation(targetFileName, tempBackup)) {
+            return;
+          }
+          // Fallback: if no association, open in notepad
+          const message = {
+            action: "openProgram",
+            params: { 
+              fileName: "notepad.html", 
+              fileData: diskBackup["programs"]["default"]["notepad.html"], 
+              withFile: targetPath 
+            }
+          };
+          window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+          return;
+        }
+        
+        // If target is a folder, navigate to it
+        if (typeof targetItem === 'object' && targetItem !== null && !Array.isArray(targetItem)) {
+          displayTopLevelObjects(targetItem);
+          pwd = `://${targetPath}/`;
+          document.getElementById("pwd").value = pwd;
+          return;
+        }
+        
+        return;
+      }
       
       // HTML files open directly
       if (extension === "html") {
@@ -767,6 +862,17 @@
         contextMenu.appendChild(pasteCtxtBttn);
       }
 
+      // Add Create Shortcut option for files and folders
+      let createShortcutBttn = document.createElement("button");
+      createShortcutBttn.textContent = "Create Shortcut";
+      createShortcutBttn.classList.add("oSButton", "osElemBase");
+      createShortcutBttn.onclick = function () {
+        const targetPath = `${pwd.substring(3)}${key}`;
+        window.top.postMessage(`MK:SHORTCUT[${pwd.substring(3)}]${targetPath}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(createShortcutBttn);
+
       let deleteCtxtBttn = document.createElement("button");
       deleteCtxtBttn.textContent = "Delete";
       deleteCtxtBttn.classList.add("oSButton", "osElemBase");
@@ -871,7 +977,55 @@
         }, false);
 
         let icon = document.createElement('img');
-        if (key.indexOf('.') === -1) {
+        
+        // Check if it's a shortcut file
+        if (key.endsWith('.shortcut')) {
+          const shortcutContent = backupObject[key];
+          if (typeof shortcutContent === 'string') {
+            try {
+              const shortcutData = JSON.parse(shortcutContent);
+              if (shortcutData.targetPath) {
+                // Get the target file to determine its icon
+                const targetItem = getItemFromPath(shortcutData.targetPath);
+                if (targetItem !== null) {
+                  const targetPathParts = shortcutData.targetPath.split("/").filter(Boolean);
+                  const targetFileName = targetPathParts[targetPathParts.length - 1];
+                  
+                  // Determine icon based on target file
+                  if (targetFileName.indexOf('.') === -1) {
+                    // Target is a folder
+                    icon.src = folderImage;
+                  } else if (imgExtensions.some(ext => targetFileName.includes(ext))) {
+                    icon.src = imageImage;
+                  } else if (targetFileName.indexOf('.html') !== -1) {
+                    if (typeof targetItem === 'string') {
+                      const iconMatch = targetItem.match(/<!--.* microIcon="(.+?)".*-->/);
+                      icon.src = iconMatch ? iconMatch[1] : executableImage;
+                    } else {
+                      icon.src = executableImage;
+                    }
+                  } else {
+                    icon.src = documentImage;
+                  }
+                } else {
+                  // Target not found, use shortcut icon
+                  const shortcutIconContent = diskBackup.system && diskBackup.system.icons && diskBackup.system.icons["shortcut.json"];
+                  if (shortcutIconContent) {
+                    icon.src = JSON.parse(shortcutIconContent).normal;
+                  } else {
+                    icon.src = documentImage;
+                  }
+                }
+              } else {
+                icon.src = documentImage;
+              }
+            } catch (error) {
+              icon.src = documentImage;
+            }
+          } else {
+            icon.src = documentImage;
+          }
+        } else if (key.indexOf('.') === -1) {
           icon.src = folderImage;
         } else if (imgExtensions.some(ext => key.includes(ext))) {
           icon.src = imageImage;
