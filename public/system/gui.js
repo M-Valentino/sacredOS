@@ -5,30 +5,12 @@ async function guiStart() {
 }
 
 async function loadFont() {
-  let settingsContent = await findFileContents("system", "settings.json");
-  // Convert from Uint8Array to string if needed
-  if (settingsContent instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    settingsContent = decoder.decode(settingsContent);
-  }
+  const settingsContent = await findFileContents("system", "settings.json");
   const fontPath = JSON.parse(settingsContent).fontOSPath;
   const directories = fontPath.split("/");
   const fileName = directories.pop();
   const directoryPath = directories.join("/");
-  let fontData = await findFileContents(directoryPath, fileName);
-
-  // Convert Uint8Array to base64 if needed
-  let base64FontData;
-  if (fontData instanceof Uint8Array) {
-    let binaryString = "";
-    for (let i = 0; i < fontData.length; i += 65535) {
-      binaryString += String.fromCharCode(...fontData.slice(i, i + 65535));
-    }
-    base64FontData = btoa(binaryString);
-  } else {
-    // Backward compatibility: already a base64 string
-    base64FontData = fontData;
-  }
+  let base64FontData = await findFileContents(directoryPath, fileName);
 
   const fontMimeType = "font/woff2";
   const fontFamily = "Ark Pixel 12px Proportional latin";
@@ -39,16 +21,8 @@ async function loadFont() {
     "i"
   );
   const cssContent = await findFileContents("system", "gui.css");
-  // Convert CSS content from Uint8Array to string if needed
-  let cssText = cssContent;
-  if (cssContent instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    cssText = decoder.decode(cssContent);
-  }
-  const updatedCSS = cssText.replace(regex, `$1${fontDataUrl};`);
-  // Convert back to Uint8Array for storage
-  const encoder = new TextEncoder();
-  await saveFileContentsRecursive("system", "gui.css", encoder.encode(updatedCSS));
+  const updatedCSS = cssContent.replace(regex, `$1${fontDataUrl};`);
+  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
 
   const styleSheet = document.styleSheets[0];
   const ruleIndex = [...styleSheet.cssRules].findIndex((rule) =>
@@ -68,93 +42,45 @@ async function loadFont() {
 
 async function loadDesktopBG() {
   const settingsContent = await findFileContents("system", "settings.json");
-  // Convert settings JSON from Uint8Array to string if needed
-  let settingsText = settingsContent;
-  if (settingsContent instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    settingsText = decoder.decode(settingsContent);
-  }
-  const imagePath = JSON.parse(settingsText).desktopBGPath;
+  const imagePath = JSON.parse(settingsContent).desktopBGPath;
   const directories = imagePath.split("/");
   const fileName = directories.pop();
   const directoryPath = directories.join("/");
-  let imageData = await findFileContents(directoryPath, fileName);
+  let base64ImageData = await findFileContents(directoryPath, fileName);
 
-  // Convert Uint8Array to blob
-  let dataArray;
-  if (imageData instanceof Uint8Array) {
-    dataArray = imageData;
-  } else {
-    // Backward compatibility: convert base64 string to Uint8Array
-    const binaryString = atob(imageData);
-    dataArray = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      dataArray[i] = binaryString.charCodeAt(i);
-    }
+  const binaryString = atob(base64ImageData);
+  const dataArray = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    dataArray[i] = binaryString.charCodeAt(i);
   }
 
   const blob = new Blob([dataArray], { type: "image/png" });
   const objectUrl = URL.createObjectURL(blob);
 
-  // Don't save blob URLs to CSS file - they're temporary and invalid after page reload
-  // Just set it directly via CSS variable. Always create a fresh blob URL on each load.
+  const regex = new RegExp(`(--bgBlobURL: ).*?;`);
+  const cssContent = await findFileContents("system", "gui.css");
+  const updatedCSS = cssContent.replace(regex, `$1 url("${objectUrl}");`);
+  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
   document
     .querySelector(":root")
     .style.setProperty("--bgBlobURL", `url("${objectUrl}")`);
-  
-  // Clean up any old blob URLs that might be in the CSS file (from previous sessions)
-  // Reset it to empty string to avoid security errors
-  const regex = new RegExp(`(--bgBlobURL: ).*?;`);
-  const cssContent = await findFileContents("system", "gui.css");
-  if (cssContent) {
-    let cssText = cssContent;
-    if (cssContent instanceof Uint8Array) {
-      const decoder = new TextDecoder('utf-8');
-      cssText = decoder.decode(cssContent);
-    }
-    // Only update if there's an old blob URL in the CSS (not empty string)
-    if (cssText.match(/--bgBlobURL:\s*url\("blob:/)) {
-      const updatedCSS = cssText.replace(regex, `$1 "";`);
-      const encoder = new TextEncoder();
-      await saveFileContentsRecursive("system", "gui.css", encoder.encode(updatedCSS));
-    }
-  }
 }
 
 async function populateMenu() {
   let menu = document.getElementById("programs");
   menu.innerHTML = "";
   const shortcutsContent = await findFileContents("system", "menuShortcuts.json");
-  // Convert JSON content from Uint8Array to string if needed
-  let shortcutsText = shortcutsContent;
-  if (shortcutsContent instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    shortcutsText = decoder.decode(shortcutsContent);
-  }
-  const programList = JSON.parse(shortcutsText);
+  const programList = JSON.parse(shortcutsContent);
 
   async function appendToMenu(program, programData) {
-    // Convert program data from Uint8Array to string if needed
-    let programText = programData;
-    if (programData instanceof Uint8Array) {
-      const decoder = new TextDecoder('utf-8');
-      programText = decoder.decode(programData);
-    }
-    
     let menuItem = document.createElement("div");
-    const iconMatch = programText.match(/<!--.* microIcon="(.+?)".*-->/);
+    const iconMatch = programData.match(/<!--.* microIcon="(.+?)".*-->/);
     let img = document.createElement("img");
     if (iconMatch) {
       img.src = iconMatch[1];
     } else {
       const executableIconContent = await findFileContents("system/icons", "executable.json");
-      // Convert icon JSON from Uint8Array to string if needed
-      let iconText = executableIconContent;
-      if (executableIconContent instanceof Uint8Array) {
-        const decoder = new TextDecoder('utf-8');
-        iconText = decoder.decode(executableIconContent);
-      }
-      img.src = JSON.parse(iconText).micro;
+      img.src = JSON.parse(executableIconContent).micro;
     }
     img.classList.add("programMenuIcon");
     img.width, (img.height = 27);
@@ -168,7 +94,7 @@ async function populateMenu() {
 
     menuItem.classList = "oSButton osElemBase flexRow";
     menuItem.onclick = menuItem.onclick = function () {
-      openProgram(programName, programText, true);
+      openProgram(programName, programData, true);
     };
 
     menu.appendChild(menuItem);
@@ -350,11 +276,6 @@ function openProgram(
   withFile,
   customId = null
 ) {
-  // Convert Uint8Array to string if needed
-  if (data instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    data = decoder.decode(data);
-  }
   const noResizeMatch = data.match(/<!--.*noRS.*-->/);
 
   if (dontToggleMenu) {
@@ -818,12 +739,7 @@ function getClockEndText(is12HourTime, isPM) {
 }
 
 async function updateClock() {
-  let settingsContent = await findFileContents("system", "settings.json");
-  // Convert from Uint8Array to string if needed
-  if (settingsContent instanceof Uint8Array) {
-    const decoder = new TextDecoder('utf-8');
-    settingsContent = decoder.decode(settingsContent);
-  }
+  const settingsContent = await findFileContents("system", "settings.json");
   const is12HourTime = JSON.parse(settingsContent).timeFormat === "12h";
   const today = new Date();
   let h = today.getHours();
