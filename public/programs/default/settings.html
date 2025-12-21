@@ -247,10 +247,26 @@
           break;
       }
 
-      changePrimColor(primColor);
-      changeSecColor(secColor);
-      changeSecColorLight(secColorLight);
-      changeSecColorDark(secColorDark);
+      // Update local CSS variables
+      document.querySelector(':root').style.setProperty('--primColor', primColor);
+      document.querySelector(':root').style.setProperty('--secColor', secColor);
+      document.querySelector(':root').style.setProperty('--secColorLight', secColorLight);
+      document.querySelector(':root').style.setProperty('--secColorDark', secColorDark);
+      
+      // Update color boxes
+      document.getElementById('primColorBox').style.backgroundColor = primColor;
+      document.getElementById('secColorBox').style.backgroundColor = secColor;
+      document.getElementById('secColorLightBox').style.backgroundColor = secColorLight;
+      document.getElementById('secColorDarkBox').style.backgroundColor = secColorDark;
+      
+      // Send batch update message to save all colors at once
+      window.top.postMessage(`U:THEME[${primColor},${secColor},${secColorLight},${secColorDark}]`, "*");
+      
+      // Also send individual messages for system-wide CSS updates
+      window.top.postMessage(changePrimColorSystemWide(primColor), "*");
+      window.top.postMessage(changeSecColorSystemWide(secColor), "*");
+      window.top.postMessage(changeSecColorLSystemWide(secColorLight), "*");
+      window.top.postMessage(changeSecColorDSystemWide(secColorDark), "*");
     }
 
     function changeBackgroundMode(mode) {

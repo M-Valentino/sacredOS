@@ -32,6 +32,15 @@ async function updateCSSvar(varName, value) {
   await saveFileContentsRecursive("system", "gui.css", updatedCSS);
 }
 
+async function updateMultipleCSSvars(updates) {
+  let cssContent = await findFileContents("system", "gui.css");
+  for (const { varName, value } of updates) {
+    let regex = new RegExp(`(${varName}: ).*?;`);
+    cssContent = cssContent.replace(regex, `$1 ${value};`);
+  }
+  await saveFileContentsRecursive("system", "gui.css", cssContent);
+}
+
 async function changeBGMode(mode) {
   await updateBGModeSetting(mode);
 
@@ -101,6 +110,24 @@ window.onmessage = async function (e) {
         await broadcastFileStructure();
       } catch (error) {
         window.top.postMessage("ALERT:[" + error.message, "*");
+      }
+      return;
+    } else if (e.data.startsWith("U:THEME[")) {
+      // Batch update for theme colors: U:THEME[primColor,secColor,secColorLight,secColorDark]
+      const rightBracketIndex = e.data.indexOf("]", 8);
+      if (rightBracketIndex === -1) {
+        console.error("Invalid theme update format");
+        return;
+      }
+      const colorsStr = e.data.substring(8, rightBracketIndex);
+      const colors = colorsStr.split(',');
+      if (colors.length === 4) {
+        await updateMultipleCSSvars([
+          { varName: "--primColor", value: colors[0] },
+          { varName: "--secColor", value: colors[1] },
+          { varName: "--secColorLight", value: colors[2] },
+          { varName: "--secColorDark", value: colors[3] }
+        ]);
       }
       return;
     } else if (e.data.startsWith("U:PRIMC")) {
@@ -393,10 +420,9 @@ window.onmessage = async function (e) {
       try {
         const associations = JSON.parse(associationsJson);
         let settingsContent = await findFileContents("system", "settings.json");
-        settingsContent = decodeTextFile(settingsContent);
         const settings = JSON.parse(settingsContent);
         settings.fileAssociations = associations;
-        await saveFileContentsRecursive("system", "settings.json", encodeTextFile(JSON.stringify(settings, null, 2)));
+        await saveFileContentsRecursive("system", "settings.json", JSON.stringify(settings, null, 2));
       } catch (error) {
         console.error("Error saving file associations:", error);
         window.top.postMessage("ALERT:[Error saving file associations: " + error.message + "]", "*");
