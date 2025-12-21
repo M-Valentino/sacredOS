@@ -2,5 +2,13 @@
   "timeFormat": "12h",
   "desktopBGPath": "system/desktopBG.png",
   "desktopBGMode": "stretch",
-  "fontOSPath": "system/system12px.woff2"
+  "fontOSPath": "system/system12px.woff2",
+  "fileAssociations": {
+    ".png": "programs/default/imageViewer.html",
+    ".gif": "programs/default/imageViewer.html",
+    ".jpg": "programs/default/imageViewer.html",
+    ".webp": "programs/default/imageViewer.html",
+    ".nes": "programs/default/jsNES/jsNES.html",
+    ".txt": "programs/default/notepad.html"
+  }
 }

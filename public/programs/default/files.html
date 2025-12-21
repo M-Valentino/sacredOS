@@ -276,31 +276,64 @@
 
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:AF", "*");
+    loadFileAssociations();
 
     let pwd = "://";
     document.getElementById("pwd").value = pwd;
 
-    function openInNotepad(key) {
-      const message = {
-        action: "openProgram",
-        params: { fileName: "notepad.html", fileData: diskBackup["programs"]["default"]["notepad.html"], withFile: `${pwd.substring(3)}${key}` }
-      };
-      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
-    }
-
-    function openInImageViewer(key) {
-      const message = {
-        action: "openProgram",
-        params: { fileName: "imageViewer.html", fileData: diskBackup["programs"]["default"]["imageViewer.html"], withFile: `${pwd.substring(3)}${key}` }
-      };
-      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
-    }
-
+    let fileAssociations = {};
     const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
+    
+    function getFileExtension(filename) {
+      const lastDot = filename.lastIndexOf('.');
+      if (lastDot === -1) return '';
+      return filename.substring(lastDot).toLowerCase();
+    }
+
+    async function loadFileAssociations() {
+      window.top.postMessage(`REQ:PH[system/settings.json]`, "*");
+    }
+
+    function openFileWithAssociation(key, backupObject) {
+      const extension = getFileExtension(key);
+      const filePath = `${pwd.substring(3)}${key}`;
+      
+      // Check if we have an association for this extension
+      if (fileAssociations[extension]) {
+        const programPath = fileAssociations[extension];
+        const pathParts = programPath.split('/');
+        const programFileName = pathParts.pop();
+        
+        // Get program data from backup by traversing the path
+        let programData = diskBackup;
+        for (const part of programPath.split('/')) {
+          if (programData && programData[part] !== undefined) {
+            programData = programData[part];
+          } else {
+            console.error("Program not found:", programPath);
+            return false;
+          }
+        }
+        
+        const message = {
+          action: "openProgram",
+          params: { 
+            fileName: programFileName, 
+            fileData: programData,
+            withFile: filePath
+          }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return true;
+      }
+      return false;
+    }
 
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       const extension = keyToCheck.split('.').pop();
+      
+      // HTML files open directly
       if (extension === "html") {
         const message = {
           action: "openProgram",
@@ -308,13 +341,27 @@
         };
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
-      } else if (imgExtensions.some(ext => key.includes(ext))) {
-        openInImageViewer(key);
-        return;
-      } else if (key.match(/\..*/)) {
-        openInNotepad(key);
+      }
+      
+      // Try to open with file association
+      if (key.match(/\..*/)) {
+        if (openFileWithAssociation(key, backupObject)) {
+          return;
+        }
+        // Fallback: if no association, open in notepad
+        const message = {
+          action: "openProgram",
+          params: { 
+            fileName: "notepad.html", 
+            fileData: diskBackup["programs"]["default"]["notepad.html"], 
+            withFile: `${pwd.substring(3)}${key}` 
+          }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
       }
+      
+      // No extension means it's a folder
       displayTopLevelObjects(backupObject[key]);
       pwd += `${key}/`;
       document.getElementById("pwd").value = pwd;
@@ -773,6 +820,17 @@
           document.head.appendChild(styleElement);
         } catch (error) {
           console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PH:[system/settings.json]")) {
+        try {
+          const settingsJson = e.data.substring("PH:[system/settings.json]".length);
+          const settings = JSON.parse(settingsJson);
+          if (settings.fileAssociations) {
+            fileAssociations = settings.fileAssociations;
+          }
+        } catch (error) {
+          console.error("Error parsing settings:", error);
         }
         return;
       }

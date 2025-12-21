@@ -285,6 +285,48 @@ window.onmessage = async function (e) {
         ) {
           const { fileName, fileData, withFile } = message.params;
           openProgram(fileName, fileData, false, withFile);
+          
+          // If a file is associated, send it to the program after it loads
+          if (withFile) {
+            setTimeout(async () => {
+              const directories = withFile.split("/");
+              const fileFileName = directories.pop();
+              const directoryPath = directories.join("/");
+              let fileToSend = await findFileContents(directoryPath, fileFileName);
+              
+              if (fileToSend === null) {
+                return;
+              }
+              
+              // Convert Uint8Array to appropriate format based on file type
+              const extension = fileFileName.split('.').pop().toLowerCase();
+              if (fileToSend instanceof Uint8Array) {
+                if (['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+                  // Text file - decode to string
+                  const decoder = new TextDecoder('utf-8');
+                  fileToSend = decoder.decode(fileToSend);
+                } else {
+                  // Binary file - convert to base64
+                  let binaryString = "";
+                  for (let i = 0; i < fileToSend.length; i += 65535) {
+                    binaryString += String.fromCharCode(...fileToSend.slice(i, i + 65535));
+                  }
+                  fileToSend = btoa(binaryString);
+                }
+              }
+              
+              // Find the most recently created iframe (should be the one we just opened)
+              // Send file to all iframes - they'll filter based on whether they're expecting it
+              const iframes = document.getElementsByTagName("iframe");
+              for (let i = iframes.length - 1; i >= 0; i--) {
+                const iframe = iframes[i];
+                if (iframe.contentWindow) {
+                  iframe.contentWindow.postMessage(`PHFD:[${withFile}]${fileToSend}`, "*");
+                  break; // Only send to the most recent iframe
+                }
+              }
+            }, 300); // Delay to ensure iframe is loaded
+          }
         }
       } catch (error) {
         console.error("Error parsing message:", error);
@@ -480,6 +522,25 @@ window.onmessage = async function (e) {
       const updatedSettings = settingsContent.replace(regexBG, `$1${imgPath}$2`);
       await saveFileContentsRecursive("system", "settings.json", encodeTextFile(updatedSettings));
       loadDesktopBG();
+      return;
+    } else if (e.data.startsWith("U:FA[")) {
+      const rightBracketIndex = e.data.indexOf("]", 5);
+      if (rightBracketIndex === -1) {
+        window.top.postMessage("ALERT:[Invalid file associations format!]", "*");
+        return;
+      }
+      const associationsJson = e.data.substring(5, rightBracketIndex);
+      try {
+        const associations = JSON.parse(associationsJson);
+        let settingsContent = await findFileContents("system", "settings.json");
+        settingsContent = decodeTextFile(settingsContent);
+        const settings = JSON.parse(settingsContent);
+        settings.fileAssociations = associations;
+        await saveFileContentsRecursive("system", "settings.json", encodeTextFile(JSON.stringify(settings, null, 2)));
+      } catch (error) {
+        console.error("Error saving file associations:", error);
+        window.top.postMessage("ALERT:[Error saving file associations: " + error.message + "]", "*");
+      }
       return;
     } else if (e.data.startsWith("ALERT:[")) {
       createAlert(e.data.substring(7));

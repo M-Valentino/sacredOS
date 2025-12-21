@@ -49,6 +49,23 @@
     h3 {
       margin: 0;
     }
+
+    .fileAssociationRow {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .fileAssociationRow input,
+    .fileAssociationRow select {
+      flex: 1;
+    }
+
+    .fileAssociationRow button {
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -120,12 +137,18 @@
   <label for="24h">24 hours</label>
   <input type="radio" id="12h" name="time_format" value="12h" onchange="window.top.postMessage(`U:TF[12h`)">
   <label for="12h">12 hours</label>
+  
+  <h3 class="mt-20">File Associations</h3>
+  <div id="fileAssociationsContainer"></div>
+  <button class="oSButton osElemBase mt-20" onclick="addFileAssociation()">Add Association</button>
 
   <script>
     window.top.postMessage("REQ:SS", "*");
     window.top.postMessage("REQ:OSV", "*");
     const settingsFilePath = "system/settings.json";
     window.top.postMessage(`REQ:PH[${settingsFilePath}]`, "*");
+    // Request file structure to discover available programs
+    window.top.postMessage("REQ:AF", "*");
 
     function changePrimColorSystemWide(color) {
       return encodeURI(`document.querySelector(':root').style.setProperty('--primColor', '${color}');`);
@@ -263,6 +286,91 @@
       }
     }
 
+    let availablePrograms = [
+      { path: "programs/default/notepad.html", name: "Notepad" },
+      { path: "programs/default/imageViewer.html", name: "Image Viewer" },
+      { path: "programs/default/jsNES/jsNES.html", name: "jsNES" }
+    ];
+    
+    let currentFileAssociations = {};
+
+    function loadAvailablePrograms() {
+      window.top.postMessage("REQ:AF", "*");
+    }
+
+    function renderFileAssociations(associations) {
+      const container = document.getElementById("fileAssociationsContainer");
+      container.innerHTML = '';
+      currentFileAssociations = associations || {};
+      
+      if (!associations || Object.keys(associations).length === 0) {
+        return;
+      }
+
+      for (const [extension, programPath] of Object.entries(associations)) {
+        const row = document.createElement("div");
+        row.className = "fileAssociationRow";
+        
+        const extInput = document.createElement("input");
+        extInput.type = "text";
+        extInput.value = extension;
+        extInput.placeholder = ".ext";
+        extInput.readOnly = true;
+        extInput.style.backgroundColor = "var(--secColorDark)";
+        
+        const programSelect = document.createElement("select");
+        programSelect.className = "oSButton osElemBase";
+        availablePrograms.forEach(prog => {
+          const option = document.createElement("option");
+          option.value = prog.path;
+          option.textContent = prog.name;
+          if (prog.path === programPath) {
+            option.selected = true;
+          }
+          programSelect.appendChild(option);
+        });
+        programSelect.onchange = function() {
+          currentFileAssociations[extension] = programSelect.value;
+          saveFileAssociations();
+        };
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "oSButton osElemBase";
+        deleteBtn.textContent = "Remove";
+        deleteBtn.onclick = function() {
+          delete currentFileAssociations[extension];
+          saveFileAssociations();
+        };
+        
+        row.appendChild(extInput);
+        row.appendChild(programSelect);
+        row.appendChild(deleteBtn);
+        container.appendChild(row);
+      }
+    }
+
+    function addFileAssociation() {
+      const extension = prompt("Enter file extension (e.g., .txt, .png):");
+      if (!extension) return;
+      
+      const normalizedExt = extension.startsWith('.') ? extension.toLowerCase() : '.' + extension.toLowerCase();
+      
+      if (currentFileAssociations[normalizedExt]) {
+        window.top.postMessage(`ALERT:[Association for ${normalizedExt} already exists!]`, "*");
+        return;
+      }
+      
+      // Default to notepad for new associations
+      currentFileAssociations[normalizedExt] = "programs/default/notepad.html";
+      saveFileAssociations();
+    }
+
+    function saveFileAssociations() {
+      window.top.postMessage(`U:FA[${JSON.stringify(currentFileAssociations)}]`, "*");
+      // Re-render to update UI
+      renderFileAssociations(currentFileAssociations);
+    }
+
     window.onmessage = function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -279,6 +387,8 @@
         const expectedPattern = `PH:[${settingsFilePath}]`;
         if (e.data.startsWith(expectedPattern)) {
           const savedSettings = JSON.parse(e.data.substring(expectedPattern.length));
+          localStorage.setItem('currentSettings', JSON.stringify(savedSettings));
+          
           document.getElementById("24h").checked = savedSettings.timeFormat === "24h";
           document.getElementById("12h").checked = savedSettings.timeFormat === "12h";
 
@@ -291,10 +401,59 @@
               document.getElementById("backgroundMode").selectedIndex = 2;
             }
           }
+          
+          if (savedSettings.fileAssociations) {
+            renderFileAssociations(savedSettings.fileAssociations);
+          }
         }
         return;
       } else if (e.data.startsWith("OSV:")) {
         document.getElementById("osVersion").innerText = e.data.substring(4);
+      } else if (e.data.startsWith("AF:")) {
+        // Update available programs list from file structure
+        try {
+          const fileStructure = JSON.parse(e.data.substring(3));
+          availablePrograms = [];
+          
+          function findPrograms(obj, path = '') {
+            for (const key in obj) {
+              const currentPath = path ? `${path}/${key}` : key;
+              
+              // Check if this is an HTML file in the programs directory
+              if (key.endsWith('.html') && currentPath.startsWith('programs/')) {
+                const name = key.replace('.html', '');
+                // Create a readable name from the path
+                // Remove 'programs/' prefix and split into parts
+                const pathWithoutPrograms = currentPath.substring(9); // Remove 'programs/'
+                const pathParts = pathWithoutPrograms.split('/');
+                const readableName = pathParts.length > 1 
+                  ? pathParts.slice(0, -1).join(' - ') + ' - ' + name
+                  : name;
+                availablePrograms.push({ 
+                  path: currentPath, 
+                  name: readableName || name 
+                });
+              } else if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                // Recursively search in subdirectories
+                // Only recurse if we're at root level (to enter programs) or already in programs
+                if (path === '' || path.startsWith('programs')) {
+                  findPrograms(obj[key], currentPath);
+                }
+              }
+            }
+          }
+          
+          findPrograms(fileStructure);
+          
+          // Sort programs by name for better UX
+          availablePrograms.sort((a, b) => a.name.localeCompare(b.name));
+          
+          // Always re-render associations with updated program list
+          renderFileAssociations(currentFileAssociations);
+        } catch (error) {
+          console.error("Error parsing file structure:", error);
+        }
+        return;
       }
     };
   </script>
