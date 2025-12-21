@@ -405,7 +405,7 @@
       nes_boot(rom_data);
     }
 
-    function nes_load_url(canvas_id, path) {
+    function nes_load_url(canvas_id, path, onComplete) {
       nes_init(canvas_id);
 
       const req = new XMLHttpRequest();
@@ -416,6 +416,7 @@
       req.onload = function () {
         if (this.status === 200) {
           nes_boot(this.responseText);
+          if (onComplete) onComplete();
         } else if (this.status === 0) {
           // Aborted, so ignore error
         } else {
@@ -489,6 +490,7 @@
     }
 
     let programId = "";
+    let filePath = null;
     window.addEventListener("message", function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -518,8 +520,9 @@
 
         const blob = new Blob([dataArray], { type: "application/octet-stream" });
         const objectUrl = URL.createObjectURL(blob);
-        nes_load_url("nes-canvas", objectUrl);
-        URL.revokeObjectURL(objectURL)
+        nes_load_url("nes-canvas", objectUrl, () => {
+          URL.revokeObjectURL(objectUrl);
+        });
       } else if (e.data.startsWith("ID:[")) {
         programId = e.data.substring(4);
       } else if (e.data.startsWith("NSP:[")) {
