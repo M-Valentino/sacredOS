@@ -1,0 +1,444 @@
+<!--width="400" height="90" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAi9JREFUeNq8lq9vAjEUx18JYhK5CRKQp5YpRrIJDgUCyxRjAj0siswMOfT2Dwy3IEDdYZYAiiwTyLEgtgSDnLvt9XiX0mtLEeMl/Opx/fR7/b73yoIggENFEt8YYzv/6LqudlW+7++cAEUlbSG5XE553XEcPpcNNLkLcnfq898DyGknqdfrkQATNGECeXUfLs70K92o4pFKpaDZbBofeUIHuur5W+Pln44WiiAKEzChU9QYAjyVwnGVOlGVHL1eTwmMKcM9ep2F30WgjSqMfD4P4/E4UqiE4SpExxFw116JEAKJxhHVxZQNjlpbQFKHj1LeN1JFEBG0Xq9jC2KYbMViMVDlEU2OIAQ69wCXDxDZut/vB7IaGTKfz2E6nYLnecyY1JHKWQcauDIBhFGpVBgCdRCrPFNBWQ2UiYpAEYQQFchYQWxtblKyF8wGYgvSPkaEEAgdh6/VaqUsQTfvy2ByUrZvMbpaJ+YQuQ/3iMYfV1h40wCFJUxGIfD8a6CFcetjP8PkwyRUVQQM2d7ZWS1KCX79e8k/F6PFFhRtj10g1s9sQBQfo01JgxCYP05zYKaQ4eOklME0vmdI73a7MZAcqEo2BFYZfs8fkAKh7KW91dtiBkGgCFKp4g4stbg6sWiLwM/ba7MbaRXValUJUqkSizYBCSR37ITu8ELAfeO56moPQZEbdR2b+pJOlTPsQLYQfm+/6UHG05VwQyAdamJhglgp+49zIzvkifhXgAEAjikrV9kZf3wAAAAASUVORK5CYII="-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #mediaPlayerContainer {
+      margin-top: 8px;
+    }
+
+    audio, video {
+      width: 100%;
+    }
+
+    #equalizerContainer {
+      margin-top: 16px;
+      display: none;
+    }
+
+    #equalizerContainer.active {
+      display: block;
+    }
+
+    .equalizer-band {
+      display: inline-block;
+      margin: 0 4px;
+      text-align: center;
+      vertical-align: top;
+      width: 30px;
+      height: 140px;
+      position: relative;
+    }
+
+    .equalizer-label {
+      font-size: 10px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .equalizer-slider {
+      width: 120px;
+      height: 20px;
+      margin: 8px auto;
+      display: block;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -60px;
+      margin-top: -10px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .equalizer-slider::-webkit-slider-track {
+      width: 120px;
+      height: 4px;
+      background: var(--secColorDark);
+      border: 1px inset var(--secColorDark);
+    }
+
+    .equalizer-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--primColor);
+      border: 1px solid var(--secColorDark);
+      cursor: pointer;
+      margin-top: -6px;
+    }
+
+    .equalizer-slider::-moz-range-track {
+      width: 120px;
+      height: 4px;
+      background: var(--secColorDark);
+      border: 1px inset var(--secColorDark);
+    }
+
+    .equalizer-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--primColor);
+      border: 1px solid var(--secColorDark);
+      cursor: pointer;
+      border-radius: 0;
+    }
+
+    .equalizer-value {
+      font-size: 9px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    #frequencyBarsContainer {
+      margin-top: 16px;
+      height: 150px;
+      display: none;
+      background-color: var(--secColorDark);
+      padding: 8px;
+      border: var(--borderWidth) inset var(--secColorDark);
+    }
+
+    #frequencyBarsContainer.active {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+    }
+
+    .frequency-bar {
+      flex: 1;
+      background-color: var(--primColor);
+      margin: 0 1px;
+      min-width: 2px;
+      transition: height 0.1s ease;
+    }
+
+    .equalizer-section {
+      margin-top: 16px;
+      padding: 8px;
+      background-color: var(--secColorLight);
+      border: var(--borderWidth) inset var(--secColorDark);
+    }
+
+    .equalizer-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="oSButton osElemBase" onclick="openFile()">Open</button>
+  <div id="mediaPlayerContainer">
+    <audio id="audioPlayer" controls style="display: none;">
+      Your browser does not support the audio element.
+    </audio>
+    <video id="videoPlayer" controls style="display: none;">
+      Your browser does not support the video element.
+    </video>
+  </div>
+  
+  <div id="equalizerContainer" class="equalizer-section">
+    <div class="equalizer-title">Equalizer</div>
+    <div id="equalizerBands"></div>
+  </div>
+
+  <div id="frequencyBarsContainer"></div>
+
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+
+    let filePath = null;
+    let programId = null;
+    let audioContext = null;
+    let analyser = null;
+    let source = null;
+    let filters = [];
+    let isAudio = false;
+    let animationFrameId = null;
+
+    // Equalizer frequency bands (Hz)
+    const equalizerBands = [
+      { freq: 60, label: "60Hz" },
+      { freq: 170, label: "170Hz" },
+      { freq: 310, label: "310Hz" },
+      { freq: 600, label: "600Hz" },
+      { freq: 1000, label: "1kHz" },
+      { freq: 3000, label: "3kHz" },
+      { freq: 6000, label: "6kHz" },
+      { freq: 12000, label: "12kHz" },
+      { freq: 14000, label: "14kHz" },
+      { freq: 16000, label: "16kHz" }
+    ];
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    function getFileExtension(filePath) {
+      const fileName = getFileName(filePath);
+      const parts = fileName.split(".");
+      return parts.length > 1 ? parts.pop().toLowerCase() : "";
+    }
+
+    function getMimeType(filePath) {
+      const extension = getFileExtension(filePath);
+      const mimeTypes = {
+        // Audio
+        "mp3": "audio/mpeg",
+        "wav": "audio/wav",
+        "ogg": "audio/ogg",
+        "m4a": "audio/mp4",
+        "aac": "audio/aac",
+        "flac": "audio/flac",
+        "webm": "audio/webm",
+        // Video
+        "mp4": "video/mp4",
+        "webm": "video/webm",
+        "mov": "video/quicktime",
+        "avi": "video/x-msvideo",
+        "mkv": "video/x-matroska"
+      };
+      return mimeTypes[extension] || "audio/mpeg";
+    }
+
+    function isAudioFile(filePath) {
+      const extension = getFileExtension(filePath);
+      const audioExtensions = ["mp3", "wav", "ogg", "m4a", "aac", "flac", "webm"];
+      return audioExtensions.includes(extension);
+    }
+
+    function base64ToBlob(base64, mimeType) {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: mimeType });
+    }
+
+    function setupAudioContext(mediaElement) {
+      if (audioContext) {
+        audioContext.close();
+      }
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
+
+      source = audioContext.createMediaElementSource(mediaElement);
+      
+      // Create biquad filters for equalizer (peaking filters)
+      filters = [];
+      let lastNode = source;
+      
+      equalizerBands.forEach((band) => {
+        const filter = audioContext.createBiquadFilter();
+        filter.type = "peaking";
+        filter.frequency.value = band.freq;
+        filter.Q.value = 1;
+        filter.gain.value = 0; // Start at 0dB (no change)
+        
+        lastNode.connect(filter);
+        lastNode = filter;
+        filters.push(filter);
+      });
+      
+      // Connect last filter to analyser, then to destination
+      lastNode.connect(analyser);
+      analyser.connect(audioContext.destination);
+
+      // Create equalizer UI
+      createEqualizerUI();
+      
+      // Start frequency visualization
+      startFrequencyVisualization();
+    }
+
+    function createEqualizerUI() {
+      const container = document.getElementById("equalizerBands");
+      container.innerHTML = "";
+
+      equalizerBands.forEach((band, index) => {
+        const bandDiv = document.createElement("div");
+        bandDiv.className = "equalizer-band";
+        
+        const label = document.createElement("span");
+        label.className = "equalizer-label";
+        label.textContent = band.label;
+        
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.className = "equalizer-slider";
+        slider.min = "-12";
+        slider.max = "12";
+        slider.value = "0";
+        slider.step = "0.5";
+        
+        const valueDisplay = document.createElement("span");
+        valueDisplay.className = "equalizer-value";
+        valueDisplay.textContent = "0dB";
+        
+        slider.addEventListener("input", (e) => {
+          const value = parseFloat(e.target.value);
+          valueDisplay.textContent = value > 0 ? `+${value}dB` : `${value}dB`;
+          
+          if (filters[index]) {
+            // Set gain directly in dB for biquad filter
+            filters[index].gain.value = value;
+          }
+        });
+        
+        bandDiv.appendChild(label);
+        bandDiv.appendChild(slider);
+        bandDiv.appendChild(valueDisplay);
+        container.appendChild(bandDiv);
+      });
+    }
+
+    function startFrequencyVisualization() {
+      const container = document.getElementById("frequencyBarsContainer");
+      container.innerHTML = "";
+      
+      const barCount = 32;
+      const bars = [];
+      
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement("div");
+        bar.className = "frequency-bar";
+        bar.style.height = "0px";
+        container.appendChild(bar);
+        bars.push(bar);
+      }
+
+      function updateVisualization() {
+        if (!analyser || !isAudio) {
+          animationFrameId = null;
+          return;
+        }
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+
+        bars.forEach((bar, index) => {
+          const dataIndex = Math.floor((index / barCount) * dataArray.length);
+          const value = dataArray[dataIndex];
+          const height = (value / 255) * 100;
+          bar.style.height = `${height}%`;
+        });
+
+        animationFrameId = requestAnimationFrame(updateVisualization);
+      }
+
+      updateVisualization();
+    }
+
+    function stopFrequencyVisualization() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        const base64Data = e.data.substring(rightBracketIndex + 1).trim();
+
+        if (base64Data && filePath) {
+          isAudio = isAudioFile(filePath);
+          const mimeType = getMimeType(filePath);
+          const blob = base64ToBlob(base64Data, mimeType);
+          const blobURL = URL.createObjectURL(blob);
+
+          const audioPlayer = document.getElementById("audioPlayer");
+          const videoPlayer = document.getElementById("videoPlayer");
+          const equalizerContainer = document.getElementById("equalizerContainer");
+          const frequencyBarsContainer = document.getElementById("frequencyBarsContainer");
+
+          if (isAudio) {
+            // Show audio player
+            audioPlayer.style.display = "block";
+            videoPlayer.style.display = "none";
+            audioPlayer.src = blobURL;
+            audioPlayer.load();
+            
+            // Show equalizer and frequency bars
+            equalizerContainer.classList.add("active");
+            frequencyBarsContainer.classList.add("active");
+            
+            // Setup audio context after load
+            audioPlayer.addEventListener("loadedmetadata", () => {
+              try {
+                setupAudioContext(audioPlayer);
+                // Resume audio context if suspended (required by some browsers)
+                if (audioContext && audioContext.state === 'suspended') {
+                  audioContext.resume();
+                }
+              } catch (error) {
+                console.error("Error setting up audio context:", error);
+              }
+            }, { once: true });
+            
+            // Also resume on play in case context was suspended
+            audioPlayer.addEventListener("play", () => {
+              if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+              }
+            });
+          } else {
+            // Show video player
+            audioPlayer.style.display = "none";
+            videoPlayer.style.display = "block";
+            videoPlayer.src = blobURL;
+            videoPlayer.load();
+            
+            // Hide equalizer and frequency bars
+            equalizerContainer.classList.remove("active");
+            frequencyBarsContainer.classList.remove("active");
+            stopFrequencyVisualization();
+          }
+
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`);
+        }
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener("beforeunload", () => {
+      stopFrequencyVisualization();
+      if (audioContext) {
+        audioContext.close();
+      }
+    });
+  </script>
+</body>
+
+</html>
