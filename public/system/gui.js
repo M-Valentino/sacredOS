@@ -57,10 +57,16 @@ async function loadDesktopBG() {
   const blob = new Blob([dataArray], { type: "image/png" });
   const objectUrl = URL.createObjectURL(blob);
 
+  // Clean up any old blob URLs in CSS (blob URLs are session-specific and shouldn't be persisted)
   const regex = new RegExp(`(--bgBlobURL: ).*?;`);
   const cssContent = await findFileContents("system", "gui.css");
-  const updatedCSS = cssContent.replace(regex, `$1 url("${objectUrl}");`);
-  await saveFileContentsRecursive("system", "gui.css", updatedCSS);
+  // If CSS contains a blob URL, reset it to empty (clean up old invalid blob URLs)
+  if (cssContent.includes('blob:')) {
+    const updatedCSS = cssContent.replace(regex, `$1 "";`);
+    await saveFileContentsRecursive("system", "gui.css", updatedCSS);
+  }
+  
+  // Set the blob URL dynamically (not persisted - regenerated on each boot)
   document
     .querySelector(":root")
     .style.setProperty("--bgBlobURL", `url("${objectUrl}")`);
