@@ -187,6 +187,9 @@
     <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
     <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
         class="redX">X</span>Delete</button>
+    <button class="oSButton osElemBase mr-8" onclick="cutSelected()"><span class="blueCaret">✂</span>Cut</button>
+    <button class="oSButton osElemBase mr-8" onclick="copySelected()"><span class="blueCaret">C</span>Copy</button>
+    <button class="oSButton osElemBase mr-8" onclick="pasteFromClipboard()"><span class="greenPlus">V</span>Paste</button>
     <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
     <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
       Folder</button>
@@ -387,6 +390,171 @@
       });
     }
 
+    // Clipboard functions
+    const CLIPBOARD_KEY = 'sacredOS_clipboard';
+
+    function getClipboard() {
+      try {
+        const clipboardData = localStorage.getItem(CLIPBOARD_KEY);
+        return clipboardData ? JSON.parse(clipboardData) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setClipboard(data) {
+      try {
+        localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(data));
+        return true;
+      } catch (e) {
+        console.error('Failed to save to clipboard:', e);
+        return false;
+      }
+    }
+
+    function clearClipboard() {
+      localStorage.removeItem(CLIPBOARD_KEY);
+    }
+
+    function getItemFromBackup(sourcePath, itemName) {
+      const pathParts = sourcePath.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject && currentObject[part] !== undefined) {
+          currentObject = currentObject[part];
+        } else {
+          return null;
+        }
+      }
+      return currentObject && currentObject[itemName] !== undefined ? currentObject[itemName] : null;
+    }
+
+    function copyItem(key) {
+      let sourcePath = pwd.substring(3);
+      // Remove trailing slash if present
+      sourcePath = sourcePath.replace(/\/$/, '');
+      const itemData = getItemFromBackup(sourcePath, key);
+      
+      if (itemData === null) {
+        window.top.postMessage("ALERT:[Item not found!", "*");
+        return;
+      }
+
+      const clipboardData = {
+        operation: 'copy',
+        sourcePath: sourcePath,
+        itemName: key,
+        itemData: itemData,
+        isFolder: typeof itemData === 'object' && !Array.isArray(itemData)
+      };
+
+      if (setClipboard(clipboardData)) {
+        window.top.postMessage("ALERT:[Copied to clipboard!", "*");
+      } else {
+        window.top.postMessage("ALERT:[Failed to copy to clipboard!", "*");
+      }
+    }
+
+    function cutItem(key) {
+      let sourcePath = pwd.substring(3);
+      // Remove trailing slash if present
+      sourcePath = sourcePath.replace(/\/$/, '');
+      const itemData = getItemFromBackup(sourcePath, key);
+      
+      if (itemData === null) {
+        window.top.postMessage("ALERT:[Item not found!", "*");
+        return;
+      }
+
+      const clipboardData = {
+        operation: 'cut',
+        sourcePath: sourcePath,
+        itemName: key,
+        itemData: itemData,
+        isFolder: typeof itemData === 'object' && !Array.isArray(itemData)
+      };
+
+      if (setClipboard(clipboardData)) {
+        window.top.postMessage("ALERT:[Cut to clipboard!", "*");
+      } else {
+        window.top.postMessage("ALERT:[Failed to cut to clipboard!", "*");
+      }
+    }
+
+    function copySelected() {
+      let selectedFiles = document.querySelectorAll(".oSButtonDashed");
+      if (selectedFiles.length === 0) {
+        window.top.postMessage("ALERT:[No items selected!", "*");
+        return;
+      }
+
+      if (selectedFiles.length === 1) {
+        const key = selectedFiles[0].textContent.trim();
+        copyItem(key);
+      } else {
+        window.top.postMessage("ALERT:[Please select one item at a time for copy!", "*");
+      }
+    }
+
+    function cutSelected() {
+      let selectedFiles = document.querySelectorAll(".oSButtonDashed");
+      if (selectedFiles.length === 0) {
+        window.top.postMessage("ALERT:[No items selected!", "*");
+        return;
+      }
+
+      if (selectedFiles.length === 1) {
+        const key = selectedFiles[0].textContent.trim();
+        cutItem(key);
+      } else {
+        window.top.postMessage("ALERT:[Please select one item at a time for cut!", "*");
+      }
+    }
+
+    function pasteFromClipboard() {
+      const clipboard = getClipboard();
+      if (!clipboard) {
+        window.top.postMessage("ALERT:[Clipboard is empty!", "*");
+        return;
+      }
+
+      let targetPath = pwd.substring(3);
+      // Remove trailing slash if present
+      targetPath = targetPath.replace(/\/$/, '');
+      
+      // Check if pasting to the same location
+      if (clipboard.sourcePath === targetPath && clipboard.itemName) {
+        window.top.postMessage("ALERT:[Cannot paste to the same location!", "*");
+        return;
+      }
+
+      // Check if item already exists in target
+      const targetPathParts = targetPath.split("/").filter(Boolean);
+      let targetObject = diskBackup;
+      for (const part of targetPathParts) {
+        if (targetObject && targetObject[part] !== undefined) {
+          targetObject = targetObject[part];
+        } else {
+          window.top.postMessage("ALERT:[Target path does not exist!", "*");
+          return;
+        }
+      }
+
+      if (targetObject[clipboard.itemName] !== undefined) {
+        window.top.postMessage("ALERT:[An item with that name already exists in the target location!", "*");
+        return;
+      }
+
+      // Send copy or move message to kernel
+      // Format: COPY:sourcePath|itemName|targetPath or MOVE:sourcePath|itemName|targetPath
+      // Using | as delimiter to avoid issues with brackets in paths
+      if (clipboard.operation === 'cut') {
+        window.top.postMessage(`MOVE:${clipboard.sourcePath}|${clipboard.itemName}|${targetPath}`, "*");
+      } else {
+        window.top.postMessage(`COPY:${clipboard.sourcePath}|${clipboard.itemName}|${targetPath}`, "*");
+      }
+    }
+
     function closeExistingDialogs() {
       const dialogs = document.querySelectorAll(".dialog");
       dialogs.forEach((d) => {
@@ -566,6 +734,37 @@
           window.top.postMessage(`U:DSKTP-BG[${pwd.substring(3)}${key}`, "*");
         };
         contextMenu.appendChild(setDesktopBG);
+      }
+
+      let cutCtxtBttn = document.createElement("button");
+      cutCtxtBttn.textContent = "Cut";
+      cutCtxtBttn.classList.add("oSButton", "osElemBase");
+      cutCtxtBttn.onclick = function () {
+        cutItem(key);
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(cutCtxtBttn);
+
+      let copyCtxtBttn = document.createElement("button");
+      copyCtxtBttn.textContent = "Copy";
+      copyCtxtBttn.classList.add("oSButton", "osElemBase");
+      copyCtxtBttn.onclick = function () {
+        copyItem(key);
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(copyCtxtBttn);
+
+      // Add Paste option if clipboard has data
+      const clipboard = getClipboard();
+      if (clipboard) {
+        let pasteCtxtBttn = document.createElement("button");
+        pasteCtxtBttn.textContent = "Paste";
+        pasteCtxtBttn.classList.add("oSButton", "osElemBase");
+        pasteCtxtBttn.onclick = function () {
+          pasteFromClipboard();
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(pasteCtxtBttn);
       }
 
       let deleteCtxtBttn = document.createElement("button");

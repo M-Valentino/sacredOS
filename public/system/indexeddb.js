@@ -358,3 +358,97 @@ async function renamePath(directoryPath, oldName, newName) {
   await deletePath(oldPath);
 }
 
+// Copy file or folder recursively
+async function copyPath(sourceDirectoryPath, sourceItemName, targetDirectoryPath) {
+  const sourcePathArray = sourceDirectoryPath === '' ? [] : pathToArray(sourceDirectoryPath);
+  const sourcePath = [...sourcePathArray, sourceItemName];
+  const targetPathArray = targetDirectoryPath === '' ? [] : pathToArray(targetDirectoryPath);
+  const targetPath = [...targetPathArray, sourceItemName];
+
+  // Check if source exists
+  const sourceValue = await getPath(sourcePath);
+  if (sourceValue === null) {
+    const sourcePathKey = pathToKey(sourcePath);
+    throw new Error(`Source file or folder not found at path: ${sourcePathKey} (directory: "${sourceDirectoryPath}", item: "${sourceItemName}")`);
+  }
+
+  // Check if target already exists
+  if (await pathExists(targetPath)) {
+    throw new Error('A file or folder with that name already exists in the target location!');
+  }
+
+  // If it's a folder, copy all children recursively
+  if (typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+    // Create the target folder
+    await setPath(targetPath, {});
+
+    // Get all paths under the source folder
+    const allPaths = await getAllPaths();
+    const sourcePathStr = pathToKey(sourcePath);
+    const targetPathStr = pathToKey(targetPath);
+
+    // Copy all children
+    for (const item of allPaths) {
+      if (item.path.startsWith(sourcePathStr + '/')) {
+        const relativePath = item.path.substring(sourcePathStr.length + 1);
+        const newItemPath = targetPathStr + '/' + relativePath;
+        await setPath(pathToArray(newItemPath), item.value);
+      }
+    }
+  } else {
+    // It's a file, just copy it
+    await setPath(targetPath, sourceValue);
+  }
+}
+
+// Move file or folder recursively (cut and paste)
+async function movePath(sourceDirectoryPath, sourceItemName, targetDirectoryPath) {
+  const sourcePathArray = sourceDirectoryPath === '' ? [] : pathToArray(sourceDirectoryPath);
+  const sourcePath = [...sourcePathArray, sourceItemName];
+  const targetPathArray = targetDirectoryPath === '' ? [] : pathToArray(targetDirectoryPath);
+  const targetPath = [...targetPathArray, sourceItemName];
+
+  // Check if source exists
+  const sourceValue = await getPath(sourcePath);
+  if (sourceValue === null) {
+    throw new Error('Source file or folder not found');
+  }
+
+  // Check if target already exists
+  if (await pathExists(targetPath)) {
+    throw new Error('A file or folder with that name already exists in the target location!');
+  }
+
+  // Check if trying to move into itself (for folders)
+  const sourcePathStr = pathToKey(sourcePath);
+  const targetPathStr = pathToKey(targetPath);
+  if (targetPathStr.startsWith(sourcePathStr + '/')) {
+    throw new Error('Cannot move a folder into itself!');
+  }
+
+  // If it's a folder, move all children recursively
+  if (typeof sourceValue === 'object' && !Array.isArray(sourceValue)) {
+    // Create the target folder
+    await setPath(targetPath, {});
+
+    // Get all paths under the source folder
+    const allPaths = await getAllPaths();
+
+    // Move all children
+    for (const item of allPaths) {
+      if (item.path.startsWith(sourcePathStr + '/')) {
+        const relativePath = item.path.substring(sourcePathStr.length + 1);
+        const newItemPath = targetPathStr + '/' + relativePath;
+        await setPath(pathToArray(newItemPath), item.value);
+        await deletePath(pathToArray(item.path));
+      }
+    }
+  } else {
+    // It's a file, just move it
+    await setPath(targetPath, sourceValue);
+  }
+
+  // Delete the source path
+  await deletePath(sourcePath);
+}
+

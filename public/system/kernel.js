@@ -428,6 +428,56 @@ window.onmessage = async function (e) {
         window.top.postMessage("ALERT:[Error saving file associations: " + error.message + "]", "*");
       }
       return;
+    } else if (e.data.startsWith("COPY:")) {
+      // Format: COPY:sourcePath|itemName|targetPath
+      // Using | as delimiter to avoid issues with brackets in paths
+      const parts = e.data.substring(5).split("|");
+      if (parts.length !== 3) {
+        window.top.postMessage("ALERT:[Invalid COPY message format!", "*");
+        return;
+      }
+      
+      const sourcePath = parts[0];
+      const itemName = parts[1];
+      const targetPath = parts[2];
+      
+      // Remove trailing slashes and normalize empty paths
+      const sourceDirectoryPath = sourcePath.replace(/\/$/, '');
+      const targetDirectoryPath = targetPath.replace(/\/$/, '');
+      
+      try {
+        await copyPath(sourceDirectoryPath, itemName, targetDirectoryPath);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
+      return;
+    } else if (e.data.startsWith("MOVE:")) {
+      // Format: MOVE:sourcePath|itemName|targetPath
+      // Using | as delimiter to avoid issues with brackets in paths
+      const parts = e.data.substring(5).split("|");
+      if (parts.length !== 3) {
+        window.top.postMessage("ALERT:[Invalid MOVE message format!", "*");
+        return;
+      }
+      
+      const sourcePath = parts[0];
+      const itemName = parts[1];
+      const targetPath = parts[2];
+      
+      // Remove trailing slashes and normalize empty paths
+      const sourceDirectoryPath = sourcePath.replace(/\/$/, '');
+      const targetDirectoryPath = targetPath.replace(/\/$/, '');
+      
+      try {
+        await movePath(sourceDirectoryPath, itemName, targetDirectoryPath);
+        await broadcastFileStructure();
+      } catch (error) {
+        window.top.postMessage("ALERT:[" + error.message, "*");
+        await broadcastFileStructure();
+      }
+      return;
     } else if (e.data.startsWith("ALERT:[")) {
       createAlert(e.data.substring(7));
       return;
