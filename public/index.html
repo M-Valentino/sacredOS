@@ -255,6 +255,7 @@
         "gui.frag.html",
         "gui.js",
         "kernel.js",
+        "desktop.js",
         "settings.json",
         "desktopBG.png",
         "system12px.woff2",
@@ -295,7 +296,7 @@
           ]
         }
       ],
-      documents: [
+      desktop: [
         "message.txt",
         "meme.png",
         "dpadhero2.nes",
@@ -522,6 +523,12 @@
           document.body.appendChild(guiScript);
           // Wait a bit for scripts to load, then start GUI
           setTimeout(() => guiStart(), 100);
+        }
+        if (fileContents.system['desktop.js']) {
+          let kernelScript = document.createElement('script');
+          kernelScript.type = 'text/javascript';
+          kernelScript.textContent = fileContents.system['desktop.js'];
+          document.body.appendChild(kernelScript);
         }
       }
     }
