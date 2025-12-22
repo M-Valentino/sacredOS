@@ -2,6 +2,10 @@
 async function broadcastFileStructure() {
   const fileContents = await exportToObject();
   sendMessageToAllIframes("AF:" + JSON.stringify(fileContents), "*");
+  // Also update desktop if it exists (desktop is in main window, not iframe)
+  if (typeof window.updateDesktop === 'function') {
+    window.updateDesktop(fileContents);
+  }
 }
 
 
@@ -81,6 +85,11 @@ window.onmessage = async function (e) {
   if (e.origin === window.origin && typeof e.data === "string") {
     if (e.data == "REQ:AF") {
       await broadcastFileStructure();
+      // Also send directly to desktop update function if it exists
+      const fileContents = await exportToObject();
+      if (typeof window.updateDesktop === 'function') {
+        window.updateDesktop(fileContents);
+      }
       return;
     } else if (e.data.startsWith("REQ:PH[")) {
       // Extract the file path from the message

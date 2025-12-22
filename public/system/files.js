@@ -1,0 +1,880 @@
+let fileAssociations = {};
+    const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
+    
+    function getFileExtension(filename) {
+      const lastDot = filename.lastIndexOf('.');
+      if (lastDot === -1) return '';
+      return filename.substring(lastDot).toLowerCase();
+    }
+
+    async function loadFileAssociations() {
+      window.top.postMessage(`REQ:PH[system/settings.json]`, "*");
+    }
+
+    function openFileWithAssociation(key, backupObject) {
+      const extension = getFileExtension(key);
+      const filePath = `${pwd.substring(3)}${key}`;
+      
+      // Check if we have an association for this extension
+      if (fileAssociations[extension]) {
+        const programPath = fileAssociations[extension];
+        const pathParts = programPath.split('/');
+        const programFileName = pathParts.pop();
+        
+        // Get program data from backup by traversing the path
+        let programData = diskBackup;
+        for (const part of programPath.split('/')) {
+          if (programData && programData[part] !== undefined) {
+            programData = programData[part];
+          } else {
+            console.error("Program not found:", programPath);
+            return false;
+          }
+        }
+        
+        const message = {
+          action: "openProgram",
+          params: { 
+            fileName: programFileName, 
+            fileData: programData,
+            withFile: filePath
+          }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return true;
+      }
+      return false;
+    }
+
+    function openInNotepad(key) {
+      const message = {
+        action: "openProgram",
+        params: { 
+          fileName: "notepad.html", 
+          fileData: diskBackup["programs"]["default"]["notepad.html"], 
+          withFile: `${pwd.substring(3)}${key}` 
+        }
+      };
+      window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+    }
+
+    function resolveShortcut(shortcutContent) {
+      try {
+        const shortcutData = JSON.parse(shortcutContent);
+        if (shortcutData.targetPath) {
+          return shortcutData.targetPath;
+        }
+        return null;
+      } catch (error) {
+        console.error("Error parsing shortcut:", error);
+        return null;
+      }
+    }
+
+    function getItemFromPath(pathString) {
+      const pathParts = pathString.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject && currentObject[part] !== undefined) {
+          currentObject = currentObject[part];
+        } else {
+          return null;
+        }
+      }
+      return currentObject;
+    }
+
+    function handleOpen(key, backupObject) {
+      let keyToCheck = key;
+      const extension = keyToCheck.split('.').pop();
+      
+      // Check if it's a shortcut file
+      if (extension === "shortcut") {
+        const shortcutContent = backupObject[key];
+        if (typeof shortcutContent !== 'string') {
+          window.top.postMessage("ALERT:[Invalid shortcut file!", "*");
+          return;
+        }
+        
+        const targetPath = resolveShortcut(shortcutContent);
+        if (!targetPath) {
+          window.top.postMessage("ALERT:[Invalid shortcut file format!", "*");
+          return;
+        }
+        
+        // Get the target file/folder from diskBackup
+        const targetItem = getItemFromPath(targetPath);
+        if (targetItem === null) {
+          window.top.postMessage("ALERT:[Shortcut target not found!", "*");
+          return;
+        }
+        
+        // Get the target file name
+        const targetPathParts = targetPath.split("/").filter(Boolean);
+        const targetFileName = targetPathParts[targetPathParts.length - 1];
+        
+        // Now open the target file using the same logic
+        const targetExtension = targetFileName.split('.').pop();
+        
+        // HTML files open directly
+        if (targetExtension === "html") {
+          const message = {
+            action: "openProgram",
+            params: { fileName: targetFileName, fileData: targetItem }
+          };
+          window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+          return;
+        }
+        
+        // Try to open with file association
+        if (targetFileName.match(/\..*/)) {
+          // Create a temporary backup object for the target
+          const tempBackup = { [targetFileName]: targetItem };
+          if (openFileWithAssociation(targetFileName, tempBackup)) {
+            return;
+          }
+          // Fallback: if no association, open in notepad
+          const message = {
+            action: "openProgram",
+            params: { 
+              fileName: "notepad.html", 
+              fileData: diskBackup["programs"]["default"]["notepad.html"], 
+              withFile: targetPath 
+            }
+          };
+          window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+          return;
+        }
+        
+        // If target is a folder, navigate to it
+        if (typeof targetItem === 'object' && targetItem !== null && !Array.isArray(targetItem)) {
+          displayTopLevelObjects(targetItem);
+          pwd = `://${targetPath}/`;
+          document.getElementById("pwd").value = pwd;
+          return;
+        }
+        
+        return;
+      }
+      
+      // HTML files open directly
+      if (extension === "html") {
+        const message = {
+          action: "openProgram",
+          params: { fileName: key, fileData: backupObject[key] }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      }
+      
+      // Try to open with file association
+      if (key.match(/\..*/)) {
+        if (openFileWithAssociation(key, backupObject)) {
+          return;
+        }
+        // Fallback: if no association, open in notepad
+        const message = {
+          action: "openProgram",
+          params: { 
+            fileName: "notepad.html", 
+            fileData: diskBackup["programs"]["default"]["notepad.html"], 
+            withFile: `${pwd.substring(3)}${key}` 
+          }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      }
+      
+      // No extension means it's a folder
+      displayTopLevelObjects(backupObject[key]);
+      pwd += `${key}/`;
+      document.getElementById("pwd").value = pwd;
+    }
+
+    function markForDeletion() {
+      let documentFiles = document.querySelectorAll(".oSButtonDashed");
+      documentFiles.forEach(file => {
+        const path = pwd.substring(3) + file.textContent;
+        window.top.postMessage(`DEL[${path}`, '*');
+      });
+    }
+
+    // Clipboard functions
+    const CLIPBOARD_KEY = 'sacredOS_clipboard';
+
+    function getClipboard() {
+      try {
+        const clipboardData = localStorage.getItem(CLIPBOARD_KEY);
+        return clipboardData ? JSON.parse(clipboardData) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setClipboard(data) {
+      try {
+        localStorage.setItem(CLIPBOARD_KEY, JSON.stringify(data));
+        return true;
+      } catch (e) {
+        console.error('Failed to save to clipboard:', e);
+        return false;
+      }
+    }
+
+    function clearClipboard() {
+      localStorage.removeItem(CLIPBOARD_KEY);
+    }
+
+    function getItemFromBackup(sourcePath, itemName) {
+      const pathParts = sourcePath.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject && currentObject[part] !== undefined) {
+          currentObject = currentObject[part];
+        } else {
+          return null;
+        }
+      }
+      return currentObject && currentObject[itemName] !== undefined ? currentObject[itemName] : null;
+    }
+
+    function copyItem(key) {
+      let sourcePath = pwd.substring(3);
+      // Remove trailing slash if present
+      sourcePath = sourcePath.replace(/\/$/, '');
+      const itemData = getItemFromBackup(sourcePath, key);
+      
+      if (itemData === null) {
+        window.top.postMessage("ALERT:[Item not found!", "*");
+        return;
+      }
+
+      const clipboardData = {
+        operation: 'copy',
+        sourcePath: sourcePath,
+        itemName: key,
+        itemData: itemData,
+        isFolder: typeof itemData === 'object' && !Array.isArray(itemData)
+      };
+
+      if (setClipboard(clipboardData)) {
+        window.top.postMessage("ALERT:[Copied to clipboard!", "*");
+      } else {
+        window.top.postMessage("ALERT:[Failed to copy to clipboard!", "*");
+      }
+    }
+
+    function cutItem(key) {
+      let sourcePath = pwd.substring(3);
+      // Remove trailing slash if present
+      sourcePath = sourcePath.replace(/\/$/, '');
+      const itemData = getItemFromBackup(sourcePath, key);
+      
+      if (itemData === null) {
+        window.top.postMessage("ALERT:[Item not found!", "*");
+        return;
+      }
+
+      const clipboardData = {
+        operation: 'cut',
+        sourcePath: sourcePath,
+        itemName: key,
+        itemData: itemData,
+        isFolder: typeof itemData === 'object' && !Array.isArray(itemData)
+      };
+
+      if (setClipboard(clipboardData)) {
+        window.top.postMessage("ALERT:[Cut to clipboard!", "*");
+      } else {
+        window.top.postMessage("ALERT:[Failed to cut to clipboard!", "*");
+      }
+    }
+
+    function copySelected() {
+      let selectedFiles = document.querySelectorAll(".oSButtonDashed");
+      if (selectedFiles.length === 0) {
+        window.top.postMessage("ALERT:[No items selected!", "*");
+        return;
+      }
+
+      if (selectedFiles.length === 1) {
+        const key = selectedFiles[0].textContent.trim();
+        copyItem(key);
+      } else {
+        window.top.postMessage("ALERT:[Please select one item at a time for copy!", "*");
+      }
+    }
+
+    function cutSelected() {
+      let selectedFiles = document.querySelectorAll(".oSButtonDashed");
+      if (selectedFiles.length === 0) {
+        window.top.postMessage("ALERT:[No items selected!", "*");
+        return;
+      }
+
+      if (selectedFiles.length === 1) {
+        const key = selectedFiles[0].textContent.trim();
+        cutItem(key);
+      } else {
+        window.top.postMessage("ALERT:[Please select one item at a time for cut!", "*");
+      }
+    }
+
+    function pasteFromClipboard() {
+      const clipboard = getClipboard();
+      if (!clipboard) {
+        window.top.postMessage("ALERT:[Clipboard is empty!", "*");
+        return;
+      }
+
+      let targetPath = pwd.substring(3);
+      // Remove trailing slash if present
+      targetPath = targetPath.replace(/\/$/, '');
+      
+      // Check if pasting to the same location
+      if (clipboard.sourcePath === targetPath && clipboard.itemName) {
+        window.top.postMessage("ALERT:[Cannot paste to the same location!", "*");
+        return;
+      }
+
+      // Check if item already exists in target
+      const targetPathParts = targetPath.split("/").filter(Boolean);
+      let targetObject = diskBackup;
+      for (const part of targetPathParts) {
+        if (targetObject && targetObject[part] !== undefined) {
+          targetObject = targetObject[part];
+        } else {
+          window.top.postMessage("ALERT:[Target path does not exist!", "*");
+          return;
+        }
+      }
+
+      if (targetObject[clipboard.itemName] !== undefined) {
+        window.top.postMessage("ALERT:[An item with that name already exists in the target location!", "*");
+        return;
+      }
+
+      // Send copy or move message to kernel
+      // Format: COPY:sourcePath|itemName|targetPath or MOVE:sourcePath|itemName|targetPath
+      // Using | as delimiter to avoid issues with brackets in paths
+      if (clipboard.operation === 'cut') {
+        window.top.postMessage(`MOVE:${clipboard.sourcePath}|${clipboard.itemName}|${targetPath}`, "*");
+      } else {
+        window.top.postMessage(`COPY:${clipboard.sourcePath}|${clipboard.itemName}|${targetPath}`, "*");
+      }
+    }
+
+    function closeExistingDialogs() {
+      const dialogs = document.querySelectorAll(".dialog");
+      dialogs.forEach((d) => {
+        d.style.display = "none";
+      });
+    }
+
+    function makeNewFile() {
+      closeExistingDialogs();
+      let newFileDialog = document.getElementById("newFileDialog");
+      newFileDialog.style.display = "initial";
+    }
+
+    function makeNewFolder() {
+      closeExistingDialogs();
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      newFolderDialog.style.display = "initial";
+    }
+
+    function handleOkNewFile() {
+      // Handle OK button click
+      let newFileNameInput = document.getElementById("newFileNameInput");
+      let newFileDialog = document.getElementById("newFileDialog");
+
+      // Get the entered filename
+      let fileName = newFileNameInput.value.trim();
+
+      if (!fileName.includes(".")) {
+        fileName = fileName.concat(".txt");
+      }
+
+      fileName = fileName.replace("]", "");
+      fileName = fileName.replace("[", "");
+      
+      if (fileName !== "") {
+        window.top.postMessage(`MK:F[${pwd.substring(3)}${fileName}]`, '*');
+      }
+
+      // Hide the dialog
+      newFileDialog.style.display = "none";
+      newFileNameInput.value = "";
+    }
+
+    function handleOkNewFolder() {
+      let newFolderNameInput = document.getElementById("newFolderNameInput");
+      let newFolderDialog = document.getElementById("newFolderDialog");
+      let folderName = newFolderNameInput.value.trim();
+
+      if (folderName.includes(".")) {
+        window.top.postMessage("ALERT:[Can't name a folder with \".\"!");
+      }
+
+      folderName = folderName.replace("]", "");
+      folderName = folderName.replace("[", "");
+
+      if (folderName !== "") {
+        window.top.postMessage(`MK:D[${pwd.substring(3)}${folderName}]`, '*');
+      } else {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      }
+
+      newFolderDialog.style.display = "none";
+      newFolderNameInput.value = "";
+    }
+
+    function handleOkRenameFile() {
+      let renameFileInput = document.getElementById("renameFileNameInput");
+      let renameFileDialog = document.getElementById("fileRenameDialog");
+      let newFileName = renameFileInput.value.trim();
+      if (newFileName === "") {
+        window.top.postMessage("ALERT:[Empty file name!");
+      } else if (!newFileName.includes(".")) {
+        window.top.postMessage("ALERT:[File names must include an extension!");
+      } else {
+        window.top.postMessage(`RNF:[${renamingFile}]${newFileName}`, "*");
+        renameFileInput.value = "";
+      }
+      renameFileDialog.style.display = "none";
+    }
+
+    function handleOkRenameFolder() {
+      let renameFolderInput = document.getElementById("renameFolderInput");
+      let renameFolderDialog = document.getElementById("folderRenameDialog");
+      let newFolderName = renameFolderInput.value.trim();
+      if (newFolderName === "") {
+        window.top.postMessage("ALERT:[Empty folder name!");
+      } else {
+        window.top.postMessage(`RND:[${renamingFolder}]${newFolderName}`, "*");
+        renameFolderInput.value = "";
+      }
+      renameFolderDialog.style.display = "none";
+    }
+
+    function handleCancelDialog(dialogId, inputId) {
+      document.getElementById(dialogId).style.display = "none";
+      document.getElementById(inputId).value = "";
+    }
+
+    function removeOldContextMenus() {
+      const oldMenu = document.getElementsByTagName('div'),
+        forEach = Array.prototype.forEach,
+        regex = /^cntxtMn-.*$/;
+
+      forEach.call(oldMenu, function (d) {
+        if (d.id !== undefined && regex.test(d.id)) {
+          d.parentNode.removeChild(d);
+        }
+      });
+    }
+
+    let renamingFile = "";
+    let renamingFolder = "";
+    function handleContextMenu(e, key) {
+      e.preventDefault();
+      // Prevents duplicate context menus from being made
+      if (document.getElementById(`cntxtMn-${key}`)) {
+        return;
+      }
+      removeOldContextMenus();
+      let contextMenu = document.createElement("div");
+      contextMenu.id = `cntxtMn-${key}`;
+      contextMenu.style.position = "absolute";
+      contextMenu.style.left = e.clientX + "px";
+      contextMenu.style.top = e.clientY + "px";
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase", "contextMenu");
+      document.body.appendChild(contextMenu);
+
+      // Folders don't have periods and shouldn't be edited.
+      if (key.includes(".")) {
+        let menuItemEdit = document.createElement("button");
+        menuItemEdit.textContent = "Edit";
+        menuItemEdit.classList.add("oSButton", "osElemBase");
+        menuItemEdit.onclick = function () {
+          openInNotepad(key);
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(menuItemEdit);
+
+        let fileRenameBttn = document.createElement("button");
+        fileRenameBttn.textContent = "Rename";
+        fileRenameBttn.classList.add("oSButton", "osElemBase");
+        fileRenameBttn.onclick = function () {
+          closeExistingDialogs();
+          let renameFileDialog = document.getElementById("fileRenameDialog");
+          renameFileDialog.style.display = "initial";
+          const input = document.getElementById("renameFileNameInput");
+          input.value = key;
+          input.select();
+
+          renamingFile = `${pwd.substring(3)}${key}`;
+        };
+
+        contextMenu.appendChild(fileRenameBttn);
+      } else {
+        let folderRenameBttn = document.createElement("button");
+        folderRenameBttn.textContent = "Rename";
+        folderRenameBttn.classList.add("oSButton", "osElemBase");
+        folderRenameBttn.onclick = function () {
+          closeExistingDialogs();
+          let renameFolderDialog = document.getElementById("folderRenameDialog");
+          renameFolderDialog.style.display = "initial";
+          const input = document.getElementById("renameFolderInput");
+          input.value = key;
+          input.select();
+
+          renamingFolder = `${pwd.substring(3)}${key}`;
+        };
+
+        contextMenu.appendChild(folderRenameBttn);
+      }
+
+      if (imgExtensions.some(ext => key.includes(ext))) {
+        let setDesktopBG = document.createElement("button");
+        setDesktopBG.textContent = "Set as Desktop BG";
+        setDesktopBG.classList.add("oSButton", "osElemBase");
+        setDesktopBG.onclick = function () {
+          window.top.postMessage(`U:DSKTP-BG[${pwd.substring(3)}${key}`, "*");
+        };
+        contextMenu.appendChild(setDesktopBG);
+      }
+
+      let cutCtxtBttn = document.createElement("button");
+      cutCtxtBttn.textContent = "Cut";
+      cutCtxtBttn.classList.add("oSButton", "osElemBase");
+      cutCtxtBttn.onclick = function () {
+        cutItem(key);
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(cutCtxtBttn);
+
+      let copyCtxtBttn = document.createElement("button");
+      copyCtxtBttn.textContent = "Copy";
+      copyCtxtBttn.classList.add("oSButton", "osElemBase");
+      copyCtxtBttn.onclick = function () {
+        copyItem(key);
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(copyCtxtBttn);
+
+      // Add Paste option if clipboard has data
+      const clipboard = getClipboard();
+      if (clipboard) {
+        let pasteCtxtBttn = document.createElement("button");
+        pasteCtxtBttn.textContent = "Paste";
+        pasteCtxtBttn.classList.add("oSButton", "osElemBase");
+        pasteCtxtBttn.onclick = function () {
+          pasteFromClipboard();
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(pasteCtxtBttn);
+      }
+
+      // Add Create Shortcut option for files and folders
+      let createShortcutBttn = document.createElement("button");
+      createShortcutBttn.textContent = "Create Shortcut";
+      createShortcutBttn.classList.add("oSButton", "osElemBase");
+      createShortcutBttn.onclick = function () {
+        const targetPath = `${pwd.substring(3)}${key}`;
+        window.top.postMessage(`MK:SHORTCUT[${pwd.substring(3)}]${targetPath}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(createShortcutBttn);
+
+      let deleteCtxtBttn = document.createElement("button");
+      deleteCtxtBttn.textContent = "Delete";
+      deleteCtxtBttn.classList.add("oSButton", "osElemBase");
+      deleteCtxtBttn.onclick = function () {
+        window.top.postMessage(`DEL[${pwd.substring(3)}${key}`, '*');
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(deleteCtxtBttn);
+
+      // Event listener to remove the context menu on next left click outside of it
+      document.addEventListener('click', function handleClick(event) {
+        if (!contextMenu.contains(event.target)) {
+          contextMenu.remove();
+          document.removeEventListener('click', handleClick);
+        }
+      });
+    }
+
+    document.getElementById("fileUploadButton").addEventListener("click", function () {
+      document.getElementById("fileUpload").click();
+    });
+
+    document.getElementById("fileUpload").addEventListener("change", async function (event) {
+      const file = event.target.files[0];
+      let filename = file.name;
+      filename = filename.replace("]", "");
+      filename = filename.replace("[", "");
+      const extension = file.name.split('.').pop();
+      const path = pwd.substring(3) + filename;
+
+      // For text files
+      if (file && ['html', 'css', 'json', 'js', 'txt'].includes(extension)) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+          const uploadedFile = e.target.result;
+          window.top.postMessage(`SF:[${path}]${uploadedFile}`, "*");
+        };
+        reader.readAsText(file);
+        // For binary files
+      } else if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64File = e.target.result.split(',')[1];  // Strips off the data URL prefix to get pure base64 content
+          window.top.postMessage(`SF:[${path}]${base64File}`, "*");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("topLevelObjects").addEventListener("click", function (event) {
+      if (event.target === this) {
+        removeDashedBorders();
+      }
+    });
+
+    function removeDashedBorders() {
+      let prevSelectedButtons = document.querySelectorAll(".oSButtonDashed");
+      prevSelectedButtons.forEach(bttn => {
+        bttn.classList.replace("oSButtonDashed", "listButton");
+      });
+    }
+
+    let fileForOpeningFromDialog;
+    function displayTopLevelObjects(backupObject) {
+      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).normal;
+      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).normal;
+      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).normal;
+      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).normal;
+      let displayArea = document.getElementById("topLevelObjects");
+      displayArea.innerHTML = '';
+
+      const topLevelKeys = Object.keys(backupObject);
+      topLevelKeys.forEach(function (key) {
+        let button = document.createElement('button');
+
+        button.classList = "listButton fileOrDir";
+
+        let clickTimeout;
+        let clickCount = 0;
+        button.onclick = function () {
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimeout = setTimeout(() => {
+              clickCount = 0;
+            }, 1000);
+            removeDashedBorders();
+            button.classList.replace("listButton", "oSButtonDashed");
+            if (initialMode === MODES.OPEN_FOR_PROGRAM) {
+              fileForOpeningFromDialog = `${pwd.substring(3)}${key}`;
+            }
+          } else if (clickCount === 2) {
+            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
+              handleOpen(key, backupObject);
+            }
+            clearTimeout(clickTimeout);
+            clickCount = 0;
+          }
+        };
+
+        button.addEventListener('contextmenu', function (e) {
+          handleContextMenu(e, key);
+        }, false);
+
+        let icon = document.createElement('img');
+        
+        // Check if it's a shortcut file
+        if (key.endsWith('.shortcut')) {
+          const shortcutContent = backupObject[key];
+          if (typeof shortcutContent === 'string') {
+            try {
+              const shortcutData = JSON.parse(shortcutContent);
+              if (shortcutData.targetPath) {
+                // Get the target file to determine its icon
+                const targetItem = getItemFromPath(shortcutData.targetPath);
+                if (targetItem !== null) {
+                  const targetPathParts = shortcutData.targetPath.split("/").filter(Boolean);
+                  const targetFileName = targetPathParts[targetPathParts.length - 1];
+                  
+                  // Determine icon based on target file
+                  if (targetFileName.indexOf('.') === -1) {
+                    // Target is a folder
+                    icon.src = folderImage;
+                  } else if (imgExtensions.some(ext => targetFileName.includes(ext))) {
+                    icon.src = imageImage;
+                  } else if (targetFileName.indexOf('.html') !== -1) {
+                    if (typeof targetItem === 'string') {
+                      const iconMatch = targetItem.match(/<!--.* microIcon="(.+?)".*-->/);
+                      icon.src = iconMatch ? iconMatch[1] : executableImage;
+                    } else {
+                      icon.src = executableImage;
+                    }
+                  } else {
+                    icon.src = documentImage;
+                  }
+                } else {
+                  // Target not found, use shortcut icon
+                  const shortcutIconContent = diskBackup.system && diskBackup.system.icons && diskBackup.system.icons["shortcut.json"];
+                  if (shortcutIconContent) {
+                    icon.src = JSON.parse(shortcutIconContent).normal;
+                  } else {
+                    icon.src = documentImage;
+                  }
+                }
+              } else {
+                icon.src = documentImage;
+              }
+            } catch (error) {
+              icon.src = documentImage;
+            }
+          } else {
+            icon.src = documentImage;
+          }
+        } else if (key.indexOf('.') === -1) {
+          icon.src = folderImage;
+        } else if (imgExtensions.some(ext => key.includes(ext))) {
+          icon.src = imageImage;
+        } else if (key.indexOf('.html') !== -1) {
+          const fileContent = backupObject[key];
+          if (typeof fileContent === 'string') {
+            const iconMatch = fileContent.match(/<!--.* microIcon="(.+?)".*-->/);
+            icon.src = iconMatch ? iconMatch[1] : executableImage;
+          } else {
+            icon.src = executableImage;
+          }
+        } else {
+          icon.src = documentImage;
+        }
+        button.appendChild(icon);
+
+        let bttnTxt = document.createElement("div");
+        bttnTxt.textContent = key;
+        bttnTxt.classList.add("vertButtonText");
+        button.appendChild(bttnTxt);
+        displayArea.appendChild(button);
+      });
+    }
+
+    function removeLastSlashSection(str) {
+      const lastIndex = str.lastIndexOf('/');
+      // If '/' was not found or is the only character, return the original string
+      if (lastIndex <= 0) {
+        return str;
+      }
+      // Find the next-to-last index of '/'
+      const nextToLastIndex = str.lastIndexOf('/', lastIndex - 1);
+      // If the next-to-last '/' was not found, return the original string
+      if (nextToLastIndex < 0) {
+        return str;
+      }
+      return str.substring(0, nextToLastIndex + 1) + str.substring(lastIndex + 1);
+    }
+
+    function upDir() {
+      const oldDir = pwd;
+      if (oldDir === "://") {
+        return;
+      }
+      let newDir = removeLastSlashSection(oldDir);
+      if (newDir === ":/") {
+        newDir = "://";
+      }
+      pwd = newDir;
+      document.getElementById("pwd").value = pwd;
+
+      // New logic to navigate the backupObject based on newDir
+      const pathParts = newDir.substring(3).split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", newDir);
+          return;
+        }
+      }
+
+      displayTopLevelObjects(currentObject);
+    }
+
+    function dirJump(
+      nestedDirectoryPath = document.getElementById("pwd").value.substring(3),
+      typedPath = document.getElementById("pwd").value.substring(3),
+      traversedDisk = diskBackup,
+    ) {
+      const directories = nestedDirectoryPath.split("/");
+      const currentDirectory = directories.shift();
+
+      if (nestedDirectoryPath === "") {
+        displayTopLevelObjects(traversedDisk);
+        // If the typed path is empty, we don't want a third slash appended to "://"
+        pwd = `://${typedPath}${(typedPath.slice(-1) !== "/" && typedPath.length > 0) ? "/" : ""}`;
+        document.getElementById("pwd").value = pwd;
+      } else if (
+        currentDirectory &&
+        traversedDisk.hasOwnProperty(currentDirectory)
+      ) {
+        const nestedDirectoryPath = directories.join("/");
+        dirJump(nestedDirectoryPath, typedPath, traversedDisk[currentDirectory]);
+      } else {
+        window.top.postMessage("ALERT:[Invalid Path");
+        document.getElementById("pwd").value = pwd;
+        return;
+      }
+    }
+
+    function downloadDisk() {
+      // Ensure diskBackup is a string that contains valid JSON before initiating download
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diskBackup));
+      const d = new Date();
+      let element = document.createElement('a');
+      element.setAttribute('href', dataStr);
+      element.setAttribute('download', `SacredOSBackup-${d.toISOString()}.json`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    function displayCurrentDirectory() {
+      const currentDir = pwd.substring(3);
+      const pathParts = currentDir.split("/").filter(Boolean);
+      let currentObject = diskBackup;
+      for (const part of pathParts) {
+        if (currentObject[part]) {
+          currentObject = currentObject[part];
+        } else {
+          // If the path does not exist, log an error or handle appropriately
+          console.error("Path does not exist:", currentDir);
+          return;
+        }
+      }
+      displayTopLevelObjects(currentObject);
+    }
+
+    function openFileForSource() {
+      window.top.postMessage(`OFFD:[${fileForOpeningFromDialog}`, "*");
+    }
+
+    function saveFileHere() {
+      let nameOfFileToSave = document.getElementById("fileNameInputBottomDialog").value;
+      if (!nameOfFileToSave.includes(".")) {
+        window.top.postMessage("ALERT:[File must contain an extension!");
+        return;
+      }
+      window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`,"*");
+    }
+
+    function cancelOpenOrSaveFile() {
+      window.top.postMessage(`CLOSE:[${programId}`, "*");
+    }

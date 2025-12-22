@@ -256,3 +256,78 @@ hr {
   background-image: var(--bgBlobURL);
   background-position: center center;
 }
+
+#desktop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--programBarHeight));
+  overflow: hidden;
+  z-index: 1;
+}
+
+.desktopIcon {
+  position: absolute;
+  width: 80px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.desktopIcon img {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 4px;
+  image-rendering: pixelated;
+}
+
+.desktopIconLabel {
+  text-align: center;
+  font-size: 12px;
+  word-break: break-word;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  max-width: 80px;
+  line-height: 1.2;
+}
+
+.desktopIcon.selected {
+  background-color: rgba(0, 0, 100, 0.5);
+  border: 1px dashed #000;
+}
+
+.desktopIcon.dragging {
+  opacity: 0.7;
+  z-index: 1000;
+}
+
+.desktopContextMenu {
+  position: absolute;
+  background-color: var(--secColor);
+  border: var(--borderWidth) ridge var(--secColorDark);
+  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.25);
+  z-index: 10000;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.desktopContextMenu button {
+  border: none;
+  background-color: transparent;
+  padding: 4px 8px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-family: "Ark Pixel 12px Proportional latin";
+}
+
+.desktopContextMenu button:hover {
+  background-color: var(--secColorLight);
+}
