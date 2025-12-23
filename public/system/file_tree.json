@@ -1,0 +1,54 @@
+{
+    "system": [
+      "gui.css",
+      "gui.frag.html",
+      "gui.js",
+      "kernel.js",
+      "desktop.js",
+      "settings.json",
+      "desktopBG.png",
+      "system12px.woff2",
+      "Font License.txt",
+      "menuShortcuts.json",
+      {
+        "icons": [
+          "document.json",
+          "executable.json",
+          "folder.json",
+          "picture.json"
+        ]
+      }
+    ],
+    "programs": [
+      {
+        "default": [
+          "files.html",
+          "doug.html",
+          "youTubeFilter.html",
+          "notepad.html",
+          "imageViewer.html",
+          "calculator.html",
+          "tetrJS.html",
+          "mBO.html",
+          "appStore.html",
+          "browser.html",
+          "settings.html",
+          "osTest.html",
+          "audioPlayer.html",
+          {
+            "jsNES": [
+              "jsNES.html",
+              "LICENSE.txt",
+              "NOTICE.txt"
+            ]
+          }
+        ]
+      }
+    ],
+    "desktop": [
+      "message.txt",
+      "meme.png",
+      "dpadhero2.nes",
+      "Weekend.mp3"
+    ]
+  }

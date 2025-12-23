@@ -8,61 +8,7 @@ if ('caches' in window) {
 
 
   // These are the file paths for the OS to boot with a fresh install.
-  const fileTable = {
-
-    system: [
-      "gui.css",
-      "gui.frag.html",
-      "gui.js",
-      "kernel.js",
-      "desktop.js",
-      "settings.json",
-      "desktopBG.png",
-      "system12px.woff2",
-      "Font License.txt",
-      "menuShortcuts.json",
-      {
-        icons: [
-          "document.json",
-          "executable.json",
-          "folder.json",
-          "picture.json",
-        ]
-      }
-    ],
-    programs: [
-      {
-        default: [
-          "files.html",
-          "doug.html",
-          "youTubeFilter.html",
-          "notepad.html",
-          "imageViewer.html",
-          "calculator.html",
-          "tetrJS.html",
-          "mBO.html",
-          "appStore.html",
-          "browser.html",
-          "settings.html",
-          "osTest.html",
-          "audioPlayer.html",
-          {
-            jsNES: [
-              "jsNES.html",
-              "LICENSE.txt",
-              "NOTICE.txt"
-            ]
-          }
-        ]
-      }
-    ],
-    desktop: [
-      "message.txt",
-      "meme.png",
-      "dpadhero2.nes",
-      "Weekend.mp3"
-    ]
-  };
+  // fileTable is now loaded from file_tree.json
 
   // Must be a var because other scripts appended to the DOM need access to it.
   var fileContents = "";
@@ -151,6 +97,10 @@ if ('caches' in window) {
       indexedDBScript.onerror = reject;
       document.head.appendChild(indexedDBScript);
     });
+    
+    // Fetch file_tree.json
+    const fileTableResponse = await fetch('system/file_tree.json');
+    const fileTable = await fileTableResponse.json();
     
     // Clear all existing IndexedDB data for fresh install
     await clearAll();
