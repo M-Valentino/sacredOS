@@ -2,7 +2,6 @@ async function guiStart() {
   await populateMenu();
   await loadDesktopBG();
   await loadFont();
-  await initDesktop();
 }
 
 async function loadFont() {

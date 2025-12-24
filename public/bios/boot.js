@@ -232,13 +232,28 @@ if ('caches' in window) {
         guiScript.textContent = fileContents.system['gui.js'];
         document.body.appendChild(guiScript);
         // Wait a bit for scripts to load, then start GUI
-        setTimeout(() => guiStart(), 100);
+        setTimeout(() => guiStart(), 1000);
       }
-      if (fileContents.system['desktop.js']) {
-        let kernelScript = document.createElement('script');
-        kernelScript.type = 'text/javascript';
-        kernelScript.textContent = fileContents.system['desktop.js'];
-        document.body.appendChild(kernelScript);
+      if (fileContents.programs['default']['files.html']) {
+        // Wait for loadFont to complete before creating iframe so it gets the updated CSS with font src
+        async function createDesktopIframe() {
+          // Wait for gui.js to be loaded and loadFont to be available
+          while (typeof loadFont === 'undefined') {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          // Load font before creating iframe so CSS has the font src
+          await loadFont();
+          let desktop = document.createElement('iframe');
+          modifiedData = fileContents.programs['default']['files.html'];
+          modifiedData = modifiedData.replace(
+            "const initialMode = MODES.OPEN;",
+            "const initialMode = MODES.DESKTOP;"
+          );
+          desktop.srcdoc = modifiedData;
+          desktop.style = "border: 0; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%;"
+          document.body.appendChild(desktop);
+        }
+        createDesktopIframe();
       }
     }
   }

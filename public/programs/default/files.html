@@ -272,7 +272,8 @@
     let diskBackup = {};
     const MODES = {
       OPEN: "OPEN",
-      OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM"
+      OPEN_FOR_PROGRAM: "OPEN_FOR_PROGRAM",
+      DESKTOP: "DESKTOP"
     }
     const initialMode = MODES.OPEN;
     let firstLoad = true;
@@ -1173,7 +1174,11 @@
         const jsonString = e.data.substring(3);
         try {
           diskBackup = JSON.parse(jsonString);
-          if (firstLoad) {
+          if (initialMode === MODES.DESKTOP) {
+            pwd = "://desktop";
+            firstLoad = false;
+          }
+          else if (firstLoad) {
             pwd = "://";
             firstLoad = false;
           }
