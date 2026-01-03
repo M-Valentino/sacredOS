@@ -249,6 +249,14 @@ if ('caches' in window) {
             "const initialMode = MODES.OPEN;",
             "const initialMode = MODES.DESKTOP;"
           );
+          modifiedData = modifiedData.replace(
+            "--displayTopRowControls: initial;",
+            "--displayTopRowControls: none;"
+          );
+          modifiedData = modifiedData.replace(
+            "--scrollObjectsY: auto;",
+            "--scrollObjectsY: none;"
+          );
           desktop.srcdoc = modifiedData;
           desktop.style = "border: 0; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%;"
           document.body.appendChild(desktop);

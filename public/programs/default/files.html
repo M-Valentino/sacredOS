@@ -9,6 +9,8 @@
       --displayBottomDialogActions: none;
       --displayIfSaveFileAsMode: none;
       --displayIfOpenFileMode: none;
+      --displayTopRowControls: initial;
+      --scrollObjectsY: auto;
     }
 
     .program {
@@ -60,7 +62,7 @@
     }
 
     #topLevelObjects {
-      overflow-y: scroll;
+      overflow-y: var(--scrollObjectsY);
       height: 100%;
       padding-bottom: 60px;
       display: flex;
@@ -110,6 +112,10 @@
       color: #22f;
       font-weight: bolder;
       margin-right: 5px;
+    }
+
+    #topRowControls {
+      display: var(--displayTopRowControls);
     }
 
     #newFileDialog,
@@ -183,25 +189,28 @@
 </head>
 
 <body class="program">
-  <div class="flexBttnRow">
-    <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
-    <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
-        class="redX">X</span>Delete</button>
-    <button class="oSButton osElemBase mr-8" onclick="cutSelected()"><span class="blueCaret">✂</span>Cut</button>
-    <button class="oSButton osElemBase mr-8" onclick="copySelected()"><span class="blueCaret">C</span>Copy</button>
-    <button class="oSButton osElemBase mr-8" onclick="pasteFromClipboard()"><span class="greenPlus">V</span>Paste</button>
-    <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
-    <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
-      Folder</button>
-    <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
-    <input type="file" id="fileUpload" style="display:none;">
+  <div id="topRowControls">
+    <div class="flexBttnRow">
+      <button class="oSButton osElemBase mr-8" onclick="downloadDisk()">Download Disk Backup</button>
+      <button id="delFile" class="oSButton osElemBase mr-8" onclick="markForDeletion()"><span
+          class="redX">X</span>Delete</button>
+      <button class="oSButton osElemBase mr-8" onclick="cutSelected()"><span class="blueCaret">✂</span>Cut</button>
+      <button class="oSButton osElemBase mr-8" onclick="copySelected()"><span class="blueCaret">C</span>Copy</button>
+      <button class="oSButton osElemBase mr-8" onclick="pasteFromClipboard()"><span
+          class="greenPlus">V</span>Paste</button>
+      <button class="oSButton osElemBase mr-8" onclick="makeNewFile()"><span class="greenPlus">+</span>New File</button>
+      <button class="oSButton osElemBase mr-8" onclick="makeNewFolder()"><span class="greenPlus">+</span>New
+        Folder</button>
+      <button class="oSButton osElemBase" id="fileUploadButton"><span class="blueCaret">^</span>Upload File</button>
+      <input type="file" id="fileUpload" style="display:none;">
+    </div>
+    <div class="flexRowLarge">
+      <input type="text" id="pwd" class="w-100">
+      <button class="oSButton osElemBase ml-8" id="dirUp" onclick="dirJump()">></button>
+      <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
+    </div>
+    <hr>
   </div>
-  <div class="flexRowLarge">
-    <input type="text" id="pwd" class="w-100">
-    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="dirJump()">></button>
-    <button class="oSButton osElemBase ml-8" id="dirUp" onclick="upDir()">↑</button>
-  </div>
-  <hr>
   <div class="flexColBetween">
     <div id="topLevelObjects"></div>
 
@@ -287,7 +296,7 @@
 
     let fileAssociations = {};
     const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
-    
+
     function getFileExtension(filename) {
       const lastDot = filename.lastIndexOf('.');
       if (lastDot === -1) return '';
@@ -301,13 +310,13 @@
     function openFileWithAssociation(key, backupObject) {
       const extension = getFileExtension(key);
       const filePath = `${pwd.substring(3)}${key}`;
-      
+
       // Check if we have an association for this extension
       if (fileAssociations[extension]) {
         const programPath = fileAssociations[extension];
         const pathParts = programPath.split('/');
         const programFileName = pathParts.pop();
-        
+
         // Get program data from backup by traversing the path
         let programData = diskBackup;
         for (const part of programPath.split('/')) {
@@ -318,11 +327,11 @@
             return false;
           }
         }
-        
+
         const message = {
           action: "openProgram",
-          params: { 
-            fileName: programFileName, 
+          params: {
+            fileName: programFileName,
             fileData: programData,
             withFile: filePath
           }
@@ -336,10 +345,10 @@
     function openInNotepad(key) {
       const message = {
         action: "openProgram",
-        params: { 
-          fileName: "notepad.html", 
-          fileData: diskBackup["programs"]["default"]["notepad.html"], 
-          withFile: `${pwd.substring(3)}${key}` 
+        params: {
+          fileName: "notepad.html",
+          fileData: diskBackup["programs"]["default"]["notepad.html"],
+          withFile: `${pwd.substring(3)}${key}`
         }
       };
       window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
@@ -374,7 +383,7 @@
     function handleOpen(key, backupObject) {
       let keyToCheck = key;
       const extension = keyToCheck.split('.').pop();
-      
+
       // Check if it's a shortcut file
       if (extension === "shortcut") {
         const shortcutContent = backupObject[key];
@@ -382,27 +391,27 @@
           window.top.postMessage("ALERT:[Invalid shortcut file!", "*");
           return;
         }
-        
+
         const targetPath = resolveShortcut(shortcutContent);
         if (!targetPath) {
           window.top.postMessage("ALERT:[Invalid shortcut file format!", "*");
           return;
         }
-        
+
         // Get the target file/folder from diskBackup
         const targetItem = getItemFromPath(targetPath);
         if (targetItem === null) {
           window.top.postMessage("ALERT:[Shortcut target not found!", "*");
           return;
         }
-        
+
         // Get the target file name
         const targetPathParts = targetPath.split("/").filter(Boolean);
         const targetFileName = targetPathParts[targetPathParts.length - 1];
-        
+
         // Now open the target file using the same logic
         const targetExtension = targetFileName.split('.').pop();
-        
+
         // HTML files open directly
         if (targetExtension === "html") {
           const message = {
@@ -412,7 +421,7 @@
           window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
           return;
         }
-        
+
         // Try to open with file association
         if (targetFileName.match(/\..*/)) {
           // Create a temporary backup object for the target
@@ -423,16 +432,16 @@
           // Fallback: if no association, open in notepad
           const message = {
             action: "openProgram",
-            params: { 
-              fileName: "notepad.html", 
-              fileData: diskBackup["programs"]["default"]["notepad.html"], 
-              withFile: targetPath 
+            params: {
+              fileName: "notepad.html",
+              fileData: diskBackup["programs"]["default"]["notepad.html"],
+              withFile: targetPath
             }
           };
           window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
           return;
         }
-        
+
         // If target is a folder, navigate to it
         if (typeof targetItem === 'object' && targetItem !== null && !Array.isArray(targetItem)) {
           displayTopLevelObjects(targetItem);
@@ -440,10 +449,10 @@
           document.getElementById("pwd").value = pwd;
           return;
         }
-        
+
         return;
       }
-      
+
       // HTML files open directly
       if (extension === "html") {
         const message = {
@@ -453,7 +462,7 @@
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
       }
-      
+
       // Try to open with file association
       if (key.match(/\..*/)) {
         if (openFileWithAssociation(key, backupObject)) {
@@ -462,16 +471,16 @@
         // Fallback: if no association, open in notepad
         const message = {
           action: "openProgram",
-          params: { 
-            fileName: "notepad.html", 
-            fileData: diskBackup["programs"]["default"]["notepad.html"], 
-            withFile: `${pwd.substring(3)}${key}` 
+          params: {
+            fileName: "notepad.html",
+            fileData: diskBackup["programs"]["default"]["notepad.html"],
+            withFile: `${pwd.substring(3)}${key}`
           }
         };
         window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
         return;
       }
-      
+
       // No extension means it's a folder
       displayTopLevelObjects(backupObject[key]);
       pwd += `${key}/`;
@@ -530,7 +539,7 @@
       // Remove trailing slash if present
       sourcePath = sourcePath.replace(/\/$/, '');
       const itemData = getItemFromBackup(sourcePath, key);
-      
+
       if (itemData === null) {
         window.top.postMessage("ALERT:[Item not found!", "*");
         return;
@@ -556,7 +565,7 @@
       // Remove trailing slash if present
       sourcePath = sourcePath.replace(/\/$/, '');
       const itemData = getItemFromBackup(sourcePath, key);
-      
+
       if (itemData === null) {
         window.top.postMessage("ALERT:[Item not found!", "*");
         return;
@@ -617,7 +626,7 @@
       let targetPath = pwd.substring(3);
       // Remove trailing slash if present
       targetPath = targetPath.replace(/\/$/, '');
-      
+
       // Check if pasting to the same location
       if (clipboard.sourcePath === targetPath && clipboard.itemName) {
         window.top.postMessage("ALERT:[Cannot paste to the same location!", "*");
@@ -684,7 +693,7 @@
 
       fileName = fileName.replace("]", "");
       fileName = fileName.replace("[", "");
-      
+
       if (fileName !== "") {
         window.top.postMessage(`MK:F[${pwd.substring(3)}${fileName}]`, '*');
       }
@@ -965,7 +974,7 @@
               fileForOpeningFromDialog = `${pwd.substring(3)}${key}`;
             }
           } else if (clickCount === 2) {
-            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM) {
+            if (initialMode === MODES.OPEN || initialMode === MODES.OPEN_FOR_PROGRAM || initialMode === MODES.DESKTOP) {
               handleOpen(key, backupObject);
             }
             clearTimeout(clickTimeout);
@@ -978,7 +987,7 @@
         }, false);
 
         let icon = document.createElement('img');
-        
+
         // Check if it's a shortcut file
         if (key.endsWith('.shortcut')) {
           const shortcutContent = backupObject[key];
@@ -991,7 +1000,7 @@
                 if (targetItem !== null) {
                   const targetPathParts = shortcutData.targetPath.split("/").filter(Boolean);
                   const targetFileName = targetPathParts[targetPathParts.length - 1];
-                  
+
                   // Determine icon based on target file
                   if (targetFileName.indexOf('.') === -1) {
                     // Target is a folder
@@ -1001,7 +1010,7 @@
                   } else if (targetFileName.indexOf('.html') !== -1) {
                     if (typeof targetItem === 'string') {
                       const iconMatch = targetItem.match(/<!--.* microIcon="(.+?)".*-->/);
-                      icon.src = iconMatch ? iconMatch[1] : executableImage;
+                        icon.src = iconMatch ? iconMatch[1] : executableImage;
                     } else {
                       icon.src = executableImage;
                     }
@@ -1159,7 +1168,7 @@
         window.top.postMessage("ALERT:[File must contain an extension!");
         return;
       }
-      window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`,"*");
+      window.top.postMessage(`SFFD:[${pwd.substring(3)}]${document.getElementById("fileNameInputBottomDialog").value}`, "*");
     }
 
     function cancelOpenOrSaveFile() {
@@ -1175,7 +1184,8 @@
         try {
           diskBackup = JSON.parse(jsonString);
           if (initialMode === MODES.DESKTOP) {
-            pwd = "://desktop";
+            document.getElementById("pwd").value = "://desktop/";
+            pwd = "://desktop/";
             firstLoad = false;
           }
           else if (firstLoad) {
