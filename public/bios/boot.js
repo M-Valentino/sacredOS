@@ -204,6 +204,47 @@ if ('caches' in window) {
       }
     }
 
+    // Play startup audio from IndexedDB or fileContents
+    async function playStartupAudio() {
+      try {
+        let audioData = null;
+        
+        // Try to get from IndexedDB first
+        if (typeof findFileContents !== 'undefined') {
+          audioData = await findFileContents('system', 'sacred_startup.mp3');
+        }
+        
+        // Fallback to fileContents if not in IndexedDB yet (fresh install)
+        if (!audioData && fileContents && fileContents.system && fileContents.system['sacred_startup.mp3']) {
+          audioData = fileContents.system['sacred_startup.mp3'];
+        }
+        
+        if (audioData) {
+          // Convert base64 string to blob
+          const binaryString = atob(audioData);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: 'audio/mpeg' });
+          const audioUrl = URL.createObjectURL(blob);
+          
+          // Create and play audio
+          const audio = new Audio(audioUrl);
+          audio.play().catch(err => {
+            console.log('Could not play startup audio:', err);
+          });
+          
+          // Clean up the object URL after audio ends
+          audio.addEventListener('ended', () => {
+            URL.revokeObjectURL(audioUrl);
+          });
+        }
+      } catch (error) {
+        console.log('Could not load startup audio:', error);
+      }
+    }
+
     // Check if fileContents are loaded
     if (fileContents && fileContents.system) {
       if (fileContents.system['gui.frag.html']) {
@@ -213,6 +254,9 @@ if ('caches' in window) {
         // Hide user prompt and show main menu
         document.getElementById("crtAndBootContainer").style.display = "none";
         document.getElementById("scanLines").style.display = "none";
+        
+        // Play startup audio with 1 second delay
+        setTimeout(() => playStartupAudio(), 1000);
       }
       if (fileContents.system['gui.css']) {
         let styleElement = document.createElement('style');
@@ -232,7 +276,7 @@ if ('caches' in window) {
         guiScript.textContent = fileContents.system['gui.js'];
         document.body.appendChild(guiScript);
         // Wait a bit for scripts to load, then start GUI
-        setTimeout(() => guiStart(), 1000);
+        setTimeout(() => guiStart(), 800);
       }
       if (fileContents.programs['default']['files.html']) {
         // Wait for loadFont to complete before creating iframe so it gets the updated CSS with font src
