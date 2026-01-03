@@ -64,6 +64,8 @@
       window.top.postMessage(`REQ:PH[${filePath}]`, "*");
     }
 
+    let windowId = null; // Store window ID when received
+
     window.onmessage = function (e) {
       if (e.data.startsWith("SS:")) {
         const stylesheet = e.data.substring(3);
@@ -76,23 +78,58 @@
           console.error("Error requesting stylesheet:", error);
         }
         return;
-      } else
-        if (e.data.startsWith("PH:")) {
-          const expectedPattern = `PH:[${filePath}]`;
-          if (e.data.startsWith(expectedPattern)) {
-            document.getElementById("noValidImage").remove();
-            // Extract file content by removing the initial part of the message
-            let fileContent = e.data.substring(expectedPattern.length);
-
-            let imageContainer = document.getElementById('imageContainer');
-            let image = document.createElement("img");
-
-            image.src = `data:image/${extension};base64,${fileContent}`;
-            image.id = "img";
-            imageContainer.appendChild(image);
-          }
+      } else if (e.data.startsWith("ID:[")) {
+        // Capture window ID when received
+        // Format: ID:[win1]
+        const match = e.data.match(/ID:\[(win\d+)\]/);
+        if (match) {
+          windowId = match[1];
         }
+        return;
+      } else if (e.data.startsWith("PH:")) {
+        const expectedPattern = `PH:[${filePath}]`;
+        if (e.data.startsWith(expectedPattern)) {
+          document.getElementById("noValidImage").remove();
+          // Extract file content by removing the initial part of the message
+          let fileContent = e.data.substring(expectedPattern.length);
 
+          let imageContainer = document.getElementById('imageContainer');
+          let image = document.createElement("img");
+
+          image.src = `data:image/${extension};base64,${fileContent}`;
+          image.id = "img";
+          imageContainer.appendChild(image);
+          
+          // Wait for image to load, then resize window to fit image
+          image.onload = function() {
+            const imgWidth = image.naturalWidth;
+            const imgHeight = image.naturalHeight;
+            
+            // Try to get window ID from iframe if not already captured
+            if (!windowId) {
+              try {
+                const iframe = window.frameElement;
+                if (iframe && iframe.id) {
+                  windowId = iframe.id.replace("prog", "win");
+                }
+              } catch (e) {
+                // Cross-origin or other error
+              }
+            }
+            
+            // Request window resize: image dimensions + padding for GUI elements
+            // Add extra space: 40px for zoom select, 30px top margin, 20px padding
+            const extraWidth = 40; // For zoom select and padding
+            const extraHeight = 60; // For header (30px) + top margin (30px)
+            const newWidth = imgWidth + extraWidth;
+            const newHeight = imgHeight + extraHeight;
+            
+            if (windowId) {
+              window.top.postMessage(`REQ:RESIZE[${windowId},${newWidth},${newHeight}]`, "*");
+            }
+          };
+        }
+      }
     };
 
   </script>

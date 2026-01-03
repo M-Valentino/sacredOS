@@ -162,6 +162,25 @@ window.onmessage = async function (e) {
       return;
     } else if (e.data == "REQ:OSV") {
       e.source.postMessage("OSV:1.18", "*");
+    } else if (e.data.startsWith("REQ:RESIZE[")) {
+      // Format: REQ:RESIZE[windowId,width,height]
+      const rightBracketIndex = e.data.indexOf("]", 11);
+      if (rightBracketIndex === -1) {
+        console.error("Invalid resize request format");
+        return;
+      }
+      const params = e.data.substring(11, rightBracketIndex).split(",");
+      if (params.length === 3) {
+        const windowId = params[0];
+        const width = parseInt(params[1], 10);
+        const height = parseInt(params[2], 10);
+            if (windowId && !isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+          if (typeof window.resizeWindow === 'function') {
+            window.resizeWindow(windowId, width, height);
+          }
+        }
+      }
+      return;
     } else if (e.data.startsWith("SF:[")) {
       const rightBracketIndex = e.data.indexOf("]");
 

@@ -378,7 +378,7 @@ function openProgram(
   iframe.style.border = "0";
   iframe.allowFullscreen = true;
   iframe.onload = function () {
-    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}`, "*");
+    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}]`, "*");
     iframe.contentDocument.body.addEventListener("click", function () {
       bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     });
@@ -710,8 +710,46 @@ function minimizeProgram(windowID, menuButtonID) {
     "var(--borderWidth) outset var(--secColorDark)";
 }
 
+function resizeWindow(windowID, width, height) {
+  const programWindow = document.getElementById(windowID);
+  if (!programWindow) {
+    console.error("Window not found:", windowID);
+    return;
+  }
+
+  // Check if window is maximized - don't resize if maximized
+  const windowIdNum = windowID.replace("win", "");
+  const maximizeButton = document.getElementById(`max${windowIdNum}`);
+  if (maximizeButton && maximizeButton.textContent === "[]") {
+    return; // Window is maximized, don't resize
+  }
+
+  const programHeader = document.getElementById(`hed${windowIdNum}`);
+  if (!programHeader) {
+    console.error("Header not found for window:", windowID);
+    return;
+  }
+
+  let { borderWidth } = window.getComputedStyle(programWindow);
+  borderWidth = parseInt(borderWidth, 10);
+  const headerRectHeight = programHeader.getBoundingClientRect().height;
+
+  // Set window size (content size + borders + header)
+  programWindow.style.width = width + borderWidth * 2 + "px";
+  programWindow.style.height = height + borderWidth * 2 + headerRectHeight + "px";
+}
+
+// Make function available globally for kernel.js
+window.resizeWindow = resizeWindow;
+
 function bringWindowToFront(winID, buttID) {
-  document.getElementById(winID).style.display = "initial";
+  const windowElement = document.getElementById(winID);
+  if (!windowElement) {
+    console.error("Window not found:", winID);
+    return;
+  }
+  
+  windowElement.style.display = "initial";
   const windows = document.querySelectorAll('div[id^="win"]');
   windows.forEach(function (win) {
     // If the id matches the specified window, bring it to the front
@@ -724,8 +762,12 @@ function bringWindowToFront(winID, buttID) {
       win.style.cursor = "default";
     }
   });
-  document.getElementById(buttID).style.border =
-    "var(--borderWidth) inset var(--secColorDark)";
+  
+  const buttonElement = document.getElementById(buttID);
+  if (buttonElement) {
+    buttonElement.style.border = "var(--borderWidth) inset var(--secColorDark)";
+  }
+  // If button doesn't exist yet (async creation), it's okay - it will be styled when created
 }
 
 function checkTime(i) {
