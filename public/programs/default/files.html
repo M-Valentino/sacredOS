@@ -482,6 +482,37 @@
       }
 
       // No extension means it's a folder
+      if (initialMode === MODES.DESKTOP) {
+        // Open a new instance of files.html with the folder as the working directory
+        const newPath = `${pwd.substring(3)}${key}/`;
+        const filesHtmlData = diskBackup["programs"]["default"]["files.html"];
+        let modifiedData = filesHtmlData;
+        // Set the initial pwd by replacing the default value
+        modifiedData = modifiedData.replace(
+          'let pwd = "://";',
+          `let pwd = "://${newPath}";`
+        );
+        modifiedData = modifiedData.replace(
+          'document.getElementById("pwd").value = pwd;',
+          `document.getElementById("pwd").value = "://${newPath}";`
+        );
+        // Set firstLoad to false so pwd doesn't get reset when disk backup loads
+        modifiedData = modifiedData.replace(
+          'let firstLoad = true;',
+          'let firstLoad = false;'
+        );
+        
+        const message = {
+          action: "openProgram",
+          params: {
+            fileName: "files.html",
+            fileData: modifiedData
+          }
+        };
+        window.top.postMessage(`OP:${JSON.stringify(message)}`, '*');
+        return;
+      }
+      
       displayTopLevelObjects(backupObject[key]);
       pwd += `${key}/`;
       document.getElementById("pwd").value = pwd;
@@ -1010,7 +1041,7 @@
                   } else if (targetFileName.indexOf('.html') !== -1) {
                     if (typeof targetItem === 'string') {
                       const iconMatch = targetItem.match(/<!--.* microIcon="(.+?)".*-->/);
-                        icon.src = iconMatch ? iconMatch[1] : executableImage;
+                      icon.src = iconMatch ? iconMatch[1] : executableImage;
                     } else {
                       icon.src = executableImage;
                     }
