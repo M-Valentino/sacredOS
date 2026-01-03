@@ -1,7 +1,0 @@
-1. Open up blueFuture.css.
-2. Copy all the code.
-3. Go to system/gui.css and open it up.
-4. Delete all the code.
-5. Paste in the code from blueFuture.css.
-6. Save.
-7. You must create a JSON disk backup and boot from it for it to fully take affect.

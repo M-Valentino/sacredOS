@@ -1,4 +1,4 @@
-<!--width="600" height="400" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKpJREFUeNpi/P//PwO9ABMDHQELjMHIyMhQ6ciA15vt+xkYSbUAOeQGxmfEAEI+xwEYybIMG/AyGOwJhFzX0izObPr+U8ey/4vwR/6R85T7jBGeDxYz0qYoif3POCAJZNSyUcuIswyWj6hNY7XMxhCigNo01kx9pIg2mRpYxGHP1Nsu0IbGsAwkASrtqU1jDcYqJ9oEY9u+gS4byWk5EQLoZjIO20YqQIABALwHeXra/70iAAAAAElFTkSuQmCC"-->
+<!--width="800" height="400" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKpJREFUeNpi/P//PwO9ABMDHQELjMHIyMhQ6ciA15vt+xkYSbUAOeQGxmfEAEI+xwEYybIMG/AyGOwJhFzX0izObPr+U8ey/4vwR/6R85T7jBGeDxYz0qYoif3POCAJZNSyUcuIswyWj6hNY7XMxhCigNo01kx9pIg2mRpYxGHP1Nsu0IbGsAwkASrtqU1jDcYqJ9oEY9u+gS4byWk5EQLoZjIO20YqQIABALwHeXra/70iAAAAAElFTkSuQmCC"-->
 <!DOCTYPE html>
 <html>
 
@@ -803,6 +803,61 @@
 
     let renamingFile = "";
     let renamingFolder = "";
+    
+    function handleEmptySpaceContextMenu(e) {
+      // Prevents duplicate context menus from being made
+      if (document.getElementById("cntxtMn-emptySpace")) {
+        return;
+      }
+      removeOldContextMenus();
+      let contextMenu = document.createElement("div");
+      contextMenu.id = "cntxtMn-emptySpace";
+      contextMenu.style.position = "absolute";
+      contextMenu.style.left = e.clientX + "px";
+      contextMenu.style.top = e.clientY + "px";
+      contextMenu.classList.add("windowRidgeBorder", "osElemBase", "contextMenu");
+      document.body.appendChild(contextMenu);
+
+      let newFileBttn = document.createElement("button");
+      newFileBttn.textContent = "New File";
+      newFileBttn.classList.add("oSButton", "osElemBase");
+      newFileBttn.onclick = function () {
+        makeNewFile();
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(newFileBttn);
+
+      let newFolderBttn = document.createElement("button");
+      newFolderBttn.textContent = "New Folder";
+      newFolderBttn.classList.add("oSButton", "osElemBase");
+      newFolderBttn.onclick = function () {
+        makeNewFolder();
+        removeOldContextMenus();
+      };
+      contextMenu.appendChild(newFolderBttn);
+
+      // Add Paste option if clipboard has data
+      const clipboard = getClipboard();
+      if (clipboard) {
+        let pasteCtxtBttn = document.createElement("button");
+        pasteCtxtBttn.textContent = "Paste";
+        pasteCtxtBttn.classList.add("oSButton", "osElemBase");
+        pasteCtxtBttn.onclick = function () {
+          pasteFromClipboard();
+          removeOldContextMenus();
+        };
+        contextMenu.appendChild(pasteCtxtBttn);
+      }
+
+      // Event listener to remove the context menu on next left click outside of it
+      document.addEventListener('click', function handleClick(event) {
+        if (!contextMenu.contains(event.target)) {
+          contextMenu.remove();
+          document.removeEventListener('click', handleClick);
+        }
+      });
+    }
+    
     function handleContextMenu(e, key) {
       e.preventDefault();
       // Prevents duplicate context menus from being made
@@ -966,6 +1021,18 @@
     document.getElementById("topLevelObjects").addEventListener("click", function (event) {
       if (event.target === this) {
         removeDashedBorders();
+      }
+    });
+
+    document.getElementById("topLevelObjects").addEventListener("contextmenu", function (event) {
+      // Check if the click is on empty space (not on a file/folder button)
+      const target = event.target;
+      const container = document.getElementById("topLevelObjects");
+      
+      // If clicking directly on the container or on an element that's not a file/folder button
+      if (target === container || !target.closest('.fileOrDir')) {
+        event.preventDefault();
+        handleEmptySpaceContextMenu(event);
       }
     });
 

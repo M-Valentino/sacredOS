@@ -18,15 +18,6 @@
     "mode": "Install"
   },
   {
-    "name": "Audio Player",
-    "dir": "/apps/audioPlayer",
-    "icon": "icon.png",
-    "description": "Play your music and audio files in Sacred OS. Works with WAV, MP3, and more.",
-    "author": "Mark Valentino",
-    "link": "https://github.com/M-Valentino",
-    "mode": "Install"
-  },
-  {
     "name": "Synthesizer",
     "dir": "/apps/synthesizer",
     "icon": "icon.png",
@@ -70,15 +61,6 @@
     "author": "Yiotis Kaltsikis",
     "link": "https://github.com/giotiskl",
     "mode": "Install"
-  },
-  {
-    "name": "Blue Future",
-    "dir": "/apps/blueFuture",
-    "icon": "icon.png",
-    "description": "Alternative OS GUI theme with rounded buttons and transparent colors. Installation instructions included. This version is updated to be compatible with Sacred OS v1.8",
-    "author": "Mark Valentino",
-    "link": "https://github.com/M-Valentino",
-    "mode": "Download"
   },
   {
     "name": "SpeedRead",
