@@ -1,4 +1,4 @@
-<!--width="270" height="370" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAapJREFUeNq8lr/Ng0AMxTnECih1anpETc8UWYIRWCJTpKdmAWpqxBD3fQ/xImPuH00soSTOnX+2750TY63NfmWF/GCMiW7o+/6U3TAM0U0sKL+TmQb5fD7LY8HvBIutz1OqSAGmrHfCXq/XZXHbtl6g6zsXsPAF2LYtK8vy4v98PqfPXdd59yfBlmXJns/nybeu6w7SwTWcIMTQZuQ9k9JHawBEdQjYNM3+PlQxEiFoHEejpe+FEYiKNEi/SuDj8TiBJKyIHSzbJAHIHE9d1xcgfP+PdV36IgZCVfosROYWwaVY9LkeSjVBNfqEI1t0vP+e7a0Jgszlow3n5/KxvSHZXypzyVXa0VI7z/NeXVVVlgpMAV7UqKcB1ShtmiYJ/4LghxqlodVJ0sfYQgAN850nE3u/3+bWTwznIzJlJTEQq3LNVm9lXMyxxWCydbqlAHEtRx0r9F5qKRS9WQanyTOSyenZGr1nujIE1gKgiOjnHlfrnWcmLy5BlLsLhO/kHQTItd4rEAJDIGkEhtYHpa8Nl1i3MSWZoEBC2WOvw5dk5pd/UvPsh/YnwAAIIH4dYG3CNQAAAABJRU5ErkJggg=="-->
+<!--width="420" height="550" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAapJREFUeNq8lr/Ng0AMxTnECih1anpETc8UWYIRWCJTpKdmAWpqxBD3fQ/xImPuH00soSTOnX+2750TY63NfmWF/GCMiW7o+/6U3TAM0U0sKL+TmQb5fD7LY8HvBIutz1OqSAGmrHfCXq/XZXHbtl6g6zsXsPAF2LYtK8vy4v98PqfPXdd59yfBlmXJns/nybeu6w7SwTWcIMTQZuQ9k9JHawBEdQjYNM3+PlQxEiFoHEejpe+FEYiKNEi/SuDj8TiBJKyIHSzbJAHIHE9d1xcgfP+PdV36IgZCVfosROYWwaVY9LkeSjVBNfqEI1t0vP+e7a0Jgszlow3n5/KxvSHZXypzyVXa0VI7z/NeXVVVlgpMAV7UqKcB1ShtmiYJ/4LghxqlodVJ0sfYQgAN850nE3u/3+bWTwznIzJlJTEQq3LNVm9lXMyxxWCydbqlAHEtRx0r9F5qKRS9WQanyTOSyenZGr1nujIE1gKgiOjnHlfrnWcmLy5BlLsLhO/kHQTItd4rEAJDIGkEhtYHpa8Nl1i3MSWZoEBC2WOvw5dk5pd/UvPsh/YnwAAIIH4dYG3CNQAAAABJRU5ErkJggg=="-->
 <!DOCTYPE html>
 <html>
 
@@ -50,6 +50,10 @@
       margin: 0;
     }
 
+    #fileAssociationsContainer {
+      max-width: 480px;
+    }
+
     .fileAssociationRow {
       display: flex;
       flex-direction: row;
@@ -65,6 +69,10 @@
 
     .fileAssociationRow button {
       flex-shrink: 0;
+    }
+
+    .extInput {
+      max-width: 50px;
     }
   </style>
 </head>
@@ -308,11 +316,10 @@
         row.className = "fileAssociationRow";
         
         const extInput = document.createElement("input");
+        extInput.classList.add("extInput");
         extInput.type = "text";
         extInput.value = extension;
         extInput.placeholder = ".ext";
-        extInput.readOnly = true;
-        extInput.style.backgroundColor = "var(--secColorDark)";
         
         const programSelect = document.createElement("select");
         programSelect.className = "oSButton osElemBase";
