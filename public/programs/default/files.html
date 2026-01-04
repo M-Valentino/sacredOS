@@ -295,12 +295,25 @@
     document.getElementById("pwd").value = pwd;
 
     let fileAssociations = {};
+    let fileIcons = {};
     const imgExtensions = [".png", ".gif", ".jpg", ".webp"];
 
     function getFileExtension(filename) {
       const lastDot = filename.lastIndexOf('.');
       if (lastDot === -1) return '';
       return filename.substring(lastDot).toLowerCase();
+    }
+
+    function getFirstExtension(filename) {
+      // For .shortcut files, get the extension before .shortcut
+      // e.g., "image.png.shortcut" -> ".png"
+      if (filename.endsWith('.shortcut')) {
+        const withoutShortcut = filename.slice(0, -9); // Remove ".shortcut"
+        const lastDot = withoutShortcut.lastIndexOf('.');
+        if (lastDot === -1) return '';
+        return withoutShortcut.substring(lastDot).toLowerCase();
+      }
+      return getFileExtension(filename);
     }
 
     async function loadFileAssociations() {
@@ -1043,12 +1056,61 @@
       });
     }
 
+    function getIconForFile(filename, fileContent) {
+      // Folders have no extension
+      if (filename.indexOf('.') === -1) {
+        const folderIconPath = "system/icons/folder.json";
+        const folderIconContent = getItemFromPath(folderIconPath);
+        if (folderIconContent) {
+          try {
+            return JSON.parse(folderIconContent).normal;
+          } catch (e) {
+            console.error("Error parsing folder icon:", e);
+          }
+        }
+      }
+
+      // For HTML files, check for embedded microIcon first
+      if (filename.endsWith('.html') && typeof fileContent === 'string') {
+        const iconMatch = fileContent.match(/<!--.* microIcon="(.+?)".*-->/);
+        if (iconMatch) {
+          return iconMatch[1];
+        }
+      }
+
+      // Get the extension to use (first extension for .shortcut files)
+      const extension = getFirstExtension(filename);
+      
+      // Look up icon path in fileIcons
+      const iconPath = fileIcons[extension];
+      if (iconPath) {
+        const iconContent = getItemFromPath(iconPath);
+        if (iconContent) {
+          try {
+            return JSON.parse(iconContent).normal;
+          } catch (e) {
+            console.error("Error parsing icon:", e);
+          }
+        }
+      }
+
+      // Fall back to document icon
+      const documentIconPath = "system/icons/document.json";
+      const documentIconContent = getItemFromPath(documentIconPath);
+      if (documentIconContent) {
+        try {
+          return JSON.parse(documentIconContent).normal;
+        } catch (e) {
+          console.error("Error parsing document icon:", e);
+        }
+      }
+
+      // Last resort fallback (shouldn't happen in normal operation)
+      return '';
+    }
+
     let fileForOpeningFromDialog;
     function displayTopLevelObjects(backupObject) {
-      const folderImage = JSON.parse(diskBackup.system.icons["folder.json"]).normal;
-      const documentImage = JSON.parse(diskBackup.system.icons["document.json"]).normal;
-      const imageImage = JSON.parse(diskBackup.system.icons["picture.json"]).normal;
-      const executableImage = JSON.parse(diskBackup.system.icons["executable.json"]).normal;
       let displayArea = document.getElementById("topLevelObjects");
       displayArea.innerHTML = '';
 
@@ -1085,69 +1147,8 @@
         }, false);
 
         let icon = document.createElement('img');
-
-        // Check if it's a shortcut file
-        if (key.endsWith('.shortcut')) {
-          const shortcutContent = backupObject[key];
-          if (typeof shortcutContent === 'string') {
-            try {
-              const shortcutData = JSON.parse(shortcutContent);
-              if (shortcutData.targetPath) {
-                // Get the target file to determine its icon
-                const targetItem = getItemFromPath(shortcutData.targetPath);
-                if (targetItem !== null) {
-                  const targetPathParts = shortcutData.targetPath.split("/").filter(Boolean);
-                  const targetFileName = targetPathParts[targetPathParts.length - 1];
-
-                  // Determine icon based on target file
-                  if (targetFileName.indexOf('.') === -1) {
-                    // Target is a folder
-                    icon.src = folderImage;
-                  } else if (imgExtensions.some(ext => targetFileName.includes(ext))) {
-                    icon.src = imageImage;
-                  } else if (targetFileName.indexOf('.html') !== -1) {
-                    if (typeof targetItem === 'string') {
-                      const iconMatch = targetItem.match(/<!--.* microIcon="(.+?)".*-->/);
-                      icon.src = iconMatch ? iconMatch[1] : executableImage;
-                    } else {
-                      icon.src = executableImage;
-                    }
-                  } else {
-                    icon.src = documentImage;
-                  }
-                } else {
-                  // Target not found, use shortcut icon
-                  const shortcutIconContent = diskBackup.system && diskBackup.system.icons && diskBackup.system.icons["shortcut.json"];
-                  if (shortcutIconContent) {
-                    icon.src = JSON.parse(shortcutIconContent).normal;
-                  } else {
-                    icon.src = documentImage;
-                  }
-                }
-              } else {
-                icon.src = documentImage;
-              }
-            } catch (error) {
-              icon.src = documentImage;
-            }
-          } else {
-            icon.src = documentImage;
-          }
-        } else if (key.indexOf('.') === -1) {
-          icon.src = folderImage;
-        } else if (imgExtensions.some(ext => key.includes(ext))) {
-          icon.src = imageImage;
-        } else if (key.indexOf('.html') !== -1) {
-          const fileContent = backupObject[key];
-          if (typeof fileContent === 'string') {
-            const iconMatch = fileContent.match(/<!--.* microIcon="(.+?)".*-->/);
-            icon.src = iconMatch ? iconMatch[1] : executableImage;
-          } else {
-            icon.src = executableImage;
-          }
-        } else {
-          icon.src = documentImage;
-        }
+        const fileContent = backupObject[key];
+        icon.src = getIconForFile(key, fileContent);
         button.appendChild(icon);
 
         let bttnTxt = document.createElement("div");
@@ -1313,6 +1314,13 @@
           if (settings.fileAssociations) {
             fileAssociations = settings.fileAssociations;
           }
+          if (settings.fileIcons) {
+            fileIcons = settings.fileIcons;
+            // If diskBackup is already loaded, refresh the display so icons are shown
+            if (diskBackup && Object.keys(diskBackup).length > 0) {
+              displayCurrentDirectory();
+            }
+          }
         } catch (error) {
           console.error("Error parsing settings:", error);
         }
@@ -1322,4 +1330,5 @@
   </script>
 </body>
 
+</html>
 </html>

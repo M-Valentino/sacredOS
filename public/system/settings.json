@@ -15,5 +15,22 @@
     ".mp4": "programs/default/mediaPlayer.html",
     ".mov": "programs/default/mediaPlayer.html",
     ".txt": "programs/default/notepad.html"
+  },
+  "fileIcons": {
+    ".png": "system/icons/picture.json",
+    ".gif": "system/icons/picture.json",
+    ".jpg": "system/icons/picture.json",
+    ".webp": "system/icons/picture.json",
+    ".html": "system/icons/executable.json",
+    ".txt": "system/icons/document.json",
+    ".json": "system/icons/document.json",
+    ".js": "system/icons/document.json",
+    ".css": "system/icons/document.json",
+    ".mp3": "system/icons/music.json",
+    ".mp4": "system/icons/document.json",
+    ".ogg": "system/icons/document.json",
+    ".wav": "system/icons/music.json",
+    ".mov": "system/icons/document.json",
+    ".nes": "system/icons/nes.json"
   }
 }

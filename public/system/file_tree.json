@@ -15,7 +15,9 @@
           "document.json",
           "executable.json",
           "folder.json",
-          "picture.json"
+          "picture.json",
+          "music.json",
+          "nes.json"
         ]
       }
     ],
