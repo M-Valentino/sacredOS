@@ -161,7 +161,7 @@ window.onmessage = async function (e) {
       }
       return;
     } else if (e.data == "REQ:OSV") {
-      e.source.postMessage("OSV:1.18", "*");
+      e.source.postMessage("OSV:2.0", "*");
     } else if (e.data.startsWith("REQ:RESIZE[")) {
       // Format: REQ:RESIZE[windowId,width,height]
       const rightBracketIndex = e.data.indexOf("]", 11);
