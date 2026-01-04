@@ -103,7 +103,7 @@
         if (fileContent === "undefined") {
           fileContent = "";
         } else {
-          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`);
         }
         document.getElementById('mainTextarea').value = fileContent;
       } else if (e.data.startsWith("ID:[")) {
@@ -111,7 +111,7 @@
       } else if (e.data.startsWith("NSP:[")) {
         if (filePath === null) {
           filePath = e.data.substring(5);
-          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`)
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`);
         }
       }
     });

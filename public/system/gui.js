@@ -378,7 +378,7 @@ function openProgram(
   iframe.style.border = "0";
   iframe.allowFullscreen = true;
   iframe.onload = function () {
-    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}]`, "*");
+    iframe.contentWindow.postMessage(`ID:[win${currentWindowID}`, "*");
     iframe.contentDocument.body.addEventListener("click", function () {
       bringWindowToFront(`win${currentWindowID}`, `men${currentWindowID}`);
     });

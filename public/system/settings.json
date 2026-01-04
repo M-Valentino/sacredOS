@@ -9,10 +9,11 @@
     ".jpg": "programs/default/imageViewer.html",
     ".webp": "programs/default/imageViewer.html",
     ".nes": "programs/default/jsNES/jsNES.html",
-    ".mp3": "programs/default/audioPlayer.html",
-    ".ogg": "programs/default/audioPlayer.html",
-    ".wav": "programs/default/audioPlayer.html",
-    ".mp4": "programs/default/audioPlayer.html",
+    ".mp3": "programs/default/mediaPlayer.html",
+    ".ogg": "programs/default/mediaPlayer.html",
+    ".wav": "programs/default/mediaPlayer.html",
+    ".mp4": "programs/default/mediaPlayer.html",
+    ".mov": "programs/default/mediaPlayer.html",
     ".txt": "programs/default/notepad.html"
   }
 }

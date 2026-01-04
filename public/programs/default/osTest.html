@@ -1,0 +1,383 @@
+<!--width="800" height="800" -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    main {
+      margin: 1rem;
+    }
+
+    #testResults {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #000;
+      background-color: #f9f9f9;
+    }
+
+    .test-result.passed {
+      color: green;
+    }
+
+    .test-result.failed {
+      color: red;
+    }
+
+    .summary {
+      color: blue;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>OS Tests</h1>
+    <p>This program is for Sacred OS software development purposes.
+      <strong>Note: Running tests will create a bunch of folders and files.</strong>
+    </p>
+    <br />
+    <button onclick="runTests()" class="oSButton osElemBase">Start Tests</button>
+    <div id="testResults">
+      <h2>Test Results</h2>
+      <ul id="testResultsList"></ul>
+      <p id="testSummary" class="summary"></p>
+    </div>
+  </main>
+  <script>
+    window.top.postMessage("REQ:SS", "*");
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    let diskBackup;
+    let awaitingAF = true;
+    let osv;
+    let awaitingOSV = true;
+
+    const resultsDiv = document.getElementById("testResultsList");
+    const summaryDiv = document.getElementById("testSummary");
+
+    function printPassed(message) {
+      const listItem = document.createElement("li");
+      listItem.className = "test-result passed";
+      listItem.textContent = `Passed: ${message}`;
+      resultsDiv.appendChild(listItem);
+    }
+
+    function printFailed(message) {
+      const listItem = document.createElement("li");
+      listItem.className = "test-result failed";
+      listItem.textContent = `Failed: ${message}`;
+      resultsDiv.appendChild(listItem);
+    }
+
+    function updateSummary(passed, total) {
+      summaryDiv.textContent = `Passed ${passed} out of ${total} tests.`;
+    }
+
+    async function __canGetOsv() {
+      const message = "Can get the current OS version.";
+      window.top.postMessage("REQ:OSV", "*");
+
+      while (awaitingOSV) {
+        await sleep(10);
+      }
+
+      if (/^\d+(\.\d+)*$/.test(osv)) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFolderAtRoot() {
+      const message = "Can create a folder named 'test' in root directory.";
+      window.top.postMessage("MK:D[test]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["test"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFolderTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a folder named '2' in /test directory.";
+      window.top.postMessage("MK:D[test/2]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["test"]["2"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFolderThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a folder named '3' in /test/2 directory.";
+      window.top.postMessage("MK:D[test/2/3]", "*");
+      // For a test that happens later
+      window.top.postMessage("MK:F[test/2/3/a.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["test"]["2"]["3"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFolderEmptyName() {
+      awaitingAF = true;
+      const message = "It should not be possible to create a folder named ''.";
+      window.top.postMessage("MK:D[/]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !diskBackup[""]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileAtRoot() {
+      awaitingAF = true;
+      const message = "Can create a file named 'test.txt' in root directory.";
+      window.top.postMessage("MK:F[test.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && "test.txt" in diskBackup) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a file named '2.txt' in test/ directory.";
+      window.top.postMessage("MK:F[test/2.txt]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && "2.txt" in diskBackup["test"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can create a file named '3.txt' in test/2/ directory.";
+      window.top.postMessage("MK:F[test/2/3.txt]", "*");
+      
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && "3.txt" in diskBackup["test"]["2"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __createFileWithEmptyName() {
+      awaitingAF = true;
+      const message = "It should not be possible to create a file named ''.";
+      window.top.postMessage("MK:F[]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !("" in diskBackup)) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderAtRoot() {
+      awaitingAF = true;
+      const message = "Can rename folder test/ to renamed/ and preserve folder data.";
+      window.top.postMessage("RND:[test]renamed", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["renamed"] && "2.txt" in diskBackup["renamed"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderTwoLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can rename renamed/2/ to renamed/renamed2/ and preserve folder data.";
+      window.top.postMessage("RND:[renamed/2]renamed2", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["renamed"]["renamed2"] &&
+        "3.txt" in diskBackup["renamed"]["renamed2"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderThreeLevelsDeep() {
+      awaitingAF = true;
+      const message = "Can rename renamed/renamed2/3/ to renamed/renamed2/3/rn3 and preserve folder data.";
+      window.top.postMessage("RND:[renamed/renamed2/3]rn3", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && diskBackup["renamed"]["renamed2"]["rn3"] &&
+        "a.txt" in diskBackup["renamed"]["renamed2"]["rn3"]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    async function __renameFolderEmptyString() {
+      awaitingAF = true;
+      const message = "It should not be possible to rename folder renamed/ to the empty string";
+      window.top.postMessage("RND:[renamed]", "*");
+
+      while (awaitingAF) {
+        await sleep(10);
+      }
+
+      if (diskBackup && !diskBackup[""]) {
+        printPassed(message);
+        return true;
+      } else {
+        printFailed(message);
+        return false;
+      }
+    }
+
+    // Do NOT rearrange order of tests.
+    const testCalls = [
+      __canGetOsv,
+      __createFolderAtRoot,
+      __createFolderTwoLevelsDeep,
+      __createFolderThreeLevelsDeep,
+      __createFolderEmptyName,
+      __createFileAtRoot,
+      __createFileTwoLevelsDeep,
+      __createFileThreeLevelsDeep,
+      __createFileWithEmptyName,
+      __renameFolderAtRoot,
+      __renameFolderTwoLevelsDeep,
+      __renameFolderThreeLevelsDeep,
+      __renameFolderEmptyString,
+    ];
+
+    async function runTests() {
+      // Clears previous results
+      resultsDiv.innerHTML = "";
+      summaryDiv.textContent = "";
+
+      let testPoints = testCalls.length;
+      let passedTests = 0;
+
+      for (const test of testCalls) {
+        if (await test()) {
+          passedTests++;
+        } else {
+          testPoints--;
+        }
+      }
+
+      updateSummary(passedTests, testCalls.length);
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("AF:")) {
+        const jsonString = e.data.substring(3);
+        try {
+          diskBackup = JSON.parse(jsonString);
+        } catch (error) {
+          console.error("Error parsing JSON data:", error);
+        }
+        awaitingAF = false;
+        return;
+      } else if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("OSV:")) {
+        awaitingOSV = false;
+        osv = e.data.substring(4);
+      }
+    });
+  </script>
+</body>
+
+</html>

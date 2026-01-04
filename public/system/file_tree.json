@@ -33,7 +33,8 @@
           "appStore.html",
           "browser.html",
           "settings.html",
-          "audioPlayer.html",
+          "mediaPlayer.html",
+          "osTest.html",
           {
             "jsNES": [
               "jsNES.html",
