@@ -84,7 +84,7 @@
       window.top.postMessage("REQ:OSV", "*");
 
       while (awaitingOSV) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (/^\d+(\.\d+)*$/.test(osv)) {
@@ -101,7 +101,7 @@
       window.top.postMessage("MK:D[test]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["test"]) {
@@ -119,7 +119,7 @@
       window.top.postMessage("MK:D[test/2]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["test"]["2"]) {
@@ -139,7 +139,7 @@
       window.top.postMessage("MK:F[test/2/3/a.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["test"]["2"]["3"]) {
@@ -157,7 +157,7 @@
       window.top.postMessage("MK:D[/]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && !diskBackup[""]) {
@@ -175,7 +175,7 @@
       window.top.postMessage("MK:F[test.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && "test.txt" in diskBackup) {
@@ -193,7 +193,7 @@
       window.top.postMessage("MK:F[test/2.txt]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && "2.txt" in diskBackup["test"]) {
@@ -211,7 +211,7 @@
       window.top.postMessage("MK:F[test/2/3.txt]", "*");
       
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && "3.txt" in diskBackup["test"]["2"]) {
@@ -229,7 +229,7 @@
       window.top.postMessage("MK:F[]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && !("" in diskBackup)) {
@@ -247,7 +247,7 @@
       window.top.postMessage("RND:[test]renamed", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["renamed"] && "2.txt" in diskBackup["renamed"]) {
@@ -265,7 +265,7 @@
       window.top.postMessage("RND:[renamed/2]renamed2", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["renamed"]["renamed2"] &&
@@ -284,7 +284,7 @@
       window.top.postMessage("RND:[renamed/renamed2/3]rn3", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && diskBackup["renamed"]["renamed2"]["rn3"] &&
@@ -303,7 +303,7 @@
       window.top.postMessage("RND:[renamed]", "*");
 
       while (awaitingAF) {
-        await sleep(10);
+        await sleep(100);
       }
 
       if (diskBackup && !diskBackup[""]) {
