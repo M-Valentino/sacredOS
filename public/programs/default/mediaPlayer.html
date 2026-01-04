@@ -5,12 +5,37 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    #mediaPlayerContainer {
-      margin-top: 8px;
+    body {
+      margin: 0;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
-    audio, video {
+    #mediaPlayerContainer {
+      margin-top: 8px;
       width: 100%;
+    }
+
+    #mediaPlayerContainer.has-video {
+      height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    audio {
+      width: 100%;
+    }
+
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      display: block;
+      object-fit: contain;
     }
 
     #equalizerContainer {
@@ -381,6 +406,7 @@
 
           const audioPlayer = document.getElementById("audioPlayer");
           const videoPlayer = document.getElementById("videoPlayer");
+          const mediaPlayerContainer = document.getElementById("mediaPlayerContainer");
           const equalizerContainer = document.getElementById("equalizerContainer");
           const frequencyBarsContainer = document.getElementById("frequencyBarsContainer");
 
@@ -388,6 +414,7 @@
             // Show audio player
             audioPlayer.style.display = "block";
             videoPlayer.style.display = "none";
+            mediaPlayerContainer.classList.remove("has-video");
             audioPlayer.src = blobURL;
             audioPlayer.load();
             
@@ -418,6 +445,7 @@
             // Show video player
             audioPlayer.style.display = "none";
             videoPlayer.style.display = "block";
+            mediaPlayerContainer.classList.add("has-video");
             videoPlayer.src = blobURL;
             videoPlayer.load();
             

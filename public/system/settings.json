@@ -27,10 +27,10 @@
     ".js": "system/icons/document.json",
     ".css": "system/icons/document.json",
     ".mp3": "system/icons/music.json",
-    ".mp4": "system/icons/document.json",
-    ".ogg": "system/icons/document.json",
     ".wav": "system/icons/music.json",
-    ".mov": "system/icons/document.json",
+    ".mp4": "system/icons/movie.json",
+    ".mov": "system/icons/movie.json",
+    ".ogg": "system/icons/movie.json",
     ".nes": "system/icons/nes.json"
   }
 }

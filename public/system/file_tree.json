@@ -17,6 +17,7 @@
           "folder.json",
           "picture.json",
           "music.json",
+          "movie.json",
           "nes.json"
         ]
       }
@@ -51,6 +52,7 @@
       "message.txt",
       "meme.png",
       "dpadhero2.nes",
-      "Weekend.mp3"
+      "Weekend.mp3",
+      "cant_sue_me.mp4"
     ]
   }
