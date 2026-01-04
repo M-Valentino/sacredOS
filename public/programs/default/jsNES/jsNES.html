@@ -479,6 +479,8 @@
     }
 
     window.top.postMessage("REQ:SS", "*");
+    // Signal that we're ready to receive file data
+    window.top.postMessage("READY:", "*");
 
     function openFile() {
       window.top.postMessage("OPWD:[", "*");

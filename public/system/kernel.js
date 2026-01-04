@@ -254,11 +254,11 @@ window.onmessage = async function (e) {
           message.params
         ) {
           const { fileName, fileData, withFile } = message.params;
-          openProgram(fileName, fileData, false, withFile);
+          const iframe = openProgram(fileName, fileData, false, withFile);
           
           // If a file is associated, send it to the program after it loads
-          if (withFile) {
-            setTimeout(async () => {
+          if (withFile && iframe) {
+            (async () => {
               const directories = withFile.split("/");
               const fileFileName = directories.pop();
               const directoryPath = directories.join("/");
@@ -285,17 +285,77 @@ window.onmessage = async function (e) {
                 }
               }
               
-              // Find the most recently created iframe (should be the one we just opened)
-              // Send file to all iframes - they'll filter based on whether they're expecting it
-              const iframes = document.getElementsByTagName("iframe");
-              for (let i = iframes.length - 1; i >= 0; i--) {
-                const iframe = iframes[i];
-                if (iframe.contentWindow) {
-                  iframe.contentWindow.postMessage(`PHFD:[${withFile}]${fileToSend}`, "*");
-                  break; // Only send to the most recent iframe
+              // Wait for iframe to load and be ready to receive messages
+              const sendFileWhenReady = () => {
+                let fileSent = false;
+                let iframeReady = false;
+                
+                const sendFile = () => {
+                  if (fileSent || !iframeReady) return false;
+                  try {
+                    if (iframe.contentWindow) {
+                      iframe.contentWindow.postMessage(`PHFD:[${withFile}]${fileToSend}`, "*");
+                      fileSent = true;
+                      return true;
+                    }
+                  } catch (e) {
+                    // Can't access iframe yet
+                  }
+                  return false;
+                };
+                
+                // Listen for READY message from the iframe
+                const readyMessageHandler = (e) => {
+                  try {
+                    if (e.data === "READY:" && iframe.contentWindow && e.source === iframe.contentWindow) {
+                      window.removeEventListener('message', readyMessageHandler);
+                      iframeReady = true;
+                      // Send file immediately when ready
+                      setTimeout(() => sendFile(), 50);
+                    }
+                  } catch (err) {
+                    // Ignore errors when checking source
+                  }
+                };
+                window.addEventListener('message', readyMessageHandler);
+                
+                // Also wait for iframe load event as fallback
+                const onLoad = () => {
+                  iframe.removeEventListener('load', onLoad);
+                  // Wait a bit for READY message, but also try sending after delay
+                  setTimeout(() => {
+                    iframeReady = true;
+                    sendFile();
+                  }, 300);
+                };
+                
+                // Check if already loaded
+                try {
+                  if (iframe.contentWindow && iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+                    iframe.addEventListener('load', onLoad);
+                    // Iframe might already be loaded, wait for READY message
+                    setTimeout(() => {
+                      iframeReady = true;
+                      sendFile();
+                    }, 300);
+                    return;
+                  }
+                } catch (e) {
+                  // Can't check readyState
                 }
-              }
-            }, 300); // Delay to ensure iframe is loaded
+                
+                iframe.addEventListener('load', onLoad);
+                
+                // Fallback timeout - send anyway after 2 seconds
+                setTimeout(() => {
+                  window.removeEventListener('message', readyMessageHandler);
+                  iframeReady = true;
+                  sendFile();
+                }, 2000);
+              };
+              
+              sendFileWhenReady();
+            })();
           }
         }
       } catch (error) {

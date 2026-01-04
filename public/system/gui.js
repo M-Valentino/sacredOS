@@ -413,6 +413,8 @@ function openProgram(
       programOverlay: overlay,
     },
   });
+  
+  return iframe;
 }
 
 const cursorStatusMap = {
