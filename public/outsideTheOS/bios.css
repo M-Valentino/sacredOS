@@ -203,16 +203,24 @@
 }
 
 .biosButton {
-  background-color: transparent;
-  border: 4px solid #ff0;
-  border-style: double;
   font-size: 16px;
   padding: 3px;
   cursor: pointer;
-  color: #fff;
   letter-spacing: 1px;
   height: fit-content;
   min-width: 70px;
+}
+
+.biosButton.biosButtonPrimary {
+  background-color: #ff0;
+  border: 4px double #000;
+  color: #000;
+}
+
+.biosButton.biosButtonSecondary {
+  background-color: transparent;
+  border: 4px double #ff0;
+  color: #fff;
 }
 
 .biosTextMain {

@@ -49,7 +49,8 @@
         <div class="innerCrtBorder">
           <main id="bootScreen">
             <header class="flexBetween">
-              <h1 id="biosTitle">𓍰 Sacred OS <span style="color:#ff0;">2</span> Boot Menu</h1><button id="help" class="biosButton">Help</button>
+              <h1 id="biosTitle">𓍰 Sacred OS <span style="color:#ff0;">2</span> Boot Menu</h1><button id="help"
+                class="biosButton biosButtonSecondary">Help</button>
             </header>
             <div id="helpDialog" class="biosDialog">
               <p>
@@ -65,21 +66,21 @@
                 does, but you are able to save it as a file anywhere on your real computer. You can create
                 these backups in the files.html program.
               </p>
-              <button id="closeHelp" class="biosButton closeDialog">Ok</button>
+              <button id="closeHelp" class="biosButton biosButtonSecondary closeDialog">Ok</button>
             </div>
             <div id="noIDBDialog" class="biosDialog">
               <p>No saved session in IndexedDB was found. If this is your first time using Sacred OS,
                 you should boot with a fresh install. Please click the help button for more info.
               </p>
-              <button id="closeNoIDB" class="biosButton closeDialog">Ok</button>
+              <button id="closeNoIDB" class="biosButton biosButtonSecondary closeDialog">Ok</button>
             </div>
             <hr class="biosHrMain mb-20" />
             <section id="bootOptions">
               <div class="biosTextMain">Choose a boot source:</div>
-              <button id="indexedDB" class="biosButton mt-20 mr-20">IndexedDB (Recommended)</button>
-              <button id="uploadJson" class="biosButton mt-20 mr-20">JSON Disk Backup</button>
+              <button id="indexedDB" class="biosButton biosButtonPrimary mt-20 mr-20">IndexedDB (Recommended)</button>
+              <button id="uploadJson" class="biosButton biosButtonSecondary mt-20 mr-20">JSON Disk Backup</button>
               <input type="file" id="fileInput" style="display:none;">
-              <button id="defaultSettings" class="biosButton mt-20">Fresh install</button>
+              <button id="defaultSettings" class="biosButton biosButtonSecondary mt-20">Fresh install</button>
               <hr class="biosHrSub mt-20" />
             </section>
             <section id="sysChecks">
@@ -147,7 +148,6 @@
   <div id="scanLines"></div>
   <script src="bios/init.js"></script>
   <script src="bios/boot.js"></script>
-
 </body>
 
 </html>
