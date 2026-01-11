@@ -1,0 +1,208 @@
+<!--width="900" height="700" microIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAA9QTFRFAAAAAAAA+DgAr38A/6NHdMoVFgAAAAV0Uk5TAP////8c0CZSAAAAiklEQVR4nHWO0Q3DMAhEoe4AeIOIdICoeABLZv+ZAlQNVGruA/HEAQfwRw/mimzaEmWsmdSWLp0Fhw5NHLrkSPdTNYcgwpKkhrtct3TKi/dxocfYWs3IZZt/sL3ZDInlS/w94E4EnRAIuzeGCIAUNabYA632MCMh+tQaR/jipzdbnHKzG4r6bQLTCdh6ECWWjImrAAAAAElFTkSuQmCC"-->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <style>
+    :root {
+      --controlHeight: 25px;
+    }
+
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #emulator-container {
+      width: 100%;
+      height: calc(100vh - var(--controlHeight));
+      position: relative;
+      background: #000;
+    }
+
+    .controls {
+      height: var(--controlHeight);
+      background-color: var(--secColor);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 5px;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .controls button,
+    .controls select {
+      height: 20px;
+      font-size: 12px;
+    }
+  </style>
+
+  <script>
+    // EmulatorJS CDN configuration
+    // Using "latest" version which may have more cores available
+    const EJS_pathtodata = "https://cdn.emulatorjs.org/latest/data/";
+    
+    // System mapping based on file extensions
+    // Note: Core names must match EmulatorJS supported cores
+    const systemMap = {
+      'nes': 'nes',
+      'smc': 'snes',
+      'sfc': 'snes',
+      'gb': 'gb',
+      'gbc': 'gbc',
+      'gba': 'gba',
+      'gen': 'genesis',
+      'md': 'genesis',
+      '32x': 'sega32x',
+      'sms': 'mastersystem',
+      'gg': 'gamegear',
+      'cd': 'segacd',
+      'pce': 'pcengine',
+      'lynx': 'lynx',
+      'jag': 'jaguar',
+      'a26': 'atari2600',
+      'a52': 'atari5200',
+      'a78': 'atari7800',
+      'col': 'coleco',
+      'psx': 'psx',
+      'cue': 'psx',
+      'psp': 'psp',
+      'vb': 'virtualboy',
+      'nds': 'nds',
+      'n64': 'n64',
+      'z64': 'n64',
+      'v64': 'n64',
+      'c64': 'c64',
+      'crt': 'c64'
+    };
+
+    function getSystemFromExtension(extension) {
+      return systemMap[extension.toLowerCase()] || 'nes';
+    }
+
+    function getFileName(filePath) {
+      const directories = filePath.split("/");
+      return directories.pop();
+    }
+
+    let programId = "";
+    let filePath = null;
+    let loaderScript = null;
+    let currentObjectUrl = null;
+
+    function openFile() {
+      window.top.postMessage("OPWD:[", "*");
+    }
+
+    function loadROM(filePath, fileContent) {
+      // Extract file extension
+      const fileName = getFileName(filePath);
+      const extension = fileName.split('.').pop().toLowerCase();
+      const system = getSystemFromExtension(extension);
+
+      // Convert base64 to binary
+      const binaryString = atob(fileContent);
+      const dataArray = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        dataArray[i] = binaryString.charCodeAt(i);
+      }
+
+      // Create blob and object URL
+      const blob = new Blob([dataArray], { type: "application/octet-stream" });
+      const objectUrl = URL.createObjectURL(blob);
+
+      // Clean up previous object URL
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+      }
+      currentObjectUrl = objectUrl;
+
+      // Clean up previous emulator if exists
+      const container = document.getElementById('emulator-container');
+      if (container) {
+        container.innerHTML = '';
+      }
+
+      // Remove previous loader script if exists
+      if (loaderScript && loaderScript.parentNode) {
+        loaderScript.parentNode.removeChild(loaderScript);
+        loaderScript = null;
+      }
+
+      // Configure EmulatorJS global variables
+      window.EJS_player = "#emulator-container";
+      window.EJS_core = system;
+      window.EJS_gameUrl = objectUrl;
+      window.EJS_pathtodata = EJS_pathtodata;
+      window.EJS_color = "#000000";
+      window.EJS_backgroundColor = "#000000";
+      window.EJS_fullscreenOnLoaded = false;
+      window.EJS_gameName = fileName;
+      window.EJS_gameParent = "";
+      window.EJS_gameID = fileName;
+      // Don't set EJS_language - let EmulatorJS use its default
+
+      // Load EmulatorJS script with cache buster to ensure fresh load
+      loaderScript = document.createElement('script');
+      loaderScript.src = EJS_pathtodata + "loader.js?" + Date.now();
+      loaderScript.onload = function() {
+        // Script loaded successfully
+      };
+      loaderScript.onerror = function() {
+        console.error('Failed to load EmulatorJS');
+        alert('Failed to load emulator. Please check your internet connection.');
+        URL.revokeObjectURL(objectUrl);
+      };
+      document.head.appendChild(loaderScript);
+    }
+
+    window.top.postMessage("REQ:SS", "*");
+    window.top.postMessage("READY:", "*");
+
+    window.addEventListener("message", function (e) {
+      if (e.data.startsWith("SS:")) {
+        const stylesheet = e.data.substring(3);
+        try {
+          const styleElement = document.createElement('style');
+          styleElement.type = 'text/css';
+          styleElement.innerText = stylesheet;
+          document.head.appendChild(styleElement);
+        } catch (error) {
+          console.error("Error requesting stylesheet:", error);
+        }
+        return;
+      } else if (e.data.startsWith("PHFD:[")) {
+        const rightBracketIndex = e.data.indexOf("]");
+        filePath = e.data.substring(6, rightBracketIndex);
+        let fileContent = e.data.substring(rightBracketIndex + 1);
+        if (fileContent === "undefined") {
+          fileContent = "";
+        } else {
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`);
+        }
+        loadROM(filePath, fileContent);
+      } else if (e.data.startsWith("ID:[")) {
+        programId = e.data.substring(4);
+      } else if (e.data.startsWith("NSP:[")) {
+        if (filePath === null) {
+          filePath = e.data.substring(5);
+          window.top.postMessage(`UHI:[${programId}]${getFileName(filePath)}`);
+        }
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div class="controls">
+    <button class="oSButton osElemBase" onclick="openFile()">Open ROM</button>
+  </div>
+  <div id="emulator-container"></div>
+</body>
+
+</html>
+

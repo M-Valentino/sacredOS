@@ -44,6 +44,11 @@
               "LICENSE.txt",
               "NOTICE.txt"
             ]
+          },
+          {
+            "emulatorJS": [
+              "emulatorJS.html"
+            ]
           }
         ]
       }
