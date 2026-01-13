@@ -149,16 +149,35 @@ if ('caches' in window) {
     document.getElementById("sysChecks").style.display = "none";
     document.getElementById("freshInstallInfo").style.display = "initial";
     let tempFileContent = {};
-    let tempObjectContent = {};
 
     for (let key in fileTable) {
       if (Array.isArray(fileTable[key])) {
         tempFileContent[key] = {};
+        
+        // Separate files and nested objects
+        const fileItems = [];
+        const nestedItems = [];
+        
         for (let item of fileTable[key]) {
           if (typeof item === 'string') {
+            fileItems.push(item);
+          } else if (typeof item === 'object') {
+            nestedItems.push(item);
+          }
+        }
+        
+        // Fetch all files in parallel
+        if (fileItems.length > 0) {
+          const fetchPromises = fileItems.map(async (item) => {
             let fileURL = `${basePath}${key}/${item}`;
             let content = await fetchContent(fileURL);
-
+            return { item, content, fileURL };
+          });
+          
+          const results = await Promise.all(fetchPromises);
+          
+          // Process results and update UI
+          for (const { item, content, fileURL } of results) {
             compileElement.innerHTML += `<div>Loaded: ${fileURL}</div>`;
             lineCount++;
 
@@ -168,11 +187,26 @@ if ('caches' in window) {
             }
 
             tempFileContent[key][item] = content;
-          } else if (typeof item === 'object') {
+          }
+        }
+        
+        // Handle nested objects in parallel
+        if (nestedItems.length > 0) {
+          const nestedPromises = nestedItems.map(async (item) => {
+            const nestedResults = {};
             for (let nestedKey in item) {
-              tempObjectContent = tempFileContent;
-              tempObjectContent[key][nestedKey] = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
-              tempFileContent[key][nestedKey] = tempObjectContent[key][nestedKey][nestedKey];
+              const result = await loadfileContents({ [nestedKey]: item[nestedKey] }, `${basePath}${key}/`);
+              nestedResults[nestedKey] = result[nestedKey];
+            }
+            return nestedResults;
+          });
+          
+          const nestedResults = await Promise.all(nestedPromises);
+          
+          // Merge nested results into tempFileContent
+          for (const nestedResult of nestedResults) {
+            for (let nestedKey in nestedResult) {
+              tempFileContent[key][nestedKey] = nestedResult[nestedKey];
             }
           }
         }
