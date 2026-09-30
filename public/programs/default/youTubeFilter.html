@@ -109,6 +109,10 @@
       animation: shake 0.5s infinite;
     }
 
+    .psychedelic.shake {
+      animation: psychedelic 5s infinite, shake 0.5s infinite;
+    }
+
     #scanLines {
       z-index: 3;
       position: absolute;
@@ -224,6 +228,7 @@
           videoFrame.style.filter = 'grayscale(1)';
           break;
         case 'Psychedelic':
+          videoFrame.style.filter = '';
           videoFrame.classList.add('psychedelic');
           break;
         case 'High Contrast':
@@ -276,11 +281,11 @@
 
     const shakeCheckbox = document.querySelector("input[name=toggleShake]");
     shakeCheckbox.addEventListener('change', function () {
-      const videoFrame = document.getElementById("video-frame");
+      const videoContainer = document.getElementById("video-container");
       if (this.checked) {
-        videoFrame.classList.add("shake");
+        videoContainer.classList.add("shake");
       } else {
-        videoFrame.classList.remove("shake");
+        videoContainer.classList.remove("shake");
       }
     });
 

@@ -254,20 +254,21 @@ window.onmessage = async function (e) {
           message.params
         ) {
           const { fileName, fileData, withFile } = message.params;
-          openProgram(fileName, fileData, false, withFile);
-          
-          // If a file is associated, send it to the program after it loads
-          if (withFile) {
-            setTimeout(async () => {
+          const iframe = openProgram(fileName, fileData, false, withFile);
+
+          // If a file is associated, send it once that program's document has loaded.
+          // A fixed delay races the program's script (jsNES waits on a CDN) and drops the file.
+          if (withFile && iframe) {
+            const deliverFile = async () => {
               const directories = withFile.split("/");
               const fileFileName = directories.pop();
               const directoryPath = directories.join("/");
               let fileToSend = await findFileContents(directoryPath, fileFileName);
-              
-              if (fileToSend === null) {
+
+              if (fileToSend === null || !iframe.contentWindow) {
                 return;
               }
-              
+
               // Convert Uint8Array to appropriate format based on file type
               const extension = fileFileName.split('.').pop().toLowerCase();
               if (fileToSend instanceof Uint8Array) {
@@ -284,18 +285,13 @@ window.onmessage = async function (e) {
                   fileToSend = btoa(binaryString);
                 }
               }
-              
-              // Find the most recently created iframe (should be the one we just opened)
-              // Send file to all iframes - they'll filter based on whether they're expecting it
-              const iframes = document.getElementsByTagName("iframe");
-              for (let i = iframes.length - 1; i >= 0; i--) {
-                const iframe = iframes[i];
-                if (iframe.contentWindow) {
-                  iframe.contentWindow.postMessage(`PHFD:[${withFile}]${fileToSend}`, "*");
-                  break; // Only send to the most recent iframe
-                }
-              }
-            }, 300); // Delay to ensure iframe is loaded
+
+              iframe.contentWindow.postMessage(`PHFD:[${withFile}]${fileToSend}`, "*");
+            };
+
+            iframe.addEventListener("load", () => {
+              deliverFile();
+            }, { once: true });
           }
         }
       } catch (error) {
